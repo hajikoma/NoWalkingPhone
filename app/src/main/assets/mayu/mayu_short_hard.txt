@@ -1,0 +1,9 @@
+短い毛のセット
+name(S),explain(S),visual(S),rare(f),width(i),maxLength(i),rootLength(i),vitality(i),weakness(i),lifeSpan(f),point(i)
+ふつうの毛,-,mayu_short,100,50,105,20,20,60,20.0f,20
+早い毛,-,mayu_short,45,50,105,20,40,65,15.0f,30
+遅い毛,-,mayu_short,45,50,105,20,10,55,25.0f,30
+強い毛,-,mayu_short,45,50,105,20,25,50,20.0f,30
+弱い毛,-,mayu_short,45,50,105,20,20,70,20.0f,30
+白髪,-,mayu_white,25,50,105,20,15,65,20.0f,40
+高得点,-,mayu_short,15,50,105,20,15,60,10.0f,60
