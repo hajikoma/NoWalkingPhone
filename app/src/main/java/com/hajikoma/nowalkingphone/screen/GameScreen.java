@@ -93,7 +93,7 @@ public class GameScreen extends Screen {
     private int charaAction = CharacterHandler.ACTION_STAND;
 
     /** Walker */
-    private Walker walker;
+    private Walker walkers[];
 
     /** 各スコアを格納 */
     private Scores sc = new Scores();
@@ -105,8 +105,6 @@ public class GameScreen extends Screen {
     private float comboTime = 0.0f;
     /** 毛根の残り成長力合計 */
     private int totalPower;
-    /** 毛根 */
-    private HairRoot[] hr;
     /** 毛根、毛の各処理に汎用的に使用するカウンタ */
     private float[] counter;
     /** ポイントの加算、効果音再生を各毛に一度だけ行うためのフラグ */
@@ -123,22 +121,9 @@ public class GameScreen extends Screen {
     /** スワイプ距離x,yを格納 */
     private int[] distanceX, distanceY;
 
-    /** アイテムを使い始めてからの経過時間 */
-    private float itemTime = 0.0f;
-    /** 選択中のアイテム */
-    private Item item;
-    /** 選択中のアイテムのインデックス */
-    private int useItemIndex;
-    /** 選択中のアイテムのカテゴリー */
-    private ItemCategory iCate;
-    /** 選択中のアイテムのタイプ */
-    private ItemType iType;
+
     /** 選択中のアイテムの効果音 */
     private Sound itemUseSound;
-    /** 強化型アイテムの効果(int型) */
-    private int cPickerExpansion, cPickerTorning, cHRPower;
-    /** 強化型アイテムの効果（float型） */
-    private float cPickerBonusPar, cEnergy;
     /** アイテムエフェクトに使用する変化するalpha値 */
     private int[] argb = new int[]{0, 0, 0, 0};
 
@@ -160,9 +145,12 @@ public class GameScreen extends Screen {
         player = new Player(gra, Assets.player, 100, 100, itemGraDstArea);
 
         // Walkerのセットアップ
+        walkers = new Walker[4];
         Assets.walker = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        walker = new Walker(gra, "歩き大学生", 2, 2, 2, "普通なのがとりえ", 1, Assets.walker, 50, 50, charaDstArea);
-        walker.setState(Walker.ActionType.WALK);
+        walkers[0] = new Walker(gra, "歩き大学生", 2, 2, 2, "普通なのがとりえ", 1, Assets.walker, 50, 50, new Rect(100,100,200,200));
+        walkers[1] = new Walker(gra, "歩き小学生", 1, 3, 1, "すばしっこくぶつかりやすい", 1, Assets.walker, 50, 50, new Rect(300,300,400,400));
+        walkers[2] = new Walker(gra, "歩きウーマン", 2, 2, 2, "たちどまったりふらついたり", 1, Assets.walker, 50, 50, new Rect(500,500,600,600));
+        walkers[3] = new Walker(gra, "歩きオタク", 3, 1, 3, "とろいがでかくて痛い", 1, Assets.walker, 50, 50, new Rect(700,700,800,800));
 
         //固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/trim_bg_head.jpg", PixmapFormat.RGB565);
@@ -181,9 +169,9 @@ public class GameScreen extends Screen {
         gra.drawPixmap(Assets.trim_bg, 0, 0);
 
         player.action(deltaTime);
-
-
-        walker.action(deltaTime);
+        for (Walker walker:walkers) {
+            walker.action(deltaTime);
+        }
 
 
         // シーンごとの処理
@@ -218,15 +206,19 @@ public class GameScreen extends Screen {
                 for (int gi = 0; gi < gestureEvents.size(); gi++) {
                     GestureEvent ges = gestureEvents.get(gi);
 
-                    if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP && isBounds(ges, walker.getLocation())) {
-                        walker.addDamage(1);
-                        if (walker.getLife() >= 1) {
-                            walker.setState(Walker.ActionType.DAMAGE);
-                        } else {
-                            walker.setState(Walker.ActionType.VANISH);
+                    if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
+                        for (Walker walker : walkers) {
+                            if (isBounds(ges, walker.getLocation())) {
+                                walker.addDamage(1);
+                                if (walker.getLife() >= 1) {
+                                    walker.setState(Walker.ActionType.DAMAGE);
+                                } else {
+                                    walker.setState(Walker.ActionType.DEAD);
+                                }
+                            }
                         }
                     }
-//                        //アイテム使用ボタンが押された場合
+
 //                        itemOnTouch();
 //                        itemState = ItemState.USING;
 //                        Assets.ud.setItemNumber(useItemIndex, -1);
@@ -306,7 +298,7 @@ public class GameScreen extends Screen {
                     txt.drawText("お手入れ終了", 5, 700, 620, Assets.map_style.get("big"));
                     timer += deltaTime;
                 } else {
-                    game.setScreen(new ResultScreen(game, misIndex, useItemIndex, sc));
+//                    game.setScreen(new ResultScreen(game, misIndex, useItemIndex, sc));
                 }
                 break;
             //-------------------------------------------------------------------------------------------------

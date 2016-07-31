@@ -17,7 +17,7 @@ public class Walker extends SpriteImage {
         WALK,
         DAMAGE,
         SMASHED,
-        VANISH
+        DEAD
     }
 
     /** 名前 */
@@ -61,7 +61,7 @@ public class Walker extends SpriteImage {
         this.point = point;
 
         life = hp;
-        state = ActionType.STANDBY;
+        state = ActionType.WALK;
     }
 
 
@@ -83,8 +83,8 @@ public class Walker extends SpriteImage {
             case DAMAGE:
                 damage();
                 break;
-            case VANISH:
-                vanish();
+            case DEAD:
+                die();
                 break;
         }
     }
@@ -140,10 +140,10 @@ public class Walker extends SpriteImage {
     /**
      * 画面から消える
      */
-    public void vanish() {
+    public void die() {
         if(dstRect.bottom > 0) {
             drawAction(1, 1);
-            move(-3, -3, 0.98f);
+            vanish(-10, -10);
         }
     }
 
@@ -176,13 +176,13 @@ public class Walker extends SpriteImage {
 
 
     /**
-     * 描画先矩形座標をずらし、かつ矩形を拡大/縮小し、描画位置と描画サイズを変更する。
+     * 画面からフェードアウトするように描画先矩形座標を移動・拡大/縮小する。
      */
-    private void move(int distanceX, int distanceY, float scale) {
-        dstRect.left = (int)((dstRect.left + distanceX));
-        dstRect.right = (int)((dstRect.right - distanceX));
-        dstRect.top = (int)((dstRect.top + distanceY));
-        dstRect.bottom = (int)((dstRect.bottom + distanceY + distanceY));
+    private void vanish(int distanceX, int distanceY) {
+        dstRect.left -= distanceX / 2;
+        dstRect.right += distanceX / 2;
+        dstRect.top += distanceY;
+        dstRect.bottom += distanceY + distanceY;
     }
 
 
