@@ -57,7 +57,7 @@ public class AndroidPixmap implements Pixmap {
 		return format;
 	}
 
-	/** インスタンスを破棄する */
+	/** インスタンスを破棄する。bitmap画像はメモリ消費が大きいため適宜破棄すること。 */
 	@Override
 	public void dispose() {
 		bitmap.recycle();

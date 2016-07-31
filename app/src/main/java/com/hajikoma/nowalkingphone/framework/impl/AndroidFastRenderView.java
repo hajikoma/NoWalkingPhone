@@ -25,8 +25,8 @@ public class AndroidFastRenderView extends SurfaceView implements Runnable {
 
 	/**
 	 * AndroidFastRenderViewインスタンスを生成する。
-	 * @param game gemeアクティビティ
-	 * @param frameBuffer 仮想フレームバッファ
+	 * @param game gameアクティビティ
+	 * @param framebuffer 仮想フレームバッファ
 	 */
 	public AndroidFastRenderView(AndroidGame game, Bitmap framebuffer) {
 		super(game);

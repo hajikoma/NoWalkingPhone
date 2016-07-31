@@ -179,12 +179,14 @@ public class LoadingScreen extends Screen {
 			for(int i = 0; i < gestureEvents.size(); i++){
 				GestureEvent ges = gestureEvents.get(i);
 				if(ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP){
-					game.setScreen(new OpeningScreen(game));
+//					game.setScreen(new OpeningScreen(game));
+					game.setScreen(new GameScreen(game));
 				}
 			}
 
 		}else{
-			game.setScreen(new OpeningScreen(game));
+//			game.setScreen(new OpeningScreen(game));
+			game.setScreen(new GameScreen(game));
 		}
 	}
 

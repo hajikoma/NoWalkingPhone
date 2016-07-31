@@ -37,7 +37,8 @@ public class Assets {
 	public static Pixmap icon_hand;
 	public static Pixmap number;
 	;
-	public static Pixmap chara_visual;
+	public static Pixmap player;
+	public static Pixmap walker;
 
 	public static Sound click;
 	public static Sound powerup;
