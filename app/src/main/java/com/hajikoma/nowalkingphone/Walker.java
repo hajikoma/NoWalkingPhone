@@ -40,6 +40,9 @@ public class Walker extends SpriteImage {
     /** アクションの経過時間 */
     private float actionTime = 0.0f;
 
+    /** 拡大ポイントを通過したか */
+    private boolean isEnlarged[] = new boolean[3];
+
 
     /**
      * Walkerを生成する。
@@ -86,6 +89,17 @@ public class Walker extends SpriteImage {
             case DEAD:
                 die();
                 break;
+        }
+
+        if(dstRect.bottom >= 600 && !isEnlarged[0]){
+            scale(20);
+            isEnlarged[0] = true;
+        }else if(dstRect.bottom >= 800 && !isEnlarged[1]){
+            scale(20);
+            isEnlarged[1] = true;
+        }else if(dstRect.bottom >= 1000 && !isEnlarged[2]){
+            scale(20);
+            isEnlarged[2] = true;
         }
     }
 
