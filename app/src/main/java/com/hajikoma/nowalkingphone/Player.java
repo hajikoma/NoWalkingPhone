@@ -1,5 +1,6 @@
 package com.hajikoma.nowalkingphone;
 
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.SparseArray;
 
@@ -24,10 +25,10 @@ public class Player extends SpriteImage {
 
     /** アクションの種類を表す定数 */
     public static enum ActionType {
-        STANDBY,
         WALK,
         DAMAGE,
-        STEP,
+        STEP_LEFT,
+        STEP_RIGHT,
         SMASH,
         DEAD
     }
@@ -43,6 +44,11 @@ public class Player extends SpriteImage {
     /** アクションの経過時間 */
     private float actionTime = 0.0f;
 
+    /** 現在位置（当たり判定のある矩形座標） */
+    private Point hitArea = new Point(0, MayuGame.TARGET_WIDTH);
+    /** Playerの描画先 */
+    private Rect defaultDstArea = new Rect(260, 1000, 460, 1200);
+
 
     /**
      * Playerを生成する。
@@ -51,13 +57,12 @@ public class Player extends SpriteImage {
      * @param visual    Playerの画像セット（スプライト画像）
      * @param rowHeight visualの中の、一画像の高さ
      * @param colWidth  visualの中の、一画像の幅
-     * @param location  描画先矩形座標
      */
-    public Player(Graphics gra, Pixmap visual, Integer rowHeight, Integer colWidth, Rect location) {
-        super(gra, visual, rowHeight, colWidth, location);
+    public Player(Graphics gra, Pixmap visual, Integer rowHeight, Integer colWidth) {
+        super(gra, visual, rowHeight, colWidth, new Rect(260, 1000, 460, 1200));
 
         health = HealthArray.get(2);
-        state = ActionType.STANDBY;
+        state = ActionType.WALK;
     }
 
 
@@ -71,16 +76,17 @@ public class Player extends SpriteImage {
         actionTime += deltaTime;
 
         switch (state) {
-            case STANDBY:
-                break;
             case WALK:
                 walk();
                 break;
             case DAMAGE:
                 damage();
                 break;
-            case STEP:
-                step();
+            case STEP_LEFT:
+                stepLeft();
+                break;
+            case STEP_RIGHT:
+                stepRight();
                 break;
             case SMASH:
                 smashed();
@@ -123,10 +129,60 @@ public class Player extends SpriteImage {
 
 
     /**
-     * ステップをした
+     * 左にステップをした
      */
-    public void step() {
-//        return srcRects[0][0];
+    public void stepLeft() {
+        if (hitArea.y == MayuGame.TARGET_WIDTH) {
+            // 中央と右側の当たり判定をなくす
+            hitArea.y = hitArea.y / 3;
+            dstRect.left -= 220;
+            dstRect.right -= 220;
+        }
+
+        if (actionTime <= 0.2f) {
+            drawAction(0, 0);
+        } else if (actionTime <= 0.4f) {
+            drawAction(0, 1);
+        } else if (actionTime <= 0.6f) {
+            drawAction(0, 2);
+        } else if (actionTime <= 0.8f) {
+            drawAction(0, 1);
+        } else if (actionTime <= 1.0f) {
+            drawAction(0, 2);
+        } else {
+            hitArea.y = MayuGame.TARGET_WIDTH;
+            resetDstArea();
+            endAction();
+        }
+    }
+
+
+    /**
+     * 右にステップをした
+     */
+    public void stepRight() {
+        if (hitArea.x == 0) {
+            // 中央と左側の当たり判定をなくす
+            hitArea.x = hitArea.y * 2 / 3;
+            dstRect.left += 220;
+            dstRect.right += 220;
+        }
+
+        if (actionTime <= 0.2f) {
+            drawAction(0, 0);
+        } else if (actionTime <= 0.4f) {
+            drawAction(0, 1);
+        } else if (actionTime <= 0.6f) {
+            drawAction(0, 2);
+        } else if (actionTime <= 0.8f) {
+            drawAction(0, 1);
+        } else if (actionTime <= 1.0f) {
+            drawAction(0, 2);
+        } else {
+            hitArea.x = 0;
+            resetDstArea();
+            endAction();
+        }
     }
 
 
@@ -156,6 +212,16 @@ public class Player extends SpriteImage {
      */
     public void setState(Player.ActionType actionType) {
         state = actionType;
+        actionTime = 0.0f;
+        hitArea.x = 0;
+        hitArea.y = MayuGame.TARGET_WIDTH;
+        resetDstArea();
+    }
+
+
+    private void resetDstArea(){
+        dstRect.left = defaultDstArea.left;
+        dstRect.right = defaultDstArea.right;
     }
 
 

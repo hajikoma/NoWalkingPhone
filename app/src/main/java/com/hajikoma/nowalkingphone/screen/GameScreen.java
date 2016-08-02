@@ -6,7 +6,6 @@ import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.CharacterHandler;
-import com.hajikoma.nowalkingphone.HairRoot;
 import com.hajikoma.nowalkingphone.Mission;
 import com.hajikoma.nowalkingphone.Player;
 import com.hajikoma.nowalkingphone.Scores;
@@ -19,9 +18,6 @@ import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Sound;
 import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.Vibrate;
-import com.hajikoma.nowalkingphone.item.Item;
-import com.hajikoma.nowalkingphone.item.Item.ItemCategory;
-import com.hajikoma.nowalkingphone.item.Item.ItemType;
 import com.hajikoma.nowalkingphone.item.Picker;
 
 import java.util.List;
@@ -54,10 +50,7 @@ public class GameScreen extends Screen {
     private Rect charaSrcArea;
     /** キャラクターの描画先 */
     private Rect charaDstArea = new Rect(430, 40, 430 + 280, 40 + 400);
-    /** アイテム画像の描画先 */
-    private Rect itemGraDstArea = new Rect(40, 1280 - 40 - 180, 40 + 180, 1280 - 40);
-    /** アイテム使用ボタンの描画先 */
-    private Rect itemUseDstArea = new Rect(40, 1280 - 40 - 180, 720 - 40, 1280 - 40);
+
 
     /** 共通して使用するゲームクラス */
     private final Game game;
@@ -142,15 +135,15 @@ public class GameScreen extends Screen {
 
         // Playerのセットアップ
         Assets.player = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        player = new Player(gra, Assets.player, 100, 100, itemGraDstArea);
+        player = new Player(gra, Assets.player, 100, 100);
 
         // Walkerのセットアップ
         walkers = new Walker[4];
         Assets.walker = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        walkers[0] = new Walker(gra, "歩き大学生", 2, 2, 2, "普通なのがとりえ", 1, Assets.walker, 50, 50, new Rect(100,100,200,200));
-        walkers[1] = new Walker(gra, "歩き小学生", 1, 3, 1, "すばしっこくぶつかりやすい", 1, Assets.walker, 50, 50, new Rect(300,300,400,400));
-        walkers[2] = new Walker(gra, "歩きウーマン", 2, 2, 2, "たちどまったりふらついたり", 1, Assets.walker, 50, 50, new Rect(500,500,600,600));
-        walkers[3] = new Walker(gra, "歩きオタク", 3, 1, 3, "とろいがでかくて痛い", 1, Assets.walker, 50, 50, new Rect(700,700,800,800));
+        walkers[0] = new Walker(gra, "歩き大学生", 2, 2, 2, "普通なのがとりえ", 1, Assets.walker, 50, 50, new Rect(100, 100, 200, 200));
+        walkers[1] = new Walker(gra, "歩き小学生", 1, 3, 1, "すばしっこくぶつかりやすい", 1, Assets.walker, 50, 50, new Rect(300, 300, 400, 400));
+        walkers[2] = new Walker(gra, "歩きウーマン", 2, 2, 2, "たちどまったりふらついたり", 1, Assets.walker, 50, 50, new Rect(500, 500, 600, 600));
+        walkers[3] = new Walker(gra, "歩きオタク", 3, 1, 3, "とろいがでかくて痛い", 1, Assets.walker, 50, 50, new Rect(700, 700, 800, 800));
 
         //固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/trim_bg_head.jpg", PixmapFormat.RGB565);
@@ -169,7 +162,7 @@ public class GameScreen extends Screen {
         gra.drawPixmap(Assets.trim_bg, 0, 0);
 
         player.action(deltaTime);
-        for (Walker walker:walkers) {
+        for (Walker walker : walkers) {
             walker.action(deltaTime);
         }
 
@@ -217,56 +210,13 @@ public class GameScreen extends Screen {
                                 }
                             }
                         }
+                    } else if (ges.type == GestureEvent.GESTURE_FLING) {
+                        if (ges.velocityX > 0.0f) {
+                            player.setState(Player.ActionType.STEP_RIGHT);
+                        } else {
+                            player.setState(Player.ActionType.STEP_LEFT);
+                        }
                     }
-
-//                        itemOnTouch();
-//                        itemState = ItemState.USING;
-//                        Assets.ud.setItemNumber(useItemIndex, -1);
-//                    } else if (ges.type == picker.GESTURE) {
-//                        //それ以外の領域でタッチイベントが発生した場合
-//                        for (int ri = 0; ri < mis.ROOT_COUNT; ri++) {
-//                            //毛を抜く判定。毛が生えており、タッチがその毛の域内で、かつちぎれ・ひっぱられの各モーション中以外の場合にのみ抜ける
-//                            if (hr[ri].isGrown() && !hr[ri].obj.isTorn() && isBounds(ges, hr[ri].obj.getX(), hr[ri].obj.getY(), 100, hr[ri].obj.getHeight(), picker.getExpansion() + cPickerExpansion)) {
-//                                boolean pickedFlag = true;    //毛が抜けたかどうか
-//
-//                                if (hr[ri].obj.getWeakness() > picker.getTorning() + cPickerTorning + random.nextInt(20)) {
-//                                    //ちぎれた場合
-//                                    pickedFlag = false;
-//                                    hr[ri].obj.torn();
-//                                    sc.tornCount++;
-//                                    combo = 0;
-//                                    playSound(Assets.pick_up2, 0.5f);
-//                                    int tornLength = hr[ri].obj.getHeight() / 2;
-//                                    hr[ri].obj.setY(hr[ri].obj.getY() + tornLength);
-//                                    hr[ri].obj.setHeight(tornLength);
-//                                    hr[ri].obj.setMaxLength(hr[ri].obj.getMaxLength() - tornLength);
-//                                    //短くなることで、少しちぎれにくくなる
-//                                    hr[ri].obj.setWeakness(hr[ri].obj.getWeakness() - 3);
-//                                } else {
-//                                    pickedFlag = true;
-//                                }
-//
-//                                //毛が抜けた場合の共通処理
-//                                if (pickedFlag) {
-//                                    //抜き方別の特殊な処理
-//                                    switch (picker.GESTURE) {
-//                                        case GestureEvent.GESTURE_FLING:
-//                                            velocityX[ri] = (int) ges.velocityX;
-//                                            velocityY[ri] = (int) ges.velocityY;
-//                                            break;
-//                                    }
-//
-//                                    hr[ri].pickedUp();
-//                                    hr[ri].changePower(-1);
-//                                    addPoint[ri] = (int) (hr[ri].obj.getPoint() * (picker.getPointPar()
-//                                            + cPickerBonusPar) + combo * 0.1f);
-//                                    sc.pickCount++;
-//                                    sc.pickLength += hr[ri].obj.getHeight();
-//                                    pickedBy[ri] = picker.GESTURE;
-//                                }
-//                            }
-//                        }
-//                    }
                 }
 
 

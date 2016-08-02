@@ -29,9 +29,9 @@ import com.hajikoma.nowalkingphone.framework.Vibrate;
 public abstract class AndroidGame extends Activity implements Game {
 
 	/** X軸方向のターゲット画面解像度 */
-	final int TARGET_WIDTH = 720;
+	public static final int TARGET_WIDTH = 720;
 	/** Y軸方向のターゲット画面解像度 */
-	final int TARGET_HEIGHT = 1280;
+	public static final int TARGET_HEIGHT = 1280;
 	/** メインループスレッドを処理するSurfaceView */
 	private AndroidFastRenderView renderView;
 	/** 画像処理モジュール */
