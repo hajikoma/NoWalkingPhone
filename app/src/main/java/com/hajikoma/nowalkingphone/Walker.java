@@ -27,7 +27,7 @@ public class Walker extends SpriteImage {
     /** 残り耐久力 */
     private int life;
     /** 移動速度 */
-    private float speed;
+    private int speed;
     /** 衝突力 */
     private int power;
     /** 解説文 */
@@ -96,10 +96,10 @@ public class Walker extends SpriteImage {
     public void walk() {
         if (actionTime <= 0.3f) {
             drawAction(1, 1);
-            move(1, 4);
+            move(1, speed);
         } else if(actionTime <= 0.6f) {
             drawAction(1, 1);
-            move(-1, 4);
+            move(-1, speed);
         } else {
             loopAction();
             walk();
