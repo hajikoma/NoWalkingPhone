@@ -6,6 +6,7 @@ import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.CharacterHandler;
+import com.hajikoma.nowalkingphone.MayuGame;
 import com.hajikoma.nowalkingphone.Mission;
 import com.hajikoma.nowalkingphone.Player;
 import com.hajikoma.nowalkingphone.Scores;
@@ -48,8 +49,7 @@ public class GameScreen extends Screen {
 
     /** キャラクターの描画に使用する矩形。画像内で描画すべき矩形の座標 */
     private Rect charaSrcArea;
-    /** キャラクターの描画先 */
-    private Rect charaDstArea = new Rect(430, 40, 430 + 280, 40 + 400);
+
 
 
     /** 共通して使用するゲームクラス */
@@ -82,8 +82,8 @@ public class GameScreen extends Screen {
 
     /** Player */
     private Player player;
-    /** 現在のキャラクターのアクション */
-    private int charaAction = CharacterHandler.ACTION_STAND;
+    /** Playerのステップ操作の受付範囲 */
+    private Rect onStepArea = new Rect(0, 1000, MayuGame.TARGET_WIDTH, MayuGame.TARGET_HEIGHT);
 
     /** Walker */
     private Walker walkers[];
@@ -210,7 +210,7 @@ public class GameScreen extends Screen {
                                 }
                             }
                         }
-                    } else if (ges.type == GestureEvent.GESTURE_FLING) {
+                    } else if (ges.type == GestureEvent.GESTURE_FLING && isBounds(ges, onStepArea)) {
                         if (ges.velocityX > 0.0f) {
                             player.setState(Player.ActionType.STEP_RIGHT);
                         } else {
