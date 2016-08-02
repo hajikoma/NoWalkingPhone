@@ -97,7 +97,7 @@ public class Walker extends SpriteImage {
         if (actionTime <= 0.3f) {
             drawAction(1, 1);
             move(1, speed);
-        } else if(actionTime <= 0.6f) {
+        } else if (actionTime <= 0.6f) {
             drawAction(1, 1);
             move(-1, speed);
         } else {
@@ -141,9 +141,10 @@ public class Walker extends SpriteImage {
      * 画面から消える
      */
     public void die() {
-        if(dstRect.bottom > 0) {
+        if (dstRect.bottom > 0) {
             drawAction(1, 1);
-            vanish(-10, -10);
+            move(0, 0);
+            scale(7);
         }
     }
 
@@ -176,13 +177,19 @@ public class Walker extends SpriteImage {
 
 
     /**
-     * 画面からフェードアウトするように描画先矩形座標を移動・拡大/縮小する。
+     * 描画先矩形座標を拡大/縮小する。
+     *
+     * @param distance 拡大／縮小距離
+     * @return 拡大／縮小後の描画先矩形座標
      */
-    private void vanish(int distanceX, int distanceY) {
-        dstRect.left -= distanceX / 2;
-        dstRect.right += distanceX / 2;
-        dstRect.top += distanceY;
-        dstRect.bottom += distanceY + distanceY;
+    private Rect scale(int distance) {
+        distance = distance / 2;
+        dstRect.left -= distance;
+        dstRect.right += distance;
+        dstRect.top -= distance;
+        dstRect.bottom += distance;
+
+        return dstRect;
     }
 
 
