@@ -15,33 +15,34 @@ public class Walker extends SpriteImage {
     public static enum ActionType {
         STANDBY,
         WALK,
+        STOP,
         DAMAGE,
         SMASHED,
         DEAD
     }
 
     /** 名前 */
-    private String name;
+    protected String name;
     /** 初期耐久力 */
-    private int hp;
+    protected int hp;
     /** 残り耐久力 */
-    private int life;
+    protected int life;
     /** 移動速度 */
-    private int speed;
+    protected int speed;
     /** 衝突力 */
-    private int power;
+    protected int power;
     /** 解説文 */
-    private String description;
+    protected String description;
     /** 得点 */
-    private int point;
+    protected int point;
 
     /** 現在のアクション */
-    private ActionType state;
+    protected ActionType state;
     /** アクションの経過時間 */
-    private float actionTime = 0.0f;
+    protected float actionTime = 0.0f;
 
     /** 拡大ポイントを通過したか */
-    private boolean isEnlarged[] = new boolean[3];
+    protected boolean isEnlarged[] = new boolean[3];
 
 
     /**
@@ -83,40 +84,56 @@ public class Walker extends SpriteImage {
             case WALK:
                 walk();
                 break;
+            case STOP:
+                stop();
+                break;
             case DAMAGE:
+                damage();
+                break;
+            case SMASHED:
                 damage();
                 break;
             case DEAD:
                 die();
                 break;
+            default:
+                walk();
         }
 
-        if(dstRect.bottom >= 600 && !isEnlarged[0]){
-            scale(20);
-            isEnlarged[0] = true;
-        }else if(dstRect.bottom >= 800 && !isEnlarged[1]){
-            scale(20);
-            isEnlarged[1] = true;
-        }else if(dstRect.bottom >= 1000 && !isEnlarged[2]){
-            scale(20);
-            isEnlarged[2] = true;
-        }
+        enlargeIfPoint();
     }
 
 
     /**
      * 歩く
      */
-    public void walk() {
+    protected void walk() {
         if (actionTime <= 0.3f) {
-            drawAction(1, 1);
-            move(1, speed);
+            drawAction(0, 1);
+            move(0, speed);
         } else if (actionTime <= 0.6f) {
-            drawAction(1, 1);
-            move(-1, speed);
+            drawAction(0, 1);
+            move(0, speed);
         } else {
             loopAction();
             walk();
+        }
+
+        // たまに立ち止まる
+        if(Math.random() > 0.999){
+            setState(ActionType.STOP);
+        }
+    }
+
+
+    /**
+     * 立ち止まる
+     */
+    protected void stop() {
+        if (actionTime <= 1.2f) {
+            drawAction(0, 1);
+        } else {
+            endAction();
         }
     }
 
@@ -124,18 +141,18 @@ public class Walker extends SpriteImage {
     /**
      * ダメージを受けた
      */
-    public void damage() {
+    protected void damage() {
         if (actionTime <= 0.1f) {
-            drawAction(1, 1);
+            drawAction(0, 1);
             move(10, 0);
         } else if (actionTime <= 0.2f) {
-            drawAction(1, 1);
+            drawAction(0, 1);
             move(-10, 0);
         } else if (actionTime <= 0.3f) {
-            drawAction(1, 1);
+            drawAction(0, 1);
             move(10, 0);
         } else if (actionTime <= 0.4f) {
-            drawAction(1, 1);
+            drawAction(0, 1);
             move(-10, 0);
         } else {
             endAction();
@@ -146,7 +163,7 @@ public class Walker extends SpriteImage {
     /**
      * スマッシュを受けた
      */
-    public void smashed() {
+    protected void smashed() {
         //return srcRects[0][0];
     }
 
@@ -154,21 +171,21 @@ public class Walker extends SpriteImage {
     /**
      * 画面から消える
      */
-    public void die() {
+    protected void die() {
         if (dstRect.bottom > 0) {
             drawAction(1, 1);
-            move(0, 0);
-            scale(7);
+            move(0, -20);
+            scale(-7);
         }
     }
 
 
-    public void loopAction() {
+    protected void loopAction() {
         actionTime = 0.0f;
     }
 
 
-    public void endAction() {
+    protected void endAction() {
         state = ActionType.WALK;
         actionTime = 0.0f;
     }
@@ -182,7 +199,7 @@ public class Walker extends SpriteImage {
     /**
      * 描画先矩形座標をずらし、描画位置を変更する。
      */
-    private void move(int distanceX, int distanceY) {
+    protected void move(int distanceX, int distanceY) {
         dstRect.left += distanceX;
         dstRect.right += distanceX;
         dstRect.top += distanceY;
@@ -196,7 +213,7 @@ public class Walker extends SpriteImage {
      * @param distance 拡大／縮小距離
      * @return 拡大／縮小後の描画先矩形座標
      */
-    private Rect scale(int distance) {
+    protected Rect scale(int distance) {
         distance = distance / 2;
         dstRect.left -= distance;
         dstRect.right += distance;
@@ -204,6 +221,23 @@ public class Walker extends SpriteImage {
         dstRect.bottom += distance;
 
         return dstRect;
+    }
+
+
+    /**
+     * 一定距離で拡大する。
+     */
+    protected void enlargeIfPoint() {
+        if(dstRect.bottom >= 600 && !isEnlarged[0]){
+            scale(20);
+            isEnlarged[0] = true;
+        }else if(dstRect.bottom >= 800 && !isEnlarged[1]){
+            scale(20);
+            isEnlarged[1] = true;
+        }else if(dstRect.bottom >= 1000 && !isEnlarged[2]){
+            scale(20);
+            isEnlarged[2] = true;
+        }
     }
 
 
