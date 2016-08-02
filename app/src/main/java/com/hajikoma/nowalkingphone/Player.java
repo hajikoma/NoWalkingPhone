@@ -134,7 +134,7 @@ public class Player extends SpriteImage {
     public void stepLeft() {
         if (hitArea.y == MayuGame.TARGET_WIDTH) {
             // 中央と右側の当たり判定をなくす
-            hitArea.y = hitArea.y / 3;
+            hitArea.y = MayuGame.TARGET_WIDTH - 500;
             dstRect.left -= 220;
             dstRect.right -= 220;
         }
@@ -163,7 +163,7 @@ public class Player extends SpriteImage {
     public void stepRight() {
         if (hitArea.x == 0) {
             // 中央と左側の当たり判定をなくす
-            hitArea.x = hitArea.y * 2 / 3;
+            hitArea.x = 500;
             dstRect.left += 220;
             dstRect.right += 220;
         }
@@ -230,6 +230,11 @@ public class Player extends SpriteImage {
      */
     public ActionType getState() {
         return state;
+    }
+
+
+    public Point getHitArea() {
+        return hitArea;
     }
 
 

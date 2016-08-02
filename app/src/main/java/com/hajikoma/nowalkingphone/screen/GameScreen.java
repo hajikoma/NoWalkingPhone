@@ -51,7 +51,6 @@ public class GameScreen extends Screen {
     private Rect charaSrcArea;
 
 
-
     /** 共通して使用するゲームクラス */
     private final Game game;
     /** Graphicsインスタンス */
@@ -195,11 +194,35 @@ public class GameScreen extends Screen {
                 }
 
 
-                //タッチイベントの処理
+                // WalkerとPlayerの衝突判定
+                for (Walker walker : walkers) {
+                    Rect location = walker.getLocation();
+                    Point hitArea = player.getHitArea();
+                    if (walker.getState() != Walker.ActionType.CRASH
+                            && walker.getState() != Walker.ActionType.VANISH
+                            && location.bottom >= 1100 && location.bottom <= 1150
+                            && location.left >= hitArea.x && location.right <= hitArea.y) {
+                        player.addDamage(walker.getPower());
+                        player.setState(Player.ActionType.DAMAGE);
+                        walker.setState(Walker.ActionType.CRASH);
+                        playSound(Assets.click, 0.5f);
+                    }
+                }
+
+                // WalkerとPlayerの状態に応じた処理
+                for (Walker walker : walkers) {
+                    if (walker.getState() == Walker.ActionType.VANISH) {
+                        System.out.print("消える");
+                        walker = null;
+                    }
+                }
+
+
+                // タッチイベントの処理
                 for (int gi = 0; gi < gestureEvents.size(); gi++) {
                     GestureEvent ges = gestureEvents.get(gi);
 
-                    if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
+                    if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP && !isBounds(ges, onStepArea)) {
                         for (Walker walker : walkers) {
                             if (isBounds(ges, walker.getLocation())) {
                                 walker.addDamage(1);
@@ -216,6 +239,7 @@ public class GameScreen extends Screen {
                         } else {
                             player.setState(Player.ActionType.STEP_LEFT);
                         }
+                        playSound(Assets.pick_up1, 0.5f);
                     }
                 }
 

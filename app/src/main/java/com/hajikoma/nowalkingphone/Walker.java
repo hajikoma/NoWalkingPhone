@@ -18,7 +18,9 @@ public class Walker extends SpriteImage {
         STOP,
         DAMAGE,
         SMASHED,
-        DEAD
+        DEAD,
+        CRASH,
+        VANISH
     }
 
     /** 名前 */
@@ -96,6 +98,11 @@ public class Walker extends SpriteImage {
             case DEAD:
                 die();
                 break;
+            case CRASH:
+                crash();
+                break;
+            case VANISH:
+                break;
             default:
                 walk();
         }
@@ -120,7 +127,7 @@ public class Walker extends SpriteImage {
         }
 
         // たまに立ち止まる
-        if(Math.random() > 0.999){
+        if (Math.random() > 0.999) {
             setState(ActionType.STOP);
         }
     }
@@ -169,14 +176,47 @@ public class Walker extends SpriteImage {
 
 
     /**
-     * 画面から消える
+     * 体力が尽きた
      */
     protected void die() {
         if (dstRect.bottom > 0) {
             drawAction(1, 1);
             move(0, -20);
             scale(-7);
+        } else {
+            vanish();
         }
+    }
+
+
+    /**
+     * Playerと衝突した
+     */
+    protected void crash() {
+        if (actionTime <= 0.1f) {
+            drawAction(0, 1);
+            move(10, 0);
+        } else if (actionTime <= 0.2f) {
+            drawAction(0, 1);
+            move(-10, 0);
+        } else if (actionTime <= 0.3f) {
+            drawAction(0, 1);
+            move(10, 0);
+        } else if (actionTime <= 0.4f) {
+            drawAction(0, 1);
+            move(-10, 0);
+        } else {
+            vanish();
+        }
+    }
+
+
+    /**
+     * 画面から消えた（消える）
+     * この状態では、Walkerインスタンスが破棄されることを期待している。
+     */
+    protected void vanish() {
+        setState(ActionType.VANISH);
     }
 
 
@@ -228,14 +268,14 @@ public class Walker extends SpriteImage {
      * 一定距離で拡大する。
      */
     protected void enlargeIfPoint() {
-        if(dstRect.bottom >= 600 && !isEnlarged[0]){
-            scale(20);
+        if (dstRect.bottom >= 500 && !isEnlarged[0]) {
+            scale(30);
             isEnlarged[0] = true;
-        }else if(dstRect.bottom >= 800 && !isEnlarged[1]){
-            scale(20);
+        } else if (dstRect.bottom >= 700 && !isEnlarged[1]) {
+            scale(30);
             isEnlarged[1] = true;
-        }else if(dstRect.bottom >= 1000 && !isEnlarged[2]){
-            scale(20);
+        } else if (dstRect.bottom >= 900 && !isEnlarged[2]) {
+            scale(30);
             isEnlarged[2] = true;
         }
     }
