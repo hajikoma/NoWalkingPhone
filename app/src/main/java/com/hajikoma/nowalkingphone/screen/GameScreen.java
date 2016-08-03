@@ -5,7 +5,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
-import com.hajikoma.nowalkingphone.CharacterHandler;
 import com.hajikoma.nowalkingphone.MayuGame;
 import com.hajikoma.nowalkingphone.Mission;
 import com.hajikoma.nowalkingphone.Player;
@@ -19,9 +18,10 @@ import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Sound;
 import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.Vibrate;
-import com.hajikoma.nowalkingphone.item.Picker;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -44,13 +44,6 @@ public class GameScreen extends Screen {
         GAMEOVER;
     }
 
-    /** 使用する毛根の場所変数 */
-    private Rect[] hrArea;
-
-    /** キャラクターの描画に使用する矩形。画像内で描画すべき矩形の座標 */
-    private Rect charaSrcArea;
-
-
     /** 共通して使用するゲームクラス */
     private final Game game;
     /** Graphicsインスタンス */
@@ -67,17 +60,9 @@ public class GameScreen extends Screen {
 
     /** チュートリアル表示フラグ */
     private boolean[] isTrimTutorialShow = new boolean[5];
-    /** チュートリアルのデモ用の毛の描画座標y */
-    int tutoMayuY = 825;
 
     /** 現在のシーン */
     private Scene scene;
-    /** 挑戦中のミッション */
-    private Mission mis;
-    /** 挑戦中のミッションのインデックス */
-    private int misIndex;
-    /** 使用するまゆ毛MAPから読み込んだキー一覧 */
-    private String[] mayuMapKeys;
 
     /** Player */
     private Player player;
@@ -85,7 +70,7 @@ public class GameScreen extends Screen {
     private Rect onStepArea = new Rect(0, 1000, MayuGame.TARGET_WIDTH, MayuGame.TARGET_HEIGHT);
 
     /** Walker */
-    private Walker walkers[];
+    private ArrayList<Walker> walkers = new ArrayList<>();
 
     /** 各スコアを格納 */
     private Scores sc = new Scores();
@@ -95,19 +80,9 @@ public class GameScreen extends Screen {
     private Point comboXY = new Point();
     /** コンボ数の表示座標 */
     private float comboTime = 0.0f;
-    /** 毛根の残り成長力合計 */
-    private int totalPower;
-    /** 毛根、毛の各処理に汎用的に使用するカウンタ */
-    private float[] counter;
     /** ポイントの加算、効果音再生を各毛に一度だけ行うためのフラグ */
     private boolean[] isDoneOnceCommand;
-    /** 抜けた時に加算されるポイント */
-    private int[] addPoint;
 
-    /** 抜き方(抜くジェスチャー) */
-    private Picker picker = Assets.default_picker;
-    /** 抜かれたジェスチャーを格納 */
-    private int[] pickedBy;
     /** フリック距離x,yを格納 */
     private int[] velocityX, velocityY;
     /** スワイプ距離x,yを格納 */
@@ -134,15 +109,14 @@ public class GameScreen extends Screen {
 
         // Playerのセットアップ
         Assets.player = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        player = new Player(gra, Assets.player, 100, 100);
+        player = new Player(gra, Assets.player, 400, 280);
 
         // Walkerのセットアップ
-        walkers = new Walker[4];
         Assets.walker = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        walkers[0] = new Walker(gra, "歩き大学生", 2, 2, 2, "普通なのがとりえ", 1, Assets.walker, 50, 50, new Rect(100, 100, 200, 200));
-        walkers[1] = new Walker(gra, "歩き小学生", 1, 3, 1, "すばしっこくぶつかりやすい", 1, Assets.walker, 50, 50, new Rect(300, 300, 400, 400));
-        walkers[2] = new Walker(gra, "歩きウーマン", 2, 2, 2, "たちどまったりふらついたり", 1, Assets.walker, 50, 50, new Rect(500, 500, 600, 600));
-        walkers[3] = new Walker(gra, "歩きオタク", 3, 1, 3, "とろいがでかくて痛い", 1, Assets.walker, 50, 50, new Rect(700, 700, 800, 800));
+        walkers.add(new Walker(gra, "歩き大学生", 2, 2, 2, "普通なのがとりえ", 1, Assets.walker, 50, 50, new Rect(100, 100, 200, 200)));
+        walkers.add(new Walker(gra, "歩き小学生", 1, 3, 1, "すばしっこくぶつかりやすい", 1, Assets.walker, 50, 50, new Rect(300, 300, 400, 400)));
+        walkers.add(new Walker(gra, "歩きウーマン", 2, 2, 2, "たちどまったりふらついたり", 1, Assets.walker, 50, 50, new Rect(500, 500, 600, 600)));
+        walkers.add(new Walker(gra, "歩きオタク", 3, 1, 3, "とろいがでかくて痛い", 1, Assets.walker, 50, 50, new Rect(700, 700, 800, 800)));
 
         //固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/trim_bg_head.jpg", PixmapFormat.RGB565);
@@ -307,9 +281,27 @@ public class GameScreen extends Screen {
     }
 
 
-    public void changeScene(Scene toScene) {
+    private void changeScene(Scene toScene) {
         this.scene = toScene;
         timer = 0.0f;
     }
 
+
+    /**
+     *  ゲームの状態に応じて、ランダムにWalkerを生成する。
+     *
+     *  @param useMap 生成する候補一覧のインスタンスMAP
+     *  @return インスタンプMAPからcloneして生成したWalkerインスタンス
+     */
+    public Walker generateWalker(Map<String, Walker> useMap){
+        Walker newWalker;
+        while(true){
+            testMayu = useMap.get(mayuMapKeys[random.nextInt(mayuMapKeys.length)]);
+            if(testMayu.getRare() >= random.nextInt(100)){
+                return testMayu.clone();
+            }
+        }
+
+        return newWalker;
+    }
 }

@@ -35,7 +35,7 @@ public class Player extends SpriteImage {
     /** 現在位置（当たり判定のある矩形座標） */
     private Point hitArea = new Point(0, MayuGame.TARGET_WIDTH);
     /** Playerの描画先 */
-    private Rect defaultDstArea = new Rect(260, 1000, 460, 1200);
+    private Rect defaultDstArea = new Rect(290, 1000, 430, 1200);
 
 
     /**
@@ -91,7 +91,7 @@ public class Player extends SpriteImage {
      * 何もしていない
      */
     public void standby() {
-        drawAction(1, 0);
+        drawAction(0, 0);
     }
 
 
@@ -100,9 +100,9 @@ public class Player extends SpriteImage {
      */
     public void walk() {
         if (actionTime <= 0.3f) {
-            drawAction(1, 0);
+            drawAction(0, 0);
         } else if (actionTime <= 0.6f) {
-            drawAction(1, 1);
+            drawAction(0, 1);
         } else {
             endAction();
         }
@@ -114,11 +114,11 @@ public class Player extends SpriteImage {
      */
     public void damage() {
         if (actionTime <= 0.3f) {
-            drawAction(0, 0);
+            drawAction(2, 0);
         } else if (actionTime <= 0.6f) {
-            drawAction(0, 1);
+            drawAction(2, 1);
         } else if (actionTime <= 0.9f) {
-            drawAction(0, 2);
+            drawAction(2, 0);
         } else {
             endAction();
         }
@@ -137,15 +137,15 @@ public class Player extends SpriteImage {
         }
 
         if (actionTime <= 0.2f) {
-            drawAction(0, 0);
+            drawAction(1, 0);
         } else if (actionTime <= 0.4f) {
-            drawAction(0, 1);
+            drawAction(1, 1);
         } else if (actionTime <= 0.6f) {
-            drawAction(0, 2);
+            drawAction(1, 0);
         } else if (actionTime <= 0.8f) {
-            drawAction(0, 1);
+            drawAction(1, 1);
         } else if (actionTime <= 1.0f) {
-            drawAction(0, 2);
+            drawAction(1, 0);
         } else {
             hitArea.y = MayuGame.TARGET_WIDTH;
             resetDstArea();
@@ -166,15 +166,15 @@ public class Player extends SpriteImage {
         }
 
         if (actionTime <= 0.2f) {
-            drawAction(0, 0);
+            drawAction(1, 0);
         } else if (actionTime <= 0.4f) {
-            drawAction(0, 1);
+            drawAction(1, 1);
         } else if (actionTime <= 0.6f) {
-            drawAction(0, 2);
+            drawAction(1, 0);
         } else if (actionTime <= 0.8f) {
-            drawAction(0, 1);
+            drawAction(1, 1);
         } else if (actionTime <= 1.0f) {
-            drawAction(0, 2);
+            drawAction(1, 0);
         } else {
             hitArea.x = 0;
             resetDstArea();
@@ -190,7 +190,7 @@ public class Player extends SpriteImage {
         if (actionTime <= 0.4f) {
             drawAction(0, 1);
         } else if (actionTime <= 0.8f) {
-            drawAction(0, 2);
+            drawAction(0, 1);
         } else if (actionTime <= 1.2f) {
             drawAction(0, 1);
         } else {
