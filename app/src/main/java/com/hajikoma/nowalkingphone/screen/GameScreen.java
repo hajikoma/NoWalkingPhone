@@ -147,7 +147,7 @@ public class GameScreen extends Screen {
         //固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/trim_bg_head.jpg", PixmapFormat.RGB565);
 
-        scene = Scene.READY;
+        changeScene(Scene.READY);
     }
 
 
@@ -170,13 +170,13 @@ public class GameScreen extends Screen {
         switch (scene) {
             case READY://-----------------------------------------------------------------------------------
                 // 変数の初期化
-                scene = Scene.START;
+                changeScene(Scene.START);
                 break;
             //-------------------------------------------------------------------------------------------------
 
             case START://--------------------------------------------------------------------------------------
                 // チュートリアル表示
-                scene = Scene.PLAYING;
+                changeScene(Scene.PLAYING);
                 break;
             //-------------------------------------------------------------------------------------------------
 
@@ -237,7 +237,11 @@ public class GameScreen extends Screen {
 
                 //ゲームオーバーの判定
                 if (player.getDamage() >= 3) {
-                    scene = Scene.GAMEOVER;
+                    player.setState(Player.ActionType.STANDBY);
+                    for (Walker walker : walkers) {
+                        walker.setState(Walker.ActionType.STANDBY);
+                    }
+                    changeScene(Scene.GAMEOVER);
                 }
 
                 break;
@@ -251,7 +255,7 @@ public class GameScreen extends Screen {
                 for (int i = 0; i < gestureEvents.size(); i++) {
                     GestureEvent ges = gestureEvents.get(i);
                     if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
-                        scene = Scene.PLAYING;
+                        changeScene(Scene.PLAYING);
                     }
                 }
                 break;
@@ -262,8 +266,6 @@ public class GameScreen extends Screen {
                 if (timer <= 3.0f) {
                     txt.drawText("お手入れ終了", 5, 700, 620, Assets.map_style.get("big"));
                     timer += deltaTime;
-                } else {
-//                    game.setScreen(new ResultScreen(game, misIndex, useItemIndex, sc));
                 }
                 break;
             //-------------------------------------------------------------------------------------------------
@@ -302,6 +304,12 @@ public class GameScreen extends Screen {
     @Override
     public String toString() {
         return "GameScreen";
+    }
+
+
+    public void changeScene(Scene toScene) {
+        this.scene = toScene;
+        timer = 0.0f;
     }
 
 }

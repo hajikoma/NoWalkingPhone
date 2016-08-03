@@ -82,6 +82,7 @@ public class Walker extends SpriteImage {
 
         switch (state) {
             case STANDBY:
+                standby();
                 break;
             case WALK:
                 walk();
@@ -108,6 +109,14 @@ public class Walker extends SpriteImage {
         }
 
         enlargeIfPoint();
+    }
+
+
+    /**
+     * 何もしていない
+     */
+    public void standby() {
+        drawAction(1, 0);
     }
 
 

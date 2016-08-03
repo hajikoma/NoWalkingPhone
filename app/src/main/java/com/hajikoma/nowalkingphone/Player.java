@@ -14,6 +14,7 @@ public class Player extends SpriteImage {
 
     /** アクションの種類を表す定数 */
     public static enum ActionType {
+        STANDBY,
         WALK,
         DAMAGE,
         STEP_LEFT,
@@ -61,6 +62,9 @@ public class Player extends SpriteImage {
         actionTime += deltaTime;
 
         switch (state) {
+            case STANDBY:
+                standby();
+                break;
             case WALK:
                 walk();
                 break;
@@ -80,6 +84,14 @@ public class Player extends SpriteImage {
                 die();
                 break;
         }
+    }
+
+
+    /**
+     * 何もしていない
+     */
+    public void standby() {
+        drawAction(1, 0);
     }
 
 
