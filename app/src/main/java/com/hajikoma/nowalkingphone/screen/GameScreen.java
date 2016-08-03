@@ -186,14 +186,6 @@ public class GameScreen extends Screen {
 
                 // Walkerの描画
 
-
-                if (timer >= 3.0f && timer < 6.0f) {
-                    player.setState(Player.ActionType.WALK);
-                } else if (timer >= 6.0f && timer < 7.0f) {
-                    player.setState(Player.ActionType.DAMAGE);
-                }
-
-
                 // WalkerとPlayerの衝突判定
                 for (Walker walker : walkers) {
                     Rect location = walker.getLocation();
@@ -212,7 +204,6 @@ public class GameScreen extends Screen {
                 // WalkerとPlayerの状態に応じた処理
                 for (Walker walker : walkers) {
                     if (walker.getState() == Walker.ActionType.VANISH) {
-                        System.out.print("消える");
                         walker = null;
                     }
                 }
@@ -245,9 +236,9 @@ public class GameScreen extends Screen {
 
 
                 //ゲームオーバーの判定
-//                if (totalPower == 0) {
-//                    scene = Scene.GAMEOVER;
-//                }
+                if (player.getDamage() >= 3) {
+                    scene = Scene.GAMEOVER;
+                }
 
                 break;
             //-------------------------------------------------------------------------------------------------
