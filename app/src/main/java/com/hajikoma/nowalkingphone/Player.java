@@ -3,7 +3,6 @@ package com.hajikoma.nowalkingphone;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
 
 /**
@@ -33,7 +32,7 @@ public class Player extends SpriteImage {
     private float actionTime = 0.0f;
 
     /** 現在位置（当たり判定のある矩形座標） */
-    private Point hitArea = new Point(0, MayuGame.TARGET_WIDTH);
+    private Point hitArea = new Point(0, NoWalkingPhoneGame.TARGET_WIDTH);
     /** Playerの描画先 */
     private Rect defaultDstArea = new Rect(290, 1000, 430, 1200);
 
@@ -41,13 +40,12 @@ public class Player extends SpriteImage {
     /**
      * Playerを生成する。
      *
-     * @param gra       描画のためのgraphicオブジェクト
      * @param visual    Playerの画像セット（スプライト画像）
      * @param rowHeight visualの中の、一画像の高さ
      * @param colWidth  visualの中の、一画像の幅
      */
-    public Player(Graphics gra, Pixmap visual, Integer rowHeight, Integer colWidth) {
-        super(gra, visual, rowHeight, colWidth, new Rect(260, 1000, 460, 1200));
+    public Player(Pixmap visual, Integer rowHeight, Integer colWidth) {
+        super(visual, rowHeight, colWidth, new Rect(260, 1000, 460, 1200));
         state = ActionType.WALK;
     }
 
@@ -129,9 +127,9 @@ public class Player extends SpriteImage {
      * 左にステップをした
      */
     public void stepLeft() {
-        if (hitArea.y == MayuGame.TARGET_WIDTH) {
+        if (hitArea.y == NoWalkingPhoneGame.TARGET_WIDTH) {
             // 中央と右側の当たり判定をなくす
-            hitArea.y = MayuGame.TARGET_WIDTH - 500;
+            hitArea.y = NoWalkingPhoneGame.TARGET_WIDTH - 500;
             dstRect.left -= 220;
             dstRect.right -= 220;
         }
@@ -147,7 +145,7 @@ public class Player extends SpriteImage {
         } else if (actionTime <= 1.0f) {
             drawAction(1, 0);
         } else {
-            hitArea.y = MayuGame.TARGET_WIDTH;
+            hitArea.y = NoWalkingPhoneGame.TARGET_WIDTH;
             resetDstArea();
             endAction();
         }
@@ -219,7 +217,7 @@ public class Player extends SpriteImage {
         state = actionType;
         actionTime = 0.0f;
         hitArea.x = 0;
-        hitArea.y = MayuGame.TARGET_WIDTH;
+        hitArea.y = NoWalkingPhoneGame.TARGET_WIDTH;
         resetDstArea();
     }
 

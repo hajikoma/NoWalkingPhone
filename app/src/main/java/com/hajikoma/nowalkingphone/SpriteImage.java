@@ -11,9 +11,6 @@ import com.hajikoma.nowalkingphone.framework.Pixmap;
  */
 abstract class SpriteImage {
 
-    /** 描画のためのgraphicオブジェクト */
-    protected Graphics gra;
-
     /** 画像 */
     private Pixmap visual;
     /** 一画像の幅 */
@@ -29,13 +26,11 @@ abstract class SpriteImage {
     /**
      * SpriteImageHandlerを生成する。
      *
-     * @param gra       描画のためのgraphicオブジェクト
      * @param visual    Playerの画像セット（スプライト画像）
      * @param rowHeight visualの中の、一画像の高さ
      * @param colWidth  visualの中の、一画像の幅
      */
-    public SpriteImage(Graphics gra, Pixmap visual, Integer rowHeight, Integer colWidth, Rect dstRect) {
-        this.gra = gra;
+    public SpriteImage(Pixmap visual, Integer rowHeight, Integer colWidth, Rect dstRect) {
         this.visual = visual;
         this.rowHeight = rowHeight;
         this.colWidth = colWidth;
@@ -54,7 +49,7 @@ abstract class SpriteImage {
 
 
     protected void drawAction(int rowIndex, int colIndex){
-        gra.drawPixmap(getVisual(), dstRect, srcRects[rowIndex][colIndex]);
+        NoWalkingPhoneGame.graphics.drawPixmap(getVisual(), dstRect, srcRects[rowIndex][colIndex]);
     }
 
 

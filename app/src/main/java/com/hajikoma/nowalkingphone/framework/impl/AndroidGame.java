@@ -35,7 +35,7 @@ public abstract class AndroidGame extends Activity implements Game {
 	/** メインループスレッドを処理するSurfaceView */
 	private AndroidFastRenderView renderView;
 	/** 画像処理モジュール */
-	Graphics graphics;
+	public static Graphics graphics;
 	/** BGM,効果音モジュール */
 	Audio audio;
 	/** ユーザー入力処理モジュール */

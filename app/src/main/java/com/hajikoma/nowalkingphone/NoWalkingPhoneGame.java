@@ -1,21 +1,5 @@
 package com.hajikoma.nowalkingphone;
 
-/*import android.app.Activity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-
-public class MayuGame extends Activity {
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_mayu_game);
-	}
-
-
-}*/
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,6 +8,7 @@ import android.view.KeyEvent;
 
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
+import com.hajikoma.nowalkingphone.screen.GameScreen;
 import com.hajikoma.nowalkingphone.screen.LoadingScreen;
 
 
@@ -33,7 +18,7 @@ import com.hajikoma.nowalkingphone.screen.LoadingScreen;
  * 各低レベル処理を行うクラスインスタンスを格納し、スクリーンを切り替え時にはこのクラスが必ず渡される。
  * ライフサイクルに沿ってメインループを管理しデータを保存する。
  */
-public class MayuGame extends AndroidGame{
+public class NoWalkingPhoneGame extends AndroidGame{
 
 	/** 初期スクリーンを取得する(このクラスのonCreateで呼ばれる) */
 	@Override

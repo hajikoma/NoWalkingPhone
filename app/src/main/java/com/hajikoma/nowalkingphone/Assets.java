@@ -58,9 +58,7 @@ public class Assets {
 	public static Pixmap mayu_normal;
 	public static Pixmap mayu_white;
 	public static Pixmap mayu_short;
-	public static HashMap<String, HashMap<String, Mayu>> maps_mayu;
 
-	public static ArrayList<Mission> mission_list;
 
 	public static Pixmap item_picker1;
 	public static Pixmap item_enhancer1;

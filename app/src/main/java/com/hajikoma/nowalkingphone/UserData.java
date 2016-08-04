@@ -111,19 +111,6 @@ public class UserData implements Serializable {
     }
 
     /**
-     * ミッションのロックを外し、開放する。
-     * @param misNo 開放するミッション番号
-     * @throws java.lang.IndexOutOfBoundsException 存在しないmisNoを指定した場合
-     */
-    public void misUnLock(int misNo) {
-    	if(misNo >= 0 && misNo < Assets.mission_list.size()){
-            misState[misNo] = 0;
-    	}else{
-    		throw new IndexOutOfBoundsException("存在しないmisNoです。");
-    	}
-    }
-
-    /**
      * ミッションの挑戦結果を格納する。
      * @param misNo 結果を格納するミッション番号
      * @throws java.lang.IllegalArgumentException 引数resultにlocked,unlockedを指定した場合

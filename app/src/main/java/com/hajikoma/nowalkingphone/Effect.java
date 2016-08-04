@@ -29,7 +29,7 @@ public class Effect extends SpriteImage {
      *                  ex) visualに3枚画像があり、各0.2秒ずつ表示　→　 [0.2f, 0.4f, 0.6f]
      */
     public Effect(Graphics gra, Pixmap visual, Integer colWidth, Rect location, float timeTable[]) {
-        super(gra, visual, visual.getHeight(), colWidth, location);
+        super(visual, visual.getHeight(), colWidth, location);
         this.timeTable = timeTable;
     }
 

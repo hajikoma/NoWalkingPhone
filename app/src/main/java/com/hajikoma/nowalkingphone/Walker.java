@@ -4,12 +4,13 @@ import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
+import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
 /**
  * 「歩く者」を表すクラス。
  * 状態によってさまざまなアクションをする。
  */
-public class Walker extends SpriteImage {
+public class Walker extends SpriteImage implements Cloneable {
 
     /** アクションの種類を表す定数 */
     public static enum ActionType {
@@ -45,30 +46,6 @@ public class Walker extends SpriteImage {
 
     /** 拡大ポイントを通過したか */
     protected boolean isEnlarged[] = new boolean[3];
-
-
-    /**
-     * Walkerを生成する。
-     *
-     * @param gra       描画のためのgraphicオブジェクト
-     * @param visual    Walkerの画像セット（スプライト画像）
-     * @param rowHeight visualの中の、一画像の高さ
-     * @param colWidth  visualの中の、一画像の幅
-     * @param location  描画先矩形座標
-     */
-    public Walker(Graphics gra, String name, int hp, int speed, int power, String description, int point,
-                  Pixmap visual, Integer rowHeight, Integer colWidth, Rect location) {
-        super(gra, visual, rowHeight, colWidth, location);
-        this.name = name;
-        this.hp = hp;
-        this.speed = speed;
-        this.power = power;
-        this.description = description;
-        this.point = point;
-
-        life = hp;
-        state = ActionType.WALK;
-    }
 
 
     /**
@@ -113,6 +90,49 @@ public class Walker extends SpriteImage {
 
 
     /**
+     * Walkerを生成する。
+     *
+     * @param visual    Walkerの画像セット（スプライト画像）
+     * @param rowHeight visualの中の、一画像の高さ
+     * @param colWidth  visualの中の、一画像の幅
+     * @param location  描画先矩形座標
+     */
+    public Walker(String name, int hp, int speed, int power, String description, int point,
+                  Pixmap visual, Integer rowHeight, Integer colWidth, Rect location) {
+        super(visual, rowHeight, colWidth, location);
+        this.name = name;
+        this.hp = hp;
+        this.speed = speed;
+        this.power = power;
+        this.description = description;
+        this.point = point;
+
+        life = hp;
+        state = ActionType.WALK;
+    }
+
+
+    /**
+     * Walkerを複製する。
+     */
+    @Override
+    public Walker clone() {
+
+        Walker newWalker = null;
+
+        /*ObjectクラスのcloneメソッドはCloneNotSupportedExceptionを投げる可能性があるので、try-catch文で記述(呼び出し元に投げても良い)*/
+        try {
+            newWalker = (Walker) super.clone(); // 親クラスのcloneメソッドを呼び出す。親クラスの型で返ってくるので、自分自身の型でのキャスト
+            newWalker.dstRect = null; // オブジェクト型変数なので、clone()では参照がコピーされる
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return newWalker;
+    }
+
+
+    /**
      * 何もしていない
      */
     public void standby() {
@@ -124,21 +144,26 @@ public class Walker extends SpriteImage {
      * 歩く
      */
     protected void walk() {
-        if (actionTime <= 0.3f) {
-            drawAction(0, 1);
-            move(0, speed);
-        } else if (actionTime <= 0.6f) {
-            drawAction(0, 1);
-            move(0, speed);
+        if (dstRect.top <= AndroidGame.TARGET_HEIGHT) {
+            if (actionTime <= 0.3f) {
+                drawAction(0, 1);
+                move(0, speed);
+            } else if (actionTime <= 0.6f) {
+                drawAction(0, 1);
+                move(0, speed);
+            } else {
+                loopAction();
+                walk();
+            }
+
+            // たまに立ち止まる
+            if (Math.random() > 0.999) {
+                setState(ActionType.STOP);
+            }
         } else {
-            loopAction();
-            walk();
+            vanish();
         }
 
-        // たまに立ち止まる
-        if (Math.random() > 0.999) {
-            setState(ActionType.STOP);
-        }
     }
 
 
@@ -329,6 +354,10 @@ public class Walker extends SpriteImage {
 
     public String getDescription() {
         return description;
+    }
+
+    public int getPoint() {
+        return point;
     }
 
 }

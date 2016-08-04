@@ -6,8 +6,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
-import com.hajikoma.nowalkingphone.MayuGame;
-import com.hajikoma.nowalkingphone.Mission;
 import com.hajikoma.nowalkingphone.Scores;
 import com.hajikoma.nowalkingphone.Settings;
 import com.hajikoma.nowalkingphone.UserData;
@@ -43,16 +41,6 @@ public class ResultScreen extends Screen {
 	/** Textインスタンス */
 	private final Text txt;
 
-	/** 挑戦したミッション */
-	private Mission mis;
-	/** 挑戦したミッションのインデックス */
-	private int misIndex;
-
-	/** 使用したアイテムのインデックス */
-	private int useItemIndex;
-	/** 新たなアイテムが開放されたかどうかのフラグ */
-	private boolean itemUnlockFlag = false;
-
 	/** 各スコアを格納 */
 	private Scores sc;
 	/** お手入れの総合判定結果 */
@@ -70,34 +58,22 @@ public class ResultScreen extends Screen {
 	public ResultScreen(Game game, int misIndex, int useItemIndex, Scores sc) {
 		super(game);
 		this.game = game;
-		this.misIndex = misIndex;
-		this.useItemIndex = useItemIndex;
 		this.sc = sc;
 
 		gra = game.getGraphics();
 		txt = game.getText();
-		mis = (Mission)Assets.mission_list.get(misIndex);
 
 
 		//固有グラフィックの読み込み
 		Assets.result_bg = gra.newPixmap("others/result_bg.jpg", PixmapFormat.RGB565);
 
 		//総合結果を判定
-		finallyPoint = sc.mp + sc.pickCount * POINT_AT_PICK + sc.dropCount * POINT_AT_DROP + sc.tornCount * POINT_AT_TORN;
-		if (finallyPoint >= mis.NEED_SCORE) {
-			result = UserData.MIS_EXCELLENT;
-		}else if (finallyPoint >= mis.NEED_SCORE * mis.BORDER) {
-			result = UserData.MIS_GOOD;
-		}else{
-			result = UserData.MIS_BAD;
-		}
 
 		//ミッションクリア（結果が失敗以外）の場合、開放されるアイテムがあるか判定
 		if(result != UserData.MIS_BAD){
 			for(int i = 0; i < Assets.item_list.size(); i++){
 				if(misIndex == Assets.item_list.get(i).UNLOCK_NEED && Assets.ud.getItemState(i) == -1){
 					Assets.ud.itemUnlock(i);
-					itemUnlockFlag = true;
 				}
 			}
 		}
@@ -175,34 +151,6 @@ public class ResultScreen extends Screen {
 			}
 		}
 
-		if(pastTime > 6.0f && itemUnlockFlag){
-			//新たなアイテムが開放された場合、通知
-			gra.drawRoundRect(40, 40, 640, 1200, 15.0f, Color.argb(245,255,255,255));
-			if(itemUnlockFlag){
-				txt.drawText("新たなアイテムが使用できるようになりました！", 80, 550, 540, Assets.map_style.get("title"));
-			}
-			if(pastTime > 8.0f){
-				itemUnlockFlag = false;
-			}
-		}else if(pastTime > 7.5f){
-			//タッチ判定
-			for(int i = 0; i < gestureEvents.size(); i++){
-				GestureEvent ges = gestureEvents.get(i);
-				if(isBounds(ges,doDstArea)){
-					playSound(Assets.click, 0.5f);
-					game.setScreen(new CourseScreen(game, misIndex, useItemIndex));
-					break;
-
-				}else if(isBounds(ges, backDstArea)){
-					playSound(Assets.click, 0.5f);
-					game.setScreen(new CourseScreen(game, useItemIndex));
-					break;
-				}
-			}
-		}else{
-			//ボタンをグレーアウト
-			gra.drawRect(30, 1030, 660, 220, Color.rgb(204, 255, 204));
-		}
 
 		pastTime += deltaTime;
 	}

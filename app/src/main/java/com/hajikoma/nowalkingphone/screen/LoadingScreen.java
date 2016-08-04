@@ -12,8 +12,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
-import com.hajikoma.nowalkingphone.Mayu;
-import com.hajikoma.nowalkingphone.Mission;
 import com.hajikoma.nowalkingphone.Settings;
 import com.hajikoma.nowalkingphone.UserData;
 import com.hajikoma.nowalkingphone.framework.Audio;
@@ -122,31 +120,6 @@ public class LoadingScreen extends Screen {
 		Assets.mayu_white	= gra.newPixmap("mayu/mayu_white.png",	PixmapFormat.ARGB4444);
 		Assets.mayu_short	= gra.newPixmap("mayu/mayu_short.png",	PixmapFormat.ARGB4444);
 
-		HashMap<String, HashMap<String, Mayu>> mayuMaps = new HashMap<String, HashMap<String, Mayu>>();
-		mayuMaps.put("normal_easy",		createMayuMap("mayu/mayu_normal_easy.txt"));
-		mayuMaps.put("normal_normal",	createMayuMap("mayu/mayu_normal_normal.txt"));
-		mayuMaps.put("normal_hard",		createMayuMap("mayu/mayu_normal_hard.txt"));
-		mayuMaps.put("short_easy",		createMayuMap("mayu/mayu_short_easy.txt"));
-		mayuMaps.put("short_normal",	createMayuMap("mayu/mayu_short_normal.txt"));
-		mayuMaps.put("short_hard",		createMayuMap("mayu/mayu_short_hard.txt"));
-		mayuMaps.put("white_easy",		createMayuMap("mayu/mayu_white_easy.txt"));
-		mayuMaps.put("white_normal",	createMayuMap("mayu/mayu_white_normal.txt"));
-		mayuMaps.put("white_hard",		createMayuMap("mayu/mayu_white_hard.txt"));
-
-		Assets.maps_mayu = mayuMaps;
-
-		// ミッションインスタンスのセットアップ
-		Assets.mission_list = createMissionList("mission/mission.txt");
-
-		// アイテムインスタンスのセットアップ
-		Assets.item_picker1		= gra.newPixmap("item/item_picking_tools.jpg",	PixmapFormat.RGB565);
-		Assets.item_enhancer1	= gra.newPixmap("item/item_enhancer.jpg",		PixmapFormat.RGB565);
-
-		ArrayList<Item> itemList = new ArrayList<Item>();
-		itemList = createItemList("item/picker.txt", itemList);
-		itemList = createItemList("item/enhancer.txt", itemList);
-		Assets.item_list = itemList;
-
 		// テキストスタイルのセットアップ
 		HashMap<String, Paint> styleMap = new HashMap<String, Paint>();
 		Paint general = new Paint();
@@ -179,13 +152,11 @@ public class LoadingScreen extends Screen {
 			for(int i = 0; i < gestureEvents.size(); i++){
 				GestureEvent ges = gestureEvents.get(i);
 				if(ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP){
-//					game.setScreen(new OpeningScreen(game));
 					game.setScreen(new GameScreen(game));
 				}
 			}
 
 		}else{
-//			game.setScreen(new OpeningScreen(game));
 			game.setScreen(new GameScreen(game));
 		}
 	}
@@ -202,204 +173,6 @@ public class LoadingScreen extends Screen {
 			txt.drawText("・何らかの操作によりセーブデータが消去された",			100, 810, 520,	Assets.map_style.get("general"));
 			txt.drawText("初期データでゲームを開始します...",					80, 920, 540,	Assets.map_style.get("general"));
 		}
-	}
-
-
-	/**
-	 * まゆ毛の設定ファイルからデータを読み込み、Mapを返すヘルパー。ファイルの記述方法は以下の通り。
-	 * 一行目：ファイルの説明（どんなまゆ毛データセットかなど） 二行目：各パラメーターの項目名とデータ型
-	 * 三行目以降：まゆ毛データ、パラメータの区切り記号は","(カンマ) なお一行目と二行目は読み飛ばされる。
-	 * @param fileName まゆ毛データの設定ファイル
-	 * @return まゆ毛のnameをキー、Mayuインスタンスを値に持つmap
-	 */
-	public HashMap<String, Mayu> createMayuMap(String fileName) {
-		FileIO fIO = game.getFileIO();
-		BufferedReader reader = null;
-		HashMap<String, Mayu> map = new HashMap<String, Mayu>();
-		try {
-			reader = new BufferedReader(new InputStreamReader(fIO.readAsset(fileName)));
-			String line;
-			// 一行目、二行目は読み飛ばす
-			reader.readLine();
-			reader.readLine();
-			//画像の登録にリフレクションを利用
-			Class<Assets> clazz = Assets.class;
-			while ((line = reader.readLine()) != null) {
-				String[] data = line.split(",");
-				Mayu mayu = new Mayu(
-					data[0], data[1], (Pixmap)(clazz.getField(data[2]).get(null)),
-					Integer.parseInt(data[3]), Integer.parseInt(data[4]),
-					Integer.parseInt(data[5]), Integer.parseInt(data[6]),
-					Integer.parseInt(data[7]), Integer.parseInt(data[8]),
-					Float.parseFloat(data[9]), Integer.parseInt(data[10])
-				);
-				map.put(mayu.NAME, mayu);
-			}
-		} catch (NullPointerException e) {
-			System.out.println("ファイル内に不要な空白行が入っている可能性があります。" + e);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println("パラメーター数が不足しています。" + e);
-		} catch (IOException e) {
-			System.out.println("ファイルの取得に失敗しました。" + e);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			System.out.println("指定のファイルが存在しません。" + e);
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				System.out.println("ファイルのクローズに失敗しました。" + e);
-			}
-		}
-		return map;
-	}
-
-	/**
-	 * ミッションの設定ファイルからデータを読み込み、Listを返すヘルパー。 ファイルの記述方法は以下の通り。
-	 * 一行目：ファイルの説明（どんなミッションセットかなど） 二行目：各パラメーターの項目名とデータ型
-	 * 三行目以降：ミッションデータ、パラメータの区切り記号は","(カンマ) なお一行目と二行目は読み飛ばされる。
-	 * @param fileName ミッションデータの設定ファイル
-	 * @return ミッションのtitleをキー、Missionインスタンスを値に持つmap
-	 */
-	public ArrayList<Mission> createMissionList(String fileName) {
-		FileIO fIO = game.getFileIO();
-		BufferedReader reader = null;
-		ArrayList<Mission> list = new ArrayList<Mission>();
-		try {
-			reader = new BufferedReader(new InputStreamReader(fIO.readAsset(fileName)));
-			String line;
-			// 一行目、二行目は読み飛ばす
-			reader.readLine();
-			reader.readLine();
-			while ((line = reader.readLine()) != null) {
-				String[] data = line.split(",");
-				Mission mission = new Mission(
-					data[1], data[2], Integer.parseInt(data[3]),
-					Assets.maps_mayu.get(data[4]),
-					Integer.parseInt(data[5]), Integer.parseInt(data[6]),
-					Integer.parseInt(data[7]), Float.parseFloat(data[8])
-				);
-				list.add(mission);
-			}
-		} catch (NullPointerException e) {
-			System.out.println("ファイル内に不要な空白行が入っている可能性があります。" + e);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println("パラメーター数が不足しています。" + e);
-		} catch (IOException e) {
-			System.out.println("ファイルの取得に失敗しました。" + e);
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				System.out.println("ファイルのクローズに失敗しました。" + e);
-			}
-		}
-		return list;
-	}
-
-	/**
-	 * アイテムの設定ファイルからデータを読み込み、Listを返すヘルパー。 ファイルの記述方法は以下の通り。
-	 * 一行目：アイテムのカテゴリー 二行目：各パラメーターの項目名とデータ型
-	 * 三行目以降：アイテムのデータ、パラメータの区切り記号は","(カンマ)
-	 * なお一行目と二行目は読み飛ばされる。
-	 * @param fileName ミッションデータの設定ファイル
-	 * @param itemList データを格納するアイテムリスト
-	 * @return アイテムリスト
-	 */
-	public ArrayList<Item> createItemList(String fileName, ArrayList<Item> itemList) {
-		FileIO fIO = game.getFileIO();
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new InputStreamReader(fIO.readAsset(fileName)));
-			String line;
-			// 一行目、二行目は読み飛ばす
-			reader.readLine();
-			reader.readLine();
-			while ((line = reader.readLine()) != null) {
-				String[] data = line.split(",");
-				Item item = null;
-				//画像の登録にリフレクションを用いる
-				Class<Assets> clazz = Assets.class;
-				switch (ItemCategory.valueOf(data[0])){
-				case PICKER:
-					item = new Picker(ItemCategory.PICKER,
-							ItemType.valueOf(data[1]), data[2], data[3],
-							data[4], Integer.parseInt(data[5]),
-							(Pixmap) (clazz.getField(data[6]).get(null)),
-							Integer.parseInt(data[7]),
-							Integer.parseInt(data[8]),
-							Integer.parseInt(data[9]),
-							Float.parseFloat(data[10]),
-							Float.parseFloat(data[11]),
-							new Rect(
-								Integer.parseInt(data[12]),
-								Integer.parseInt(data[13]),
-								Integer.parseInt(data[14]),
-								Integer.parseInt(data[15])),
-							data[16],Integer.parseInt(data[17]));
-					break;
-				case ENHANCER:
-					item = new Enhancer(ItemCategory.ENHANCER,
-							ItemType.valueOf(data[1]), data[2], data[3],
-							data[4], Integer.parseInt(data[5]),
-							(Pixmap) (clazz.getField(data[6]).get(null)),
-							Integer.parseInt(data[7]),
-							Integer.parseInt(data[8]),
-							Float.parseFloat(data[9]),
-							Integer.parseInt(data[10]),
-							Float.parseFloat(data[11]),
-							Float.parseFloat(data[12]),
-							new Rect(
-								Integer.parseInt(data[13]),
-								Integer.parseInt(data[14]),
-								Integer.parseInt(data[15]),
-								Integer.parseInt(data[16])),
-							data[17],Integer.parseInt(data[18]));
-					break;
-				case SPECIAL:
-					break;
-				default:
-					break;
-				}
-				itemList.add(item);
-			}
-		} catch (NullPointerException e) {
-			System.out.println("ファイル内に不要な空白行が入っている可能性があります。" + e);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println("パラメーター数が不足しています。" + e);
-		} catch (IOException e) {
-			System.out.println("ファイルの取得に失敗しました。" + e);
-		} catch (NoSuchFieldException e) {
-			System.out.println("NoSuchFieldException" + e);
-			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			System.out.println("NumberFormatException" + e);
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			System.out.println("IllegalArgumentException" + e);
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			System.out.println("IllegalAccessException" + e);
-			e.printStackTrace();
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				System.out.println("ファイルのクローズに失敗しました。" + e);
-			}
-		}
-		return itemList;
 	}
 
 	/** このスクリーンでの処理はない */

@@ -5,11 +5,12 @@ import android.graphics.Point;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
-import com.hajikoma.nowalkingphone.MayuGame;
-import com.hajikoma.nowalkingphone.Mission;
+import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.Player;
+import com.hajikoma.nowalkingphone.Score;
 import com.hajikoma.nowalkingphone.Scores;
 import com.hajikoma.nowalkingphone.Walker;
+import com.hajikoma.nowalkingphone.WalkerManager;
 import com.hajikoma.nowalkingphone.framework.Game;
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
@@ -18,10 +19,10 @@ import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Sound;
 import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.Vibrate;
+import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -67,30 +68,30 @@ public class GameScreen extends Screen {
     /** Player */
     private Player player;
     /** Playerのステップ操作の受付範囲 */
-    private Rect onStepArea = new Rect(0, 1000, MayuGame.TARGET_WIDTH, MayuGame.TARGET_HEIGHT);
+    private Rect onStepArea = new Rect(0, 1000, NoWalkingPhoneGame.TARGET_WIDTH, NoWalkingPhoneGame.TARGET_HEIGHT);
 
     /** Walker */
     private ArrayList<Walker> walkers = new ArrayList<>();
+    /** WalkerManager */
+    private WalkerManager manager = new WalkerManager();
+    /** Walkerの同時出現上限数 */
+    private int maxWalker = 3;
+
 
     /** 各スコアを格納 */
-    private Scores sc = new Scores();
+    private Score sc = new Score();
     /** コンボ数を格納 */
     private int combo = 0;
     /** コンボ数の表示座標 */
     private Point comboXY = new Point();
     /** コンボ数の表示座標 */
     private float comboTime = 0.0f;
-    /** ポイントの加算、効果音再生を各毛に一度だけ行うためのフラグ */
-    private boolean[] isDoneOnceCommand;
 
     /** フリック距離x,yを格納 */
     private int[] velocityX, velocityY;
     /** スワイプ距離x,yを格納 */
     private int[] distanceX, distanceY;
 
-
-    /** 選択中のアイテムの効果音 */
-    private Sound itemUseSound;
     /** アイテムエフェクトに使用する変化するalpha値 */
     private int[] argb = new int[]{0, 0, 0, 0};
 
@@ -109,14 +110,17 @@ public class GameScreen extends Screen {
 
         // Playerのセットアップ
         Assets.player = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        player = new Player(gra, Assets.player, 400, 280);
+        player = new Player(Assets.player, 400, 280);
 
         // Walkerのセットアップ
         Assets.walker = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        walkers.add(new Walker(gra, "歩き大学生", 2, 2, 2, "普通なのがとりえ", 1, Assets.walker, 50, 50, new Rect(100, 100, 200, 200)));
-        walkers.add(new Walker(gra, "歩き小学生", 1, 3, 1, "すばしっこくぶつかりやすい", 1, Assets.walker, 50, 50, new Rect(300, 300, 400, 400)));
-        walkers.add(new Walker(gra, "歩きウーマン", 2, 2, 2, "たちどまったりふらついたり", 1, Assets.walker, 50, 50, new Rect(500, 500, 600, 600)));
-        walkers.add(new Walker(gra, "歩きオタク", 3, 1, 3, "とろいがでかくて痛い", 1, Assets.walker, 50, 50, new Rect(700, 700, 800, 800)));
+        manager.addWalker(manager.BASIC, new Walker("歩きスマホ", 2, 2, 2, "普通なのがとりえ", 1, Assets.walker, 50, 50, null));
+        manager.addWalker(manager.FRIEND, new Walker("おばあさん", 1, 1, 1, "善良な市民。タップ禁止", -5, Assets.walker, 50, 50, null));
+        manager.addWalker(manager.SCHOOL, new Walker("歩き小学生", 1, 3, 1, "すばしっこくぶつかりやすい", 2, Assets.walker, 50, 50, null));
+        manager.addWalker(manager.WOMAN, new Walker("歩きウーマン", 2, 2, 2, "たちどまったりふらついたり", 2, Assets.walker, 50, 50, null));
+        manager.addWalker(manager.MANIA, new Walker("歩きオタク", 3, 1, 3, "とろいがでかくて痛い", 2, Assets.walker, 50, 50, null));
+        manager.addWalker(manager.MONSTER, new Walker("歩きモンスター", 3, 3, 2, "予測不能な危険生物", 3, Assets.walker, 50, 50, null));
+        manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 3, 5, "もはやテロリスト", 10, Assets.walker, 50, 50, null));
 
         //固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/trim_bg_head.jpg", PixmapFormat.RGB565);
@@ -158,7 +162,21 @@ public class GameScreen extends Screen {
 
                 timer += deltaTime;
 
-                // Walkerの描画
+                // Walkerの状態に応じた処理
+                for (int i = 0; i < walkers.size(); i++) {
+                    Walker.ActionType walkerState = walkers.get(i).getState();
+                    switch (walkerState) {
+                        case VANISH:
+                            walkers.remove(i);
+                            break;
+                    }
+                }
+
+                // Walkerを出現させる
+                if (walkers.size() < maxWalker) {
+                    int left = 150 + random.nextInt(AndroidGame.TARGET_WIDTH - 150 - 150);
+                    walkers.add(manager.getWalker(new Rect(left, 300, left + 100, 400)));
+                }
 
                 // WalkerとPlayerの衝突判定
                 for (Walker walker : walkers) {
@@ -175,14 +193,6 @@ public class GameScreen extends Screen {
                     }
                 }
 
-                // WalkerとPlayerの状態に応じた処理
-                for (Walker walker : walkers) {
-                    if (walker.getState() == Walker.ActionType.VANISH) {
-                        walker = null;
-                    }
-                }
-
-
                 // タッチイベントの処理
                 for (int gi = 0; gi < gestureEvents.size(); gi++) {
                     GestureEvent ges = gestureEvents.get(gi);
@@ -190,15 +200,28 @@ public class GameScreen extends Screen {
                     if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP && !isBounds(ges, onStepArea)) {
                         for (Walker walker : walkers) {
                             if (isBounds(ges, walker.getLocation())) {
+                                // Walkerをタップした
                                 walker.addDamage(1);
                                 if (walker.getLife() >= 1) {
                                     walker.setState(Walker.ActionType.DAMAGE);
+                                    playSound(Assets.click, 1.0f);
                                 } else {
                                     walker.setState(Walker.ActionType.DEAD);
+                                    if (sc.addScore(walker.getPoint())) {
+                                        // LvUp時
+                                        playSound(Assets.pay_point, 1.0f);
+                                        if (sc.level % 2 == 0) {
+                                            manager.replaceGenerateTable();
+                                        }
+                                        if (sc.level % 10 == 0) {
+                                            maxWalker++;
+                                        }
+                                    }
                                 }
                             }
                         }
                     } else if (ges.type == GestureEvent.GESTURE_FLING && isBounds(ges, onStepArea)) {
+                        // Playerをステップさせた
                         if (ges.velocityX > 0.0f) {
                             player.setState(Player.ActionType.STEP_RIGHT);
                         } else {
@@ -208,9 +231,8 @@ public class GameScreen extends Screen {
                     }
                 }
 
-
                 //ゲームオーバーの判定
-                if (player.getDamage() >= 3) {
+                if (player.getDamage() >= 300) {
                     player.setState(Player.ActionType.STANDBY);
                     for (Walker walker : walkers) {
                         walker.setState(Walker.ActionType.STANDBY);
@@ -284,24 +306,5 @@ public class GameScreen extends Screen {
     private void changeScene(Scene toScene) {
         this.scene = toScene;
         timer = 0.0f;
-    }
-
-
-    /**
-     *  ゲームの状態に応じて、ランダムにWalkerを生成する。
-     *
-     *  @param useMap 生成する候補一覧のインスタンスMAP
-     *  @return インスタンプMAPからcloneして生成したWalkerインスタンス
-     */
-    public Walker generateWalker(Map<String, Walker> useMap){
-        Walker newWalker;
-        while(true){
-            testMayu = useMap.get(mayuMapKeys[random.nextInt(mayuMapKeys.length)]);
-            if(testMayu.getRare() >= random.nextInt(100)){
-                return testMayu.clone();
-            }
-        }
-
-        return newWalker;
     }
 }

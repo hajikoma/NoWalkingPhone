@@ -23,7 +23,7 @@ public class SmaphoWalker extends Walker {
      */
     public SmaphoWalker(Graphics gra, String name, int hp, int speed, int power, String description, int point,
                         Pixmap visual, Integer rowHeight, Integer colWidth, Rect location) {
-        super(gra, name, hp, speed, power, description, point, visual, rowHeight, colWidth, location);
+        super(name, hp, speed, power, description, point, visual, rowHeight, colWidth, location);
     }
 
 
