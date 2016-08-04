@@ -12,7 +12,7 @@ public class Score {
     /** コンボ数 */
     public int combo = 0;
 
-    private int nextLvUpScore = 100;
+    private int nextLvUpScore = 10;
 
 
     /**
@@ -22,14 +22,16 @@ public class Score {
      * @return LvUpしたかどうか
      */
     public boolean addScore(int score) {
+        boolean isLvUp = false;
+
         this.score += score;
 
-        if (this.score >= nextLvUpScore) {
+        while (this.score >= nextLvUpScore) {
             level++;
-            nextLvUpScore += 100;
-            return true;
-        } else {
-            return false;
+            nextLvUpScore += 10 + level;
+            isLvUp = true;
         }
+
+        return isLvUp;
     }
 }

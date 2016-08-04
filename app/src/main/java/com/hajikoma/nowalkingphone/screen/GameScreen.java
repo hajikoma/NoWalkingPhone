@@ -8,7 +8,6 @@ import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.Player;
 import com.hajikoma.nowalkingphone.Score;
-import com.hajikoma.nowalkingphone.Scores;
 import com.hajikoma.nowalkingphone.Walker;
 import com.hajikoma.nowalkingphone.WalkerManager;
 import com.hajikoma.nowalkingphone.framework.Game;
@@ -137,6 +136,9 @@ public class GameScreen extends Screen {
 
         //共通部分の描画
         gra.drawPixmap(Assets.trim_bg, 0, 0);
+        txt.drawText(String.valueOf(sc.level), 20, 100, 200, Assets.map_style.get("score"));
+        txt.drawText(String.valueOf(sc.combo), 20, 220, 200, Assets.map_style.get("score"));
+        txt.drawText(String.valueOf(sc.score), 20, 360, 1000, Assets.map_style.get("score"));
 
         player.action(deltaTime);
         for (Walker walker : walkers) {

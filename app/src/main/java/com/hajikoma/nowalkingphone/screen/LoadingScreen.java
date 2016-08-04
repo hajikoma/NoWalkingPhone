@@ -122,18 +122,22 @@ public class LoadingScreen extends Screen {
 
 		// テキストスタイルのセットアップ
 		HashMap<String, Paint> styleMap = new HashMap<String, Paint>();
+
 		Paint general = new Paint();
 		general.setTextSize(30);
 		general.setAntiAlias(true);
 		styleMap.put("general", general);
+
 		Paint title = new Paint();
 		title.setTextSize(50);
 		title.setAntiAlias(true);
 		styleMap.put("title", title);
+
 		Paint score = new Paint();
 		score.setTextSize(100);
 		score.setAntiAlias(true);
 		styleMap.put("score", score);
+
 		Paint big = new Paint();
 		big.setTextSize(120);
 		big.setAntiAlias(true);
