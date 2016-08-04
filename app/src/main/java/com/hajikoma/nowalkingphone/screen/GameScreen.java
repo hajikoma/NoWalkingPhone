@@ -8,6 +8,7 @@ import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.Player;
 import com.hajikoma.nowalkingphone.Score;
+import com.hajikoma.nowalkingphone.SmaphoWalker;
 import com.hajikoma.nowalkingphone.Walker;
 import com.hajikoma.nowalkingphone.WalkerManager;
 import com.hajikoma.nowalkingphone.framework.Game;
@@ -113,13 +114,13 @@ public class GameScreen extends Screen {
 
         // Walkerのセットアップ
         Assets.walker = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        manager.addWalker(manager.BASIC, new Walker("歩きスマホ", 2, 2, 2, "普通なのがとりえ", 1, Assets.walker, 50, 50, null));
-        manager.addWalker(manager.FRIEND, new Walker("おばあさん", 1, 1, 1, "善良な市民。タップ禁止", -5, Assets.walker, 50, 50, null));
-        manager.addWalker(manager.SCHOOL, new Walker("歩き小学生", 1, 3, 1, "すばしっこくぶつかりやすい", 2, Assets.walker, 50, 50, null));
-        manager.addWalker(manager.WOMAN, new Walker("歩きウーマン", 2, 2, 2, "たちどまったりふらついたり", 2, Assets.walker, 50, 50, null));
-        manager.addWalker(manager.MANIA, new Walker("歩きオタク", 3, 1, 3, "とろいがでかくて痛い", 2, Assets.walker, 50, 50, null));
-        manager.addWalker(manager.MONSTER, new Walker("歩きモンスター", 3, 3, 2, "予測不能な危険生物", 3, Assets.walker, 50, 50, null));
-        manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 3, 5, "もはやテロリスト", 10, Assets.walker, 50, 50, null));
+        manager.addWalker(manager.BASIC, new SmaphoWalker("歩きスマホ", 2, 2, 2, "普通なのがとりえ", 2, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.FRIEND, new Walker("おばあさん", 1, 1, 1, "善良な市民。タップ禁止", -5, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.SCHOOL, new SmaphoWalker("歩き小学生", 1, 3, 1, "すばしっこくぶつかりやすい", 3, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.WOMAN, new SmaphoWalker("歩きウーマン", 2, 2, 2, "たちどまったりふらついたり", 3, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.MANIA, new SmaphoWalker("歩きオタク", 3, 1, 3, "とろいがでかくて痛い", 4, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.MONSTER, new SmaphoWalker("歩きモンスター", 3, 3, 2, "予測不能な危険生物", 4, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 3, 5, "もはやテロリスト", 20, Assets.walker, 400, 280, null));
 
         //固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/trim_bg_head.jpg", PixmapFormat.RGB565);
