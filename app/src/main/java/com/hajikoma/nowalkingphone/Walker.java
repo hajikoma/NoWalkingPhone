@@ -45,7 +45,7 @@ public class Walker extends SpriteImage implements Cloneable {
     protected float actionTime = 0.0f;
 
     /** 拡大ポイントを通過したか */
-    protected boolean isEnlarged[] = new boolean[3];
+    protected boolean isEnlarged[];
 
 
     /**
@@ -108,6 +108,7 @@ public class Walker extends SpriteImage implements Cloneable {
         this.point = point;
 
         life = hp;
+        isEnlarged = new boolean[]{false, false, false};
         state = ActionType.WALK;
     }
 
@@ -124,6 +125,8 @@ public class Walker extends SpriteImage implements Cloneable {
         try {
             newWalker = (Walker) super.clone(); // 親クラスのcloneメソッドを呼び出す。親クラスの型で返ってくるので、自分自身の型でのキャスト
             newWalker.dstRect = null; // オブジェクト型変数なので、clone()では参照がコピーされる
+            newWalker.isEnlarged = null;
+            newWalker.isEnlarged = new boolean[]{false, false, false};
         } catch (Exception e) {
             e.printStackTrace();
         }
