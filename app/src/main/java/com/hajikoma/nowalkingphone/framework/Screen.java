@@ -191,14 +191,13 @@ public abstract class Screen {
      * FIXME:drawNumberに負の数字が渡された場合NumberFormatExceptionが発生する
      * HACK:drawNumberに負の数字が渡された場合、0を描画する
      *
-     * @param gra        Graphicインスタンス
      * @param drawNumber 描画する数字
      * @param atHeightPx 描画する数値一つ一つの高さ（ピクセル）
      * @param x          描画座標x
      * @param y          描画座標y
      * @param digit      表示桁数（指定しない場合は-1）
      */
-    public static void drawGraphicalNumber(Graphics gra, int drawNumber, int atHeightPx, int x, int y, int digit) {
+    public static void drawGraphicalNumber(int drawNumber, int atHeightPx, int x, int y, int digit) {
         if (drawNumber < 0) {
             drawNumber = 0;
         }
@@ -213,13 +212,13 @@ public abstract class Screen {
             //3桁の区切りカンマを描画
             if (i != 0 && (roopLength - i) % 3 == 0) {
                 srcX = 300;
-                gra.drawPixmap(Assets.number, x + offsetX, y, atWidthPx / 3, atHeightPx, srcX, 0, 10, 40);
+                AndroidGame.graphics.drawPixmap(Assets.number, x + offsetX, y, atWidthPx / 3, atHeightPx, srcX, 0, 10, 40);
                 offsetX += atHeightPx / 3;    //カンマの解像度は10px*40pxで、数字の横幅/3
             }
 
             //表示指定桁数に数値の長さが満たない場合、足りない分だけ”0”を描画
             if (digit != -1 && digit > numStr.length() + i) {
-                gra.drawPixmap(Assets.number, x + offsetX, y, atWidthPx, atHeightPx, 0, 0, 30, 40);
+                AndroidGame.graphics.drawPixmap(Assets.number, x + offsetX, y, atWidthPx, atHeightPx, 0, 0, 30, 40);
                 offsetX += atWidthPx;
                 continue;
             }
@@ -230,9 +229,8 @@ public abstract class Screen {
 
             //数値を描画
             srcX = num * 30;
-            gra.drawPixmap(Assets.number, x + offsetX, y, atWidthPx, atHeightPx, srcX, 0, 30, 40);
+            AndroidGame.graphics.drawPixmap(Assets.number, x + offsetX, y, atWidthPx, atHeightPx, srcX, 0, 30, 40);
             offsetX += atWidthPx;
-
         }
     }
 

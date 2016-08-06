@@ -2,13 +2,13 @@ package com.hajikoma.nowalkingphone.screen;
 
 import java.util.List;
 
-import android.graphics.Color;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
-import com.hajikoma.nowalkingphone.Scores;
+import com.hajikoma.nowalkingphone.Player;
+import com.hajikoma.nowalkingphone.Score;
 import com.hajikoma.nowalkingphone.Settings;
-import com.hajikoma.nowalkingphone.UserData;
+import com.hajikoma.nowalkingphone.Walker;
 import com.hajikoma.nowalkingphone.framework.Game;
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
@@ -17,170 +17,112 @@ import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Text;
 
 /**
- * お手入れの結果を表示するスクリーン
- * 結果表示後にカットイン広告を一度だけ表示する
+ * ゲームの結果を表示するスクリーン
  */
 public class ResultScreen extends Screen {
 
-	/** 抜いた数のポイント倍率 */
-	public static final int POINT_AT_PICK = 10;
-	/** 抜け落ちた数のポイント倍率 */
-	public static final int POINT_AT_DROP = -25;
-	/** ちぎれた数のポイント倍率 */
-	public static final int POINT_AT_TORN = -25;
 
-	/** もう一度お手入れボタン描画先 */
-	Rect doDstArea = new Rect(40, 1040, 40 + 400, 1040 + 200);
-	/** メニューへボタン描画先 */
-	private Rect backDstArea = new Rect(40 + 400 + 30, 1040, 40 + 400 + 10 + 200, 1020 + 200);
+    /** コンティニューボタン描画先 */
+    Rect continueDstArea = new Rect(40, 1040, 40 + 400, 1040 + 200);
+    /** タイトルへボタン描画先 */
+    private Rect goMenuDstArea = new Rect(40 + 400 + 30, 1040, 40 + 400 + 10 + 200, 1020 + 200);
 
-	/** 共通して使用するゲームクラス */
-	private final Game game;
-	/** Graphicsインスタンス */
-	private final Graphics gra;
-	/** Textインスタンス */
-	private final Text txt;
+    /** 共通して使用するゲームクラス */
+    private final Game game;
+    /** Graphicインスタンス */
+    private final Graphics gra;
+    /** Textインスタンス */
+    private final Text txt;
 
-	/** 各スコアを格納 */
-	private Scores sc;
-	/** お手入れの総合判定結果 */
-	private int result;
-	/** 最終的な獲得ポイント */
-	private int finallyPoint = 0;
+    /** スコア */
+    private Score sc;
 
-	/** リザルト画面を表示し始めてからの経過時間 */
-	private float pastTime;
-	/** 個別結果を表示する際の効果音を鳴らしたかどうかのフラグ */
-	private boolean[] isSoundPlayed = new boolean[]{false, false, false, false};
+    /** 経過時間 */
+    private float timer;
+    /** 個別結果を表示する際の効果音を鳴らしたかどうかのフラグ */
+    private boolean[] isSoundPlayed = new boolean[]{false, false, false, false};
 
 
-	/** ResultScreenを生成する */
-	public ResultScreen(Game game, int misIndex, int useItemIndex, Scores sc) {
-		super(game);
-		this.game = game;
-		this.sc = sc;
+    /** ResultScreenを生成する */
+    public ResultScreen(Game game, Score sc) {
+        super(game);
+        this.game = game;
+        this.sc = sc;
 
-		gra = game.getGraphics();
-		txt = game.getText();
+        gra = game.getGraphics();
+        txt = game.getText();
 
+        //固有グラフィックの読み込み
+        Assets.result_bg = gra.newPixmap("others/result_bg.jpg", PixmapFormat.RGB565);
 
-		//固有グラフィックの読み込み
-		Assets.result_bg = gra.newPixmap("others/result_bg.jpg", PixmapFormat.RGB565);
+        //データを保存
+        Assets.ud.setGameResult(sc);
+        Settings.save(game.getFileIO(), Assets.ud);
+    }
 
-		//総合結果を判定
+    @Override
+    public void update(float deltaTime) {
 
-		//ミッションクリア（結果が失敗以外）の場合、開放されるアイテムがあるか判定
-		if(result != UserData.MIS_BAD){
-			for(int i = 0; i < Assets.item_list.size(); i++){
-				if(misIndex == Assets.item_list.get(i).UNLOCK_NEED && Assets.ud.getItemState(i) == -1){
-					Assets.ud.itemUnlock(i);
-				}
-			}
-		}
+    }
 
-		//データを保存
-		if(result > Assets.ud.getMisState(misIndex)){
-			Assets.ud.setMisResult(misIndex, result);
-		}
-		if(useItemIndex != -1){
-			Assets.ud.setUseItemIndex(useItemIndex);
-		}
-		if(finallyPoint > 0){
-			Assets.ud.setTotalMP(finallyPoint);
-		}
-		Assets.ud.addPickCount(sc.pickCount);
-		Assets.ud.addDropCount(sc.dropCount);
-		Assets.ud.addTornCount(sc.tornCount);
-		Assets.ud.setTotalLength(sc.pickLength);
-		Settings.save(game.getFileIO(), Assets.ud);
+    /** 結果と必要に応じて広告を表示 */
+    @Override
+    public void present(float deltaTime) {
+        List<GestureEvent> gestureEvents = game.getInput().getGestureEvents();
+        game.getInput().getKeyEvents();
 
-	}
+        gra.drawPixmap(Assets.result_bg, 0, 0);
 
-	@Override
-	public void update(float deltaTime) {
+        drawGraphicalNumber(sc.score, 80, 220, 250, 6);
+        drawGraphicalNumber(sc.maxCombo, 80, 220, 450, 6);
+        drawGraphicalNumber(sc.beatCount, 80, 220, 650, 6);
 
-	}
-
-	/** お手入れ結果と、必要に応じて広告を表示 */
-	@Override
-	public void present(float deltaTime) {
-		List<GestureEvent> gestureEvents = game.getInput().getGestureEvents();
-		game.getInput().getKeyEvents();
-
-		gra.drawPixmap(Assets.result_bg, 0, 0);
-
-		if(pastTime < 1.0f){
-			drawGraphicalNumber(gra, 0, 80, 220, 250, 6);
-		}else{
-			soundPlayOnce(0);
-			drawGraphicalNumber(gra, sc.mp, 80, 220, 250, 6);
-		}
-
-		if(pastTime >= 2.0f){
-			soundPlayOnce(1);
-			txt.drawText("" + sc.pickCount * POINT_AT_PICK, 470, 415, 500, Assets.map_style.get("title"));
-		}
-		if(pastTime >= 2.5f){
-			soundPlayOnce(2);
-			txt.drawText("" + sc.dropCount * POINT_AT_DROP, 470, 485, 500, Assets.map_style.get("title"));
-		}
-		if(pastTime >= 3.0f){
-			soundPlayOnce(3);
-			txt.drawText("" + sc.tornCount * POINT_AT_TORN, 470, 555, 500, Assets.map_style.get("title"));
-		}
-
-		if(pastTime < 1.0f){
-			drawGraphicalNumber(gra, 0, 100, 120, 680, 6);
-		}else if(pastTime < 2.0f){
-			drawGraphicalNumber(gra, sc.mp, 100, 120, 680, 6);
-		}else if(pastTime < 2.5f){
-			drawGraphicalNumber(gra, sc.mp + sc.pickCount * POINT_AT_PICK, 100, 120, 680, 6);
-		}else if(pastTime < 3.0f){
-			drawGraphicalNumber(gra, sc.mp + sc.pickCount * POINT_AT_PICK + sc.dropCount * POINT_AT_DROP, 100, 120, 680, 6);
-		}else{
-			drawGraphicalNumber(gra, finallyPoint, 100, 120, 680, 6);
-		}
-
-		if(pastTime >= 4.5f){
-			if(result == UserData.MIS_EXCELLENT){
-				txt.drawText("大 成 功", 150, 950, 500, Assets.map_style.get("big"));
-			}else if(result == UserData.MIS_GOOD){
-				txt.drawText("成 功", 220, 950, 500, Assets.map_style.get("big"));
-			}else if(result ==  UserData.MIS_BAD){
-				txt.drawText("失 敗", 220, 950, 500, Assets.map_style.get("big"));
-			}
-		}
+        if (timer >= 4.5f) {
+            txt.drawText("コンティニュー？", 220, 950, 500, Assets.map_style.get("big"));
+        }
 
 
-		pastTime += deltaTime;
-	}
+        // タッチイベントの処理
+        for (int gi = 0; gi < gestureEvents.size(); gi++) {
+            GestureEvent ges = gestureEvents.get(gi);
 
-	/** このスクリーンでの処理はない */
-	@Override
-	public void pause() {}
+            if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
+                game.setScreen(new GameScreen(game));
+            }
+        }
 
-	/** このスクリーンでの処理はない */
-	@Override
-	public void resume() {}
 
-	/** 固有の参照を明示的に切る */
-	@Override
-	public void dispose() {
-		Assets.result_bg = null;
-		Assets.icon_button_result = null;
-	}
+        timer += deltaTime;
+    }
 
-	/** 効果音を一度だけ再生するヘルパー */
-	private void soundPlayOnce(int flagIndex){
-		if(!isSoundPlayed[flagIndex]){
-			playSound(Assets.result_score, 0.5f);
-			isSoundPlayed[flagIndex] = true;
-		}
-	}
+    /** このスクリーンでの処理はない */
+    @Override
+    public void pause() {
+    }
 
-	@Override
-	public String toString() {
-		return "ResultScreen";
-	}
+    /** このスクリーンでの処理はない */
+    @Override
+    public void resume() {
+    }
+
+    /** 固有の参照を明示的に切る */
+    @Override
+    public void dispose() {
+        Assets.result_bg = null;
+        Assets.icon_button_result = null;
+    }
+
+    /** 効果音を一度だけ再生するヘルパー */
+    private void soundPlayOnce(int flagIndex) {
+        if (!isSoundPlayed[flagIndex]) {
+            playSound(Assets.result_score, 0.5f);
+            isSoundPlayed[flagIndex] = true;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ResultScreen";
+    }
 
 }

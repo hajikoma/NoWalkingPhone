@@ -11,6 +11,10 @@ public class Score {
     public int level = 1;
     /** コンボ数 */
     public int combo = 0;
+    /** 最大コンボ数 */
+    public int maxCombo = 0;
+    /** 倒したWalkerの数 */
+    public int beatCount = 0;
 
     private int nextLvUpScore = 10;
 
@@ -26,9 +30,13 @@ public class Score {
     public boolean beatWalker(int score) {
         boolean isLvUp = false;
 
+        this.beatCount++;
         combo++;
-        this.score += score + combo / 10;
+        if (combo > maxCombo) {
+            maxCombo = combo;
+        }
 
+        this.score += score + combo / 10;
         while (this.score >= nextLvUpScore) {
             level++;
             nextLvUpScore += 10 + level;

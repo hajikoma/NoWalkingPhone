@@ -86,12 +86,6 @@ public class LoadingScreen extends Screen {
 		//Assets.ud.setTotalMP(111111);
 		//-------------------------------テスト用のUserData初期化
 
-		// デフォルトの抜き方（Fling）のセットアップ
-		Assets.default_picker = new DefaultPicker(ItemCategory.DEFAULT,
-				ItemType.DEFAULT, "", "", "", 0, Assets.item_picker1,
-				GestureEvent.GESTURE_FLING, Assets.ud.getExpansion(),
-				Assets.ud.getTorning(), Assets.ud.getPointPar(), 0.0f,
-				new Rect(720, 0, 900, 180), "-", 0);
 
 		//共有グラフィックの読み込み
 		Assets.icons		= gra.newPixmap("others/icons.png",			PixmapFormat.ARGB4444);

@@ -270,6 +270,8 @@ public class GameScreen extends Screen {
                 if (timer <= 3.0f) {
                     txt.drawText("お手入れ終了", 5, 700, 620, Assets.map_style.get("big"));
                     timer += deltaTime;
+                } else {
+                    game.setScreen(new ResultScreen(game, sc));
                 }
                 break;
             //-------------------------------------------------------------------------------------------------
