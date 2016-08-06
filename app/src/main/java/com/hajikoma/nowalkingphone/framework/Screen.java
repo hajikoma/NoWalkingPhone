@@ -188,16 +188,14 @@ public abstract class Screen {
 
     /**
      * 画像を使って数字を描画する
-     * FIXME:drawNumberに負の数字が渡された場合NumberFormatExceptionが発生する
-     * HACK:drawNumberに負の数字が渡された場合、0を描画する
      *
      * @param drawNumber 描画する数字
      * @param atHeightPx 描画する数値一つ一つの高さ（ピクセル）
      * @param x          描画座標x
      * @param y          描画座標y
-     * @param digit      表示桁数（指定しない場合は-1）
+     * @param maxDigit   最大表示桁数
      */
-    public static void drawGraphicalNumber(int drawNumber, int atHeightPx, int x, int y, int digit) {
+    public static void drawGraphicalNumber(int drawNumber, int atHeightPx, int x, int y, int maxDigit) {
         if (drawNumber < 0) {
             drawNumber = 0;
         }
@@ -206,33 +204,32 @@ public abstract class Screen {
         int srcX, offsetX = 0;
         int atWidthPx = atHeightPx * 3 / 4;    //数字一つの解像度は30px＊40px。
 
-        int roopLength = (digit == -1) ? numStr.length() : digit;
+        for (int digit = 1; digit <= maxDigit; digit++) {
+            // 表示指定,桁数に数値の長さが満たない場合、足りない分だけ描画位置をオフセット
+            if (digit <= maxDigit - numStr.length()) {
+                offsetX += atWidthPx;
+                if((maxDigit - digit) % 3 == 0){
+                    offsetX += atHeightPx / 3;    //カンマの解像度は10px*40pxで、数字の横幅/3
+                }
+                continue;
+            }
 
-        for (int i = 0; i < roopLength; i++) {
-            //3桁の区切りカンマを描画
-            if (i != 0 && (roopLength - i) % 3 == 0) {
+            // 数値を一つずつ取り出して描画
+            int charIndex = digit - (maxDigit - numStr.length()) - 1;
+            int num = Integer.valueOf(String.valueOf(numStr.charAt(charIndex)));
+            srcX = num * 30;
+            AndroidGame.graphics.drawPixmap(Assets.number, x + offsetX, y, atWidthPx, atHeightPx, srcX, 0, 30, 40);
+            offsetX += atWidthPx;
+
+            // 3桁の区切りカンマを描画
+            if (digit != maxDigit && (maxDigit - digit) % 3 == 0) {
                 srcX = 300;
                 AndroidGame.graphics.drawPixmap(Assets.number, x + offsetX, y, atWidthPx / 3, atHeightPx, srcX, 0, 10, 40);
                 offsetX += atHeightPx / 3;    //カンマの解像度は10px*40pxで、数字の横幅/3
             }
-
-            //表示指定桁数に数値の長さが満たない場合、足りない分だけ”0”を描画
-            if (digit != -1 && digit > numStr.length() + i) {
-                AndroidGame.graphics.drawPixmap(Assets.number, x + offsetX, y, atWidthPx, atHeightPx, 0, 0, 30, 40);
-                offsetX += atWidthPx;
-                continue;
-            }
-
-            //数値を一つずつ取り出し
-            int charIndex = (digit == -1) ? i : i - (digit - numStr.length());
-            int num = Integer.valueOf(String.valueOf(numStr.charAt(charIndex)));
-
-            //数値を描画
-            srcX = num * 30;
-            AndroidGame.graphics.drawPixmap(Assets.number, x + offsetX, y, atWidthPx, atHeightPx, srcX, 0, 30, 40);
-            offsetX += atWidthPx;
         }
     }
+
 
     /**
      * チュートリアル画面の背景を描画する
