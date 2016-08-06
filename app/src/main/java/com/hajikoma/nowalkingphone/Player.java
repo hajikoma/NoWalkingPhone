@@ -24,9 +24,7 @@ public class Player extends SpriteImage {
 
 
     /** lifeの初期値 */
-    private int initLife = 100;
-    /** 残りlife */
-    private int life = 100;
+    private int initLife = 30;
     /** 受けたダメージ量 */
     private int damage = 0;
 
@@ -217,6 +215,16 @@ public class Player extends SpriteImage {
     /**
      * 状態を変更する
      */
+    public void lvUp() {
+        if(damage >= 1) {
+            damage--; // life回復
+        }
+    }
+
+
+    /**
+     * 状態を変更する
+     */
     public void setState(Player.ActionType actionType) {
         state = actionType;
         actionTime = 0.0f;
@@ -247,11 +255,6 @@ public class Player extends SpriteImage {
 
     public int getInitLife() {
         return initLife;
-    }
-
-
-    public int getLife() {
-        return life;
     }
 
 

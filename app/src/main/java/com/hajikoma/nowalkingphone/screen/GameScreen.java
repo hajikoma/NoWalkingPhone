@@ -26,7 +26,6 @@ import java.util.Random;
 
 /**
  * ゲームのメインスクリーン。
- * TODO:変数のスコープをできるだけ小さくする
  */
 public class GameScreen extends Screen {
 
@@ -44,13 +43,10 @@ public class GameScreen extends Screen {
         GAMEOVER;
     }
 
-    /** 共通して使用するゲームクラス */
+    /** 共通して使用するインスタンス */
     private final Game game;
-    /** Graphicsインスタンス */
     private final Graphics gra;
-    /** Textインスタンス */
     private final Text txt;
-    /** Vibrateインスタンス */
     private final Vibrate vib;
 
     /** 汎用的に使用するタイマー */
@@ -76,19 +72,20 @@ public class GameScreen extends Screen {
     /** Walkerの同時出現上限数 */
     private int maxWalker = 10;
 
-
     /** 各スコアを格納 */
     private Score sc = new Score();
-    /** コンボ数を格納 */
-    private int combo = 0;
     /** コンボ数の表示座標 */
     private Point comboXY = new Point();
     /** コンボ数の表示座標 */
     private float comboTime = 0.0f;
 
-    /** Walkerタップ時の、当たり判定の拡大値 */
-    private static int tapExpantion = 100;
+    /** スマッシュの使用可能回数 */
+    private int remainSmash = 3;
+    /** スマッシュの最大使用可能回数 */
+    private final int MAX_SMASH = 3;
 
+    /** Walkerタップ時の、当たり判定の拡大値 */
+    private final int TAP_EXPANTION = 100;
     /** フリック距離x,yを格納 */
     private int[] velocityX, velocityY;
     /** スワイプ距離x,yを格納 */
@@ -142,7 +139,7 @@ public class GameScreen extends Screen {
         txt.drawText(String.valueOf(sc.level), 20, 100, 200, Assets.map_style.get("score"));
         txt.drawText(String.valueOf(sc.combo), 20, 220, 200, Assets.map_style.get("score"));
         txt.drawText(String.valueOf(sc.score), 20, 360, 1000, Assets.map_style.get("score"));
-        drawLife(player.getLife(), player.getDamage());
+        drawLife(player.getInitLife(), player.getDamage());
 
         player.action(deltaTime);
         // 逆順にすればzindex解決？
@@ -207,7 +204,7 @@ public class GameScreen extends Screen {
 
                     if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP && !isBounds(ges, onStepArea)) {
                         for (Walker walker : walkers) {
-                            if (isBounds(ges, walker.getLocation(), tapExpantion)) {
+                            if (isBounds(ges, walker.getLocation(), TAP_EXPANTION)) {
                                 // Walkerをタップした
                                 walker.addDamage(1);
                                 if (walker.getLife() >= 1) {
@@ -216,14 +213,7 @@ public class GameScreen extends Screen {
                                 } else {
                                     walker.setState(Walker.ActionType.DEAD);
                                     if (sc.beatWalker(walker.getPoint())) {
-                                        // LvUp時
-                                        playSound(Assets.voice_soko, 1.0f);
-                                        if (sc.level % 2 == 0) {
-                                            manager.replaceGenerateTable();
-                                        }
-                                        if (sc.level % 10 == 0) {
-                                            maxWalker++;
-                                        }
+                                        lvUp();
                                     }
                                 }
                             }
@@ -277,6 +267,27 @@ public class GameScreen extends Screen {
             //-------------------------------------------------------------------------------------------------
 
         }
+    }
+
+
+    /**
+     * LvUp時の処理
+     */
+    private void lvUp() {
+        player.lvUp();
+
+        if (sc.level % 2 == 0) {
+            manager.replaceGenerateTable();
+        }
+        if (sc.level % 10 == 0) {
+            maxWalker++;
+        }
+
+        if (remainSmash < MAX_SMASH) {
+            remainSmash++;
+        }
+
+        playSound(Assets.voice_soko, 1.0f);
     }
 
 
@@ -341,6 +352,6 @@ public class GameScreen extends Screen {
         } else {
             color = Color.RED;
         }
-        gra.drawRoundRect(left, top, width - (int)((float)width / (float)initLife * (float)damage), height , 9.0f, color);
+        gra.drawRoundRect(left, top, width - (int) ((float) width / (float) initLife * (float) damage), height, 9.0f, color);
     }
 }
