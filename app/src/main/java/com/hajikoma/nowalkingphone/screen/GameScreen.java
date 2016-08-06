@@ -141,12 +141,6 @@ public class GameScreen extends Screen {
         txt.drawText(String.valueOf(sc.score), 20, 360, 1000, Assets.map_style.get("score"));
         drawLife(player.getInitLife(), player.getDamage());
 
-        player.action(deltaTime);
-        // 逆順にすればzindex解決？
-        for (Walker walker : walkers) {
-            walker.action(deltaTime);
-        }
-
 
         // シーンごとの処理
         switch (scene) {
@@ -182,14 +176,16 @@ public class GameScreen extends Screen {
                     walkers.add(manager.getWalker(new Rect(left, 300, left + 100, 400)));
                 }
 
-                // WalkerとPlayerの衝突判定
+                // playerとwalkerを動かす
+                player.action(deltaTime);
+                // 逆順にすることで、概ね手前のwalkerが前面に描画される（追い越されると崩れる）
+                for (int wi = walkers.size() - 1; wi >= 0; wi--) {
+                    walkers.get(wi).action(deltaTime);
+                }
+
+                // WalkerとPlayerの衝突処理
                 for (Walker walker : walkers) {
-                    Rect location = walker.getLocation();
-                    Point hitArea = player.getHitArea();
-                    if (walker.getState() != Walker.ActionType.CRASH
-                            && walker.getState() != Walker.ActionType.VANISH
-                            && location.bottom >= 1100 && location.bottom <= 1150
-                            && location.left >= hitArea.x && location.right <= hitArea.y) {
+                    if (isCrash(walker)) {
                         player.addDamage(walker.getPower());
                         player.setState(Player.ActionType.DAMAGE);
                         walker.setState(Walker.ActionType.CRASH);
@@ -267,6 +263,20 @@ public class GameScreen extends Screen {
             //-------------------------------------------------------------------------------------------------
 
         }
+    }
+
+
+    /**
+     * PlayerとWalkerが衝突したかどうか判定する
+     */
+    protected boolean isCrash(Walker walker) {
+        Rect location = walker.getLocation();
+        Point hitArea = player.getHitArea();
+
+        return walker.getState() != Walker.ActionType.CRASH
+                && walker.getState() != Walker.ActionType.VANISH
+                && location.bottom >= 1100 && location.bottom <= 1150
+                && location.left >= hitArea.x && location.right <= hitArea.y;
     }
 
 
