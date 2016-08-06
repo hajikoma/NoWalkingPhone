@@ -155,6 +155,8 @@ public class Walker extends SpriteImage implements Cloneable {
                 drawAction(0, 1);
                 move(0, speed);
             } else {
+                drawAction(0, 1);
+                move(0, speed);
                 loopAction();
                 walk();
             }
@@ -177,6 +179,7 @@ public class Walker extends SpriteImage implements Cloneable {
         if (actionTime <= 1.2f) {
             drawAction(0, 1);
         } else {
+            drawAction(0, 1);
             endAction();
         }
     }
@@ -199,6 +202,7 @@ public class Walker extends SpriteImage implements Cloneable {
             drawAction(0, 1);
             move(-10, 0);
         } else {
+            drawAction(0, 1);
             endAction();
         }
     }

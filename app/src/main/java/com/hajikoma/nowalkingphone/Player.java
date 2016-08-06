@@ -104,6 +104,7 @@ public class Player extends SpriteImage {
         } else if (actionTime <= 0.6f) {
             drawAction(0, 1);
         } else {
+            drawAction(0, 1);
             endAction();
         }
     }
@@ -120,6 +121,7 @@ public class Player extends SpriteImage {
         } else if (actionTime <= 0.9f) {
             drawAction(2, 0);
         } else {
+            drawAction(2, 0);
             endAction();
         }
     }
@@ -147,6 +149,7 @@ public class Player extends SpriteImage {
         } else if (actionTime <= 1.0f) {
             drawAction(1, 0);
         } else {
+            drawAction(1, 0);
             hitArea.y = NoWalkingPhoneGame.TARGET_WIDTH;
             resetDstArea();
             endAction();
@@ -176,6 +179,7 @@ public class Player extends SpriteImage {
         } else if (actionTime <= 1.0f) {
             drawAction(1, 0);
         } else {
+            drawAction(1, 0);
             hitArea.x = 0;
             resetDstArea();
             endAction();
@@ -194,6 +198,7 @@ public class Player extends SpriteImage {
         } else if (actionTime <= 1.2f) {
             drawAction(0, 1);
         } else {
+            drawAction(0, 1);
             endAction();
         }
     }

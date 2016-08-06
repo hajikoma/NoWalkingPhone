@@ -21,6 +21,8 @@ import com.hajikoma.nowalkingphone.framework.Vibrate;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -85,7 +87,7 @@ public class GameScreen extends Screen {
     private final int MAX_SMASH = 3;
 
     /** Walkerタップ時の、当たり判定の拡大値 */
-    private final int TAP_EXPANTION = 100;
+    private final int TAP_EXPANTION = 30;
     /** フリック距離x,yを格納 */
     private int[] velocityX, velocityY;
     /** スワイプ距離x,yを格納 */
@@ -176,11 +178,18 @@ public class GameScreen extends Screen {
                     walkers.add(manager.getWalker(new Rect(left, 300, left + 100, 400)));
                 }
 
-                // playerとwalkerを動かす
+                // playerの描画
                 player.action(deltaTime);
-                // 逆順にすることで、概ね手前のwalkerが前面に描画される（追い越されると崩れる）
-                for (int wi = walkers.size() - 1; wi >= 0; wi--) {
-                    walkers.get(wi).action(deltaTime);
+                // bottomの値が小さい（背面にいる）Walkerから描画
+                int size = walkers.size();
+                HashMap<Integer, Integer> bottomList = new HashMap<>();
+                for (int wi = 0; wi < size; wi++){
+                    bottomList.put(walkers.get(wi).getLocation().bottom, wi);
+                }
+                ArrayList<Integer> keyList = new ArrayList<>(bottomList.keySet());
+                Collections.sort(keyList);//昇順
+                for (int key: keyList ){
+                    walkers.get(bottomList.get(key)).action(deltaTime);
                 }
 
                 // WalkerとPlayerの衝突処理
