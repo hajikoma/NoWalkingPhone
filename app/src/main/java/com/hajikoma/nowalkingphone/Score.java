@@ -16,15 +16,18 @@ public class Score {
 
 
     /**
-     * scoreを加算する。加算後のscoreでLvUpの判定を行う。
+     * Walkerを倒した時のscore、comboの処理を行う。
+     * ・scoreとcomboを加算する。
+     * ・加算後のscoreでLvUpの判定を行う。
      *
      * @param score 加算するscore
      * @return LvUpしたかどうか
      */
-    public boolean addScore(int score) {
+    public boolean beatWalker(int score) {
         boolean isLvUp = false;
 
-        this.score += score;
+        combo++;
+        this.score += score + combo / 10;
 
         while (this.score >= nextLvUpScore) {
             level++;

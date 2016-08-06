@@ -4,6 +4,7 @@ import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
+import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
 /**
  * 「歩きスマホする者」を表すクラス。
@@ -31,15 +32,24 @@ public class SmaphoWalker extends Walker {
      */
     @Override
     protected void walk() {
-        if (actionTime <= 0.3f) {
-            drawAction(1, 1);
-            move(1, speed);
-        } else if (actionTime <= 0.6f) {
-            drawAction(1, 1);
-            move(-1, speed);
+        if (dstRect.top <= AndroidGame.TARGET_HEIGHT) {
+            if (actionTime <= 0.3f) {
+                drawAction(0, 1);
+                move(1, speed);
+            } else if (actionTime <= 0.6f) {
+                drawAction(0, 1);
+                move(-1, speed);
+            } else {
+                loopAction();
+                walk();
+            }
+
+            // たまに立ち止まる
+            if (Math.random() > 0.999) {
+                setState(ActionType.STOP);
+            }
         } else {
-            loopAction();
-            walk();
+            vanish();
         }
     }
 }

@@ -32,11 +32,17 @@ public class WalkerManager {
 
     /** 置換テーブル */
     public int replaceTable[][] = {
-            {BASIC, FRIEND},
+            {BASIC, BASIC},
             {BASIC, SCHOOL},
             {BASIC, WOMAN},
+            {BASIC, BASIC},
+            {BASIC, SCHOOL},
+            {BASIC, MANIA},
+            {BASIC, BASIC},
+            {BASIC, SCHOOL},
             {BASIC, MANIA},
             {BASIC, MONSTER},
+            {BASIC, SCHOOL},
             {BASIC, CAR}
     };
     /** 置換テーブルのイテレータ的役割のインデックス */
@@ -76,14 +82,18 @@ public class WalkerManager {
     public void replaceGenerateTable() {
         int from = replaceTable[replaceIndex][0];
         int to = replaceTable[replaceIndex][1];
+
+        Arrays.sort(generateTable);
         int targetIndex = Arrays.binarySearch(generateTable, from);
-        generateTable[targetIndex] = to;
+
+        // 置換対象が存在する場合
+        if(targetIndex != -1){
+            generateTable[targetIndex] = to;
+        }
 
         replaceIndex++;
-        if (replaceIndex > replaceTable.length) {
+        if (replaceIndex >= replaceTable.length) {
             replaceIndex = 0;
         }
     }
-
-
 }

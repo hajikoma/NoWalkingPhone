@@ -99,7 +99,14 @@ public class LoadingScreen extends Screen {
 		Assets.number		= gra.newPixmap("others/number.png",		PixmapFormat.ARGB4444);
 
 		// サウンドの読み込み(アイテム使用時のサウンドは、trimScreenにて読み込む)
-		Assets.click		= aud.newSound("sound/poka01.mp3");
+        Assets.voice_amai		= aud.newSound("sound/voice_amai.mp3");
+        Assets.voice_nanto		= aud.newSound("sound/voice_nanto.mp3");
+        Assets.voice_mieru	    = aud.newSound("sound/voice_mieru.mp3");
+        Assets.voice_soko	    = aud.newSound("sound/voice_soko.mp3");
+        Assets.voice_abunai	    = aud.newSound("sound/voice_abunai.mp3");
+        Assets.voice_kamihitoe	= aud.newSound("sound/voice_kamihitoe.mp3");
+
+        Assets.click		= aud.newSound("sound/poka01.mp3");
 		Assets.powerup		= aud.newSound("sound/powerup05.mp3");
 		Assets.result_score	= aud.newSound("sound/tissue.mp3");
 		Assets.pay_point	= aud.newSound("sound/coin04.mp3");

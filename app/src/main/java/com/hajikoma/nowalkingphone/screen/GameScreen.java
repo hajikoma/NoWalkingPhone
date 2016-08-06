@@ -16,7 +16,6 @@ import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
 import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
 import com.hajikoma.nowalkingphone.framework.Screen;
-import com.hajikoma.nowalkingphone.framework.Sound;
 import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.Vibrate;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
@@ -75,7 +74,7 @@ public class GameScreen extends Screen {
     /** WalkerManager */
     private WalkerManager manager = new WalkerManager();
     /** Walkerの同時出現上限数 */
-    private int maxWalker = 3;
+    private int maxWalker = 10;
 
 
     /** 各スコアを格納 */
@@ -86,6 +85,9 @@ public class GameScreen extends Screen {
     private Point comboXY = new Point();
     /** コンボ数の表示座標 */
     private float comboTime = 0.0f;
+
+    /** Walkerタップ時の、当たり判定の拡大値 */
+    private static int tapExpantion = 100;
 
     /** フリック距離x,yを格納 */
     private int[] velocityX, velocityY;
@@ -114,13 +116,13 @@ public class GameScreen extends Screen {
 
         // Walkerのセットアップ
         Assets.walker = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        manager.addWalker(manager.BASIC, new SmaphoWalker("歩きスマホ", 2, 2, 2, "普通なのがとりえ", 2, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.FRIEND, new Walker("おばあさん", 1, 1, 1, "善良な市民。タップ禁止", -5, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.SCHOOL, new SmaphoWalker("歩き小学生", 1, 3, 1, "すばしっこくぶつかりやすい", 3, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.WOMAN, new SmaphoWalker("歩きウーマン", 2, 2, 2, "たちどまったりふらついたり", 3, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.MANIA, new SmaphoWalker("歩きオタク", 3, 1, 3, "とろいがでかくて痛い", 4, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.BASIC, new SmaphoWalker("歩きスマホ", 1, 3, 2, "普通なのがとりえ", 2, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.FRIEND, new Walker("おばあさん", 1, 2, 1, "善良な市民。タップ禁止", -5, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.SCHOOL, new SmaphoWalker("歩き小学生", 1, 5, 1, "すばしっこくぶつかりやすい", 3, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.WOMAN, new SmaphoWalker("歩きウーマン", 1, 3, 2, "たちどまったりふらついたり", 3, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.MANIA, new SmaphoWalker("歩きオタク", 2, 2, 3, "とろいがでかくて痛い", 4, Assets.walker, 400, 280, null));
         manager.addWalker(manager.MONSTER, new SmaphoWalker("歩きモンスター", 3, 3, 2, "予測不能な危険生物", 4, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 3, 5, "もはやテロリスト", 20, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 10, 5, "もはやテロリスト", 20, Assets.walker, 400, 280, null));
 
         //固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/trim_bg_head.jpg", PixmapFormat.RGB565);
@@ -140,8 +142,10 @@ public class GameScreen extends Screen {
         txt.drawText(String.valueOf(sc.level), 20, 100, 200, Assets.map_style.get("score"));
         txt.drawText(String.valueOf(sc.combo), 20, 220, 200, Assets.map_style.get("score"));
         txt.drawText(String.valueOf(sc.score), 20, 360, 1000, Assets.map_style.get("score"));
+        drawLife(player.getLife(), player.getDamage());
 
         player.action(deltaTime);
+        // 逆順にすればzindex解決？
         for (Walker walker : walkers) {
             walker.action(deltaTime);
         }
@@ -192,7 +196,8 @@ public class GameScreen extends Screen {
                         player.addDamage(walker.getPower());
                         player.setState(Player.ActionType.DAMAGE);
                         walker.setState(Walker.ActionType.CRASH);
-                        playSound(Assets.click, 0.5f);
+                        sc.combo = 0;
+                        playSound(Assets.voice_nanto, 0.5f);
                     }
                 }
 
@@ -202,17 +207,17 @@ public class GameScreen extends Screen {
 
                     if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP && !isBounds(ges, onStepArea)) {
                         for (Walker walker : walkers) {
-                            if (isBounds(ges, walker.getLocation())) {
+                            if (isBounds(ges, walker.getLocation(), tapExpantion)) {
                                 // Walkerをタップした
                                 walker.addDamage(1);
                                 if (walker.getLife() >= 1) {
                                     walker.setState(Walker.ActionType.DAMAGE);
-                                    playSound(Assets.click, 1.0f);
+                                    playSound(Assets.voice_amai, 1.0f);
                                 } else {
                                     walker.setState(Walker.ActionType.DEAD);
-                                    if (sc.addScore(walker.getPoint())) {
+                                    if (sc.beatWalker(walker.getPoint())) {
                                         // LvUp時
-                                        playSound(Assets.pay_point, 1.0f);
+                                        playSound(Assets.voice_soko, 1.0f);
                                         if (sc.level % 2 == 0) {
                                             manager.replaceGenerateTable();
                                         }
@@ -230,12 +235,12 @@ public class GameScreen extends Screen {
                         } else {
                             player.setState(Player.ActionType.STEP_LEFT);
                         }
-                        playSound(Assets.pick_up1, 0.5f);
+                        playSound(Assets.voice_mieru, 0.5f);
                     }
                 }
 
                 //ゲームオーバーの判定
-                if (player.getDamage() >= 300) {
+                if (player.getDamage() >= player.getInitLife()) {
                     player.setState(Player.ActionType.STANDBY);
                     for (Walker walker : walkers) {
                         walker.setState(Walker.ActionType.STANDBY);
@@ -309,5 +314,31 @@ public class GameScreen extends Screen {
     private void changeScene(Scene toScene) {
         this.scene = toScene;
         timer = 0.0f;
+    }
+
+
+    private void drawLife(int initLife, int damage) {
+        int left = 50;
+        int top = 1150;
+        int width = 250;
+        int height = 80;
+
+        // lifeゲージ背景
+        gra.drawRoundRect(left, top, width, height, 10.0f, Color.LTGRAY);
+
+        // lifeゲージ残り
+        left += 5;
+        top += 5;
+        width -= 10;
+        height -= 10;
+        int color;
+        if (damage < initLife / 2) {
+            color = Color.GREEN;
+        } else if (damage < initLife * 4 / 5) {
+            color = Color.YELLOW;
+        } else {
+            color = Color.RED;
+        }
+        gra.drawRoundRect(left, top, width - (int)((float)width / (float)initLife * (float)damage), height , 9.0f, color);
     }
 }

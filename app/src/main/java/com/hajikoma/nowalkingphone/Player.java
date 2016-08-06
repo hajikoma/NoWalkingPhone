@@ -23,6 +23,10 @@ public class Player extends SpriteImage {
     }
 
 
+    /** lifeの初期値 */
+    private int initLife = 100;
+    /** 残りlife */
+    private int life = 100;
     /** 受けたダメージ量 */
     private int damage = 0;
 
@@ -238,6 +242,16 @@ public class Player extends SpriteImage {
 
     public Point getHitArea() {
         return hitArea;
+    }
+
+
+    public int getInitLife() {
+        return initLife;
+    }
+
+
+    public int getLife() {
+        return life;
     }
 
 

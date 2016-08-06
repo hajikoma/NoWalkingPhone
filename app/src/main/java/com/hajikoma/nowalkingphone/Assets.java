@@ -40,6 +40,13 @@ public class Assets {
 	public static Pixmap player;
 	public static Pixmap walker;
 
+	public static Sound voice_amai;
+	public static Sound voice_nanto;
+	public static Sound voice_mieru;
+	public static Sound voice_soko;
+	public static Sound voice_abunai;
+	public static Sound voice_kamihitoe;
+
 	public static Sound click;
 	public static Sound powerup;
 	public static Sound result_score;
