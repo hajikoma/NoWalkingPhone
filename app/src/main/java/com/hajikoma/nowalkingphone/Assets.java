@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import android.graphics.Paint;
 
+import com.hajikoma.nowalkingphone.framework.Music;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
 import com.hajikoma.nowalkingphone.framework.Sound;
 import com.hajikoma.nowalkingphone.item.DefaultPicker;
@@ -40,6 +41,9 @@ public class Assets {
 	public static Pixmap player;
 	public static Pixmap walker;
 
+	public static Music game;
+	public static Music game2;
+
 	public static Sound voice_amai;
 	public static Sound voice_nanto;
 	public static Sound voice_mieru;
@@ -47,25 +51,20 @@ public class Assets {
 	public static Sound voice_abunai;
 	public static Sound voice_kamihitoe;
 
-	public static Sound click;
-	public static Sound powerup;
-	public static Sound result_score;
-	public static Sound pay_point;
-
-	public static Sound pick_up1;
-	public static Sound pick_up2;
-	public static Sound fall;
-	public static Sound weak;
+	public static Sound decision22;
+	public static Sound decision15;
+	public static Sound peoplePerformanceCheer1;
+	public static Sound peopleStadiumCheer1;
+	public static Sound punchSwing1;
+	public static Sound bomb1;
+	public static Sound kickLow1;
+	public static Sound punchMiddle2;
+	public static Sound magicElectron2;
 
 	public static int vibShortOnce;
 	public static int vibLongOnce;
 	public static long[] vibShortRythem;
 	public static long[] vibLongRythem;
-
-	public static Pixmap mayu_normal;
-	public static Pixmap mayu_white;
-	public static Pixmap mayu_short;
-
 
 	public static Pixmap item_picker1;
 	public static Pixmap item_enhancer1;

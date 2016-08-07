@@ -92,6 +92,7 @@ public class LoadingScreen extends Screen {
 		Assets.icon_button	= gra.newPixmap("others/icon_button.png",	PixmapFormat.ARGB4444);
 		Assets.number		= gra.newPixmap("others/number.png",		PixmapFormat.ARGB4444);
 
+
 		// サウンドの読み込み(アイテム使用時のサウンドは、trimScreenにて読み込む)
         Assets.voice_amai		= aud.newSound("sound/voice_amai.mp3");
         Assets.voice_nanto		= aud.newSound("sound/voice_nanto.mp3");
@@ -100,26 +101,21 @@ public class LoadingScreen extends Screen {
         Assets.voice_abunai	    = aud.newSound("sound/voice_abunai.mp3");
         Assets.voice_kamihitoe	= aud.newSound("sound/voice_kamihitoe.mp3");
 
-        Assets.click		= aud.newSound("sound/poka01.mp3");
-		Assets.powerup		= aud.newSound("sound/powerup05.mp3");
-		Assets.result_score	= aud.newSound("sound/tissue.mp3");
-		Assets.pay_point	= aud.newSound("sound/coin04.mp3");
-
-		Assets.pick_up1	= aud.newSound("sound/clap01.mp3");
-		Assets.pick_up2	= aud.newSound("sound/clap02.mp3");
-		Assets.fall		= aud.newSound("sound/fall.mp3");
-		Assets.weak		= aud.newSound("sound/weak.mp3");
+        Assets.decision22		= aud.newSound("sound/decision22.mp3");
+		Assets.decision15		= aud.newSound("sound/decision15.mp3");
+		Assets.peoplePerformanceCheer1	= aud.newSound("sound/people-performance-cheer1.mp3");
+		Assets.peopleStadiumCheer1	= aud.newSound("sound/people-stadium-cheer1.mp3");
+		Assets.punchSwing1	= aud.newSound("sound/punch-swing1.mp3");
+		Assets.bomb1	= aud.newSound("sound/bomb1.mp3");
+		Assets.kickLow1	= aud.newSound("sound/kick-low1.mp3");
+		Assets.punchMiddle2	= aud.newSound("sound/punch-middle2.mp3");
+		Assets.magicElectron2	= aud.newSound("sound/magic-electron2.mp3");
 
 		//バイブパターンのセットアップ
 		Assets.vibShortOnce	= 50;
 		Assets.vibLongOnce	= 150;
 		Assets.vibShortRythem	= new long[]{50,50};
 		Assets.vibLongRythem	= new long[]{150,150};
-
-		// まゆ毛インスタンスのセットアップ
-		Assets.mayu_normal	= gra.newPixmap("mayu/mayu_normal.png",	PixmapFormat.ARGB4444);
-		Assets.mayu_white	= gra.newPixmap("mayu/mayu_white.png",	PixmapFormat.ARGB4444);
-		Assets.mayu_short	= gra.newPixmap("mayu/mayu_short.png",	PixmapFormat.ARGB4444);
 
 		// テキストスタイルのセットアップ
 		HashMap<String, Paint> styleMap = new HashMap<String, Paint>();

@@ -10,6 +10,11 @@ import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public abstract class Screen {
     protected final Game game;
 
@@ -29,6 +34,7 @@ public abstract class Screen {
 
     /** 現在のスクリーンに応じた処理を行う場合に備え、toString()のオーバーライドを強制 */
     public abstract String toString();
+
 
     /**
      * boolean型のSharedPreferencesの値を調べる。
@@ -50,6 +56,7 @@ public abstract class Screen {
         return false;
     }
 
+
     /**
      * boolean型のSharedPreferencesの値を変更する。
      *
@@ -62,6 +69,7 @@ public abstract class Screen {
         editor.putBoolean(preferenceName, switchTo);
         editor.commit();
     }
+
 
     /**
      * イベントの座標が矩形領域内にあるかどうかを判定するヘルパー。
@@ -88,6 +96,7 @@ public abstract class Screen {
         }
     }
 
+
     /**
      * イベントの座標が矩形領域内にあるかどうかを判定するヘルパー。
      * スワイプ動作（onScrollイベント）の場合、イベントの開始地点と現在位置の両方を判定する。
@@ -104,6 +113,7 @@ public abstract class Screen {
     public static boolean isBounds(GestureEvent e, int x, int y, int width, int height, int expansion) {
         return isBounds(e, x - expansion, y - expansion, width + expansion * 2, height + expansion * 2 + 15);
     }
+
 
     /**
      * イベントの座標が矩形領域内にあるかどうかを判定するヘルパー。
@@ -122,6 +132,7 @@ public abstract class Screen {
         return isBounds(e, left, top, width, height);
     }
 
+
     /**
      * イベントの座標が矩形領域内にあるかどうかを判定するヘルパー。
      *
@@ -136,6 +147,28 @@ public abstract class Screen {
             return false;
         }
     }
+
+
+    /**
+     * 渡された効果音セットから、ランダムで効果音を再生する。
+     * 設定でミュートになっている場合は再生しない。
+     *
+     * @param soundMap  再生する効果音の、キー：再生基準値（0.0～1.0の間）　値：Soundインスタンス のMAP
+     * @param volume 音量
+     * @return 再生した場合true、ミュートで再生しなかった場合false
+     */
+    public static boolean playSoundRandom(LinkedHashMap<Double, Sound> soundMap, float volume) {
+        double rand = Math.random();
+        for (Double key: soundMap.keySet()){
+            if(rand < key){
+                return playSound(soundMap.get(key), volume);
+            }
+        }
+
+        // 効果音が再生されなかった（soundMapのキー設定が誤っている）
+        return false;
+    }
+
 
     /**
      * 効果音を再生する。設定でミュートになっている場合は再生しない。
@@ -153,6 +186,7 @@ public abstract class Screen {
         }
     }
 
+
     /**
      * 振動（バイブレーション）させる。設定でバイブOFFになっている場合は再生しない。
      *
@@ -168,6 +202,7 @@ public abstract class Screen {
             return false;
         }
     }
+
 
     /**
      * 繰り返し振動（バイブレーション）させる。設定でバイブOFFになっている場合は再生しない。
@@ -185,6 +220,7 @@ public abstract class Screen {
             return true;
         }
     }
+
 
     /**
      * 画像を使って数字を描画する

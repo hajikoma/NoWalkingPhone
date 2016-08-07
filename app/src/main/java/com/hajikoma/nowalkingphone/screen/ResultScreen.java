@@ -113,7 +113,7 @@ public class ResultScreen extends Screen {
     /** 効果音を一度だけ再生するヘルパー */
     private void soundPlayOnce(int flagIndex) {
         if (!isSoundPlayed[flagIndex]) {
-            playSound(Assets.result_score, 0.5f);
+            //playSound(Assets.result_score, 0.5f);
             isSoundPlayed[flagIndex] = true;
         }
     }

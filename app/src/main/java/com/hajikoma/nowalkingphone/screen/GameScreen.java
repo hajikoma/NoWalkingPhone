@@ -11,11 +11,14 @@ import com.hajikoma.nowalkingphone.Score;
 import com.hajikoma.nowalkingphone.SmaphoWalker;
 import com.hajikoma.nowalkingphone.Walker;
 import com.hajikoma.nowalkingphone.WalkerManager;
+import com.hajikoma.nowalkingphone.framework.Audio;
 import com.hajikoma.nowalkingphone.framework.Game;
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
 import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
+import com.hajikoma.nowalkingphone.framework.Music;
 import com.hajikoma.nowalkingphone.framework.Screen;
+import com.hajikoma.nowalkingphone.framework.Sound;
 import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.Vibrate;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
@@ -23,6 +26,7 @@ import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -48,6 +52,7 @@ public class GameScreen extends Screen {
     /** 共通して使用するインスタンス */
     private final Game game;
     private final Graphics gra;
+    private final Audio aud;
     private final Text txt;
     private final Vibrate vib;
 
@@ -72,7 +77,7 @@ public class GameScreen extends Screen {
     /** WalkerManager */
     private WalkerManager manager = new WalkerManager();
     /** Walkerの同時出現上限数 */
-    private int maxWalker = 10;
+    private int maxWalker = 5;
 
     /** 各スコアを格納 */
     private Score sc = new Score();
@@ -99,6 +104,15 @@ public class GameScreen extends Screen {
     /** スワイプ距離x,yを格納 */
     private int[] distanceX, distanceY;
 
+    /** BGM */
+    private Music bgm;
+
+    /** 効果音マップ */
+    private LinkedHashMap<Double, Sound> onTap = new LinkedHashMap<>();
+    private LinkedHashMap<Double, Sound> onFling = new LinkedHashMap<>();
+    private LinkedHashMap<Double, Sound> onCrash = new LinkedHashMap<>();
+    private LinkedHashMap<Double, Sound> onSmash = new LinkedHashMap<>();
+
     /** アイテムエフェクトに使用する変化するalpha値 */
     private int[] argb = new int[]{0, 0, 0, 0};
 
@@ -112,6 +126,7 @@ public class GameScreen extends Screen {
         super(game);
         this.game = game;
         gra = game.getGraphics();
+        aud = game.getAudio();
         txt = game.getText();
         vib = game.getVibrate();
 
@@ -132,6 +147,22 @@ public class GameScreen extends Screen {
         //固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/trim_bg_head.jpg", PixmapFormat.RGB565);
 
+        // BGM
+        bgm = aud.newMusic("music/me_6777276_Race.mp3");
+//        bgm = aud.newMusic("music/me_9015790_Hoppy-the-Frog--.mp3");
+        bgm.setLooping(true);
+        bgm.setVolume(0.01f);
+
+        // 効果音
+        onTap.put(0.5, Assets.voice_soko);
+        onTap.put(1.0, Assets.punchMiddle2);
+        onFling.put(0.5, Assets.voice_mieru);
+        onFling.put(1.0, Assets.punchSwing1);
+        onSmash.put(0.5, Assets.magicElectron2);
+        onSmash.put(1.0, Assets.bomb1);
+        onCrash.put(0.5, Assets.voice_nanto);
+        onCrash.put(1.0, Assets.voice_amai);
+
         changeScene(Scene.READY);
     }
 
@@ -149,6 +180,9 @@ public class GameScreen extends Screen {
         drawGraphicalNumber(sc.score, 90, 20, 320, 9);
         drawLife(player.getInitLife(), player.getDamage());
         drawSmashIcon();
+
+        //bgm
+        bgm.play();
 
 
         // シーンごとの処理
@@ -181,7 +215,7 @@ public class GameScreen extends Screen {
 
                 // Walkerを出現させる
                 if (walkers.size() < maxWalker) {
-                    int left = 150 + random.nextInt(AndroidGame.TARGET_WIDTH - 150 - 150);
+                    int left = 100 + random.nextInt(AndroidGame.TARGET_WIDTH - 100 - 150);
                     walkers.add(manager.getWalker(new Rect(left, 300, left + 100, 400)));
                 }
 
@@ -206,7 +240,7 @@ public class GameScreen extends Screen {
                         player.setState(Player.ActionType.DAMAGE);
                         walker.setState(Walker.ActionType.CRASH);
                         sc.combo = 0;
-                        playSound(Assets.voice_nanto, 0.5f);
+                        playSoundRandom(onCrash, 1.5f);
                     }
                 }
 
@@ -219,9 +253,9 @@ public class GameScreen extends Screen {
                         for (Walker walker : walkers) {
                             if (isBounds(ges, walker.getLocation(), TAP_EXPANTION)) {
                                 walker.addDamage(1);
+                                playSoundRandom(onTap, 1.5f);
                                 if (walker.getLife() >= 1) {
                                     walker.setState(Walker.ActionType.DAMAGE);
-                                    playSound(Assets.voice_amai, 1.0f);
                                 } else {
                                     walker.setState(Walker.ActionType.DEAD);
                                     if (sc.beatWalker(walker.getPoint())) {
@@ -241,6 +275,7 @@ public class GameScreen extends Screen {
                                         lvUp();
                                     }
                                 }
+                                playSoundRandom(onSmash, 1.5f);
                                 remainSmash--;
                                 break;
                             }
@@ -253,7 +288,7 @@ public class GameScreen extends Screen {
                         } else {
                             player.setState(Player.ActionType.STEP_LEFT);
                         }
-                        playSound(Assets.voice_mieru, 0.5f);
+                        playSoundRandom(onFling, 1.5f);
                     }
                 }
 
@@ -316,7 +351,7 @@ public class GameScreen extends Screen {
     private void lvUp() {
         player.lvUp();
 
-        if (sc.level % 2 == 0) {
+        if (sc.level % 3 == 0) {
             manager.replaceGenerateTable();
         }
         if (sc.level % 10 == 0) {
@@ -325,8 +360,6 @@ public class GameScreen extends Screen {
                 remainSmash++;
             }
         }
-
-        playSound(Assets.voice_soko, 1.0f);
     }
 
 
@@ -339,6 +372,9 @@ public class GameScreen extends Screen {
     /** 一時停止状態をセットする */
     @Override
     public void pause() {
+        if (bgm.isPlaying()) {
+            bgm.pause();
+        }
         scene = Scene.PAUSE;
     }
 
@@ -354,6 +390,7 @@ public class GameScreen extends Screen {
     public void dispose() {
         Assets.trim_bg = null;
         Assets.onomatopee = null;
+        bgm.dispose();
     }
 
 

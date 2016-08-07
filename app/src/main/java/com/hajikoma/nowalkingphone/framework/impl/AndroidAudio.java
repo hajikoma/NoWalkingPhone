@@ -36,7 +36,7 @@ public class AndroidAudio implements Audio {
 
 	/**
 	 * ストリーミング再生を行うMusicインスタンスを取得する
-	 * @param fileName 再生するBGMファイル名
+	 * @param filename 再生するBGMファイル名
 	 * @return BGMファイルと紐づけられたMusicインスタンス
 	 */
 	@Override
@@ -51,7 +51,7 @@ public class AndroidAudio implements Audio {
 
 	/**
 	 * メモリからの再生を行うSoundインスタンスを取得する
-	 * @param fileName 再生する効果音ファイル名
+	 * @param filename 再生する効果音ファイル名
 	 * @return 効果音ファイルと紐づけられたSoundインスタンス
 	 */
 	@Override
