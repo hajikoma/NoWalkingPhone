@@ -99,13 +99,12 @@ public class GameScreen extends Screen {
 
     /** Walkerタップ時の、当たり判定の拡大値 */
     private final int TAP_EXPANTION = 30;
-    /** フリック距離x,yを格納 */
-    private int[] velocityX, velocityY;
-    /** スワイプ距離x,yを格納 */
-    private int[] distanceX, distanceY;
 
     /** BGM */
     private Music bgm;
+
+    /** 効果音をそのループで再生したかどうか */
+    private ArrayList<String> playedSounds;
 
     /** 効果音マップ */
     private LinkedHashMap<Double, Sound> onTap = new LinkedHashMap<>();
@@ -181,9 +180,8 @@ public class GameScreen extends Screen {
         drawLife(player.getInitLife(), player.getDamage());
         drawSmashIcon();
 
-        //bgm
+        // bgm
         bgm.play();
-
 
         // シーンごとの処理
         switch (scene) {
@@ -202,6 +200,9 @@ public class GameScreen extends Screen {
             case PLAYING://-----------------------------------------------------------------------------------
 
                 timer += deltaTime;
+
+                // 再生済み効果音を初期化
+                playedSounds = new ArrayList<>();
 
                 // Walkerの状態に応じた処理
                 for (int i = 0; i < walkers.size(); i++) {
@@ -240,7 +241,7 @@ public class GameScreen extends Screen {
                         player.setState(Player.ActionType.DAMAGE);
                         walker.setState(Walker.ActionType.CRASH);
                         sc.combo = 0;
-                        playSoundRandom(onCrash, 1.5f);
+                        playSoundOnceRandom("onCrash", onCrash, 1.5f);
                     }
                 }
 
@@ -253,7 +254,7 @@ public class GameScreen extends Screen {
                         for (Walker walker : walkers) {
                             if (isBounds(ges, walker.getLocation(), TAP_EXPANTION)) {
                                 walker.addDamage(1);
-                                playSoundRandom(onTap, 1.5f);
+                                playSoundOnceRandom("onTap", onTap, 1.5f);
                                 if (walker.getLife() >= 1) {
                                     walker.setState(Walker.ActionType.DAMAGE);
                                 } else {
@@ -275,7 +276,7 @@ public class GameScreen extends Screen {
                                         lvUp();
                                     }
                                 }
-                                playSoundRandom(onSmash, 1.5f);
+                                playSoundOnceRandom("onSmash", onSmash, 1.5f);
                                 remainSmash--;
                                 break;
                             }
@@ -288,16 +289,19 @@ public class GameScreen extends Screen {
                         } else {
                             player.setState(Player.ActionType.STEP_LEFT);
                         }
-                        playSoundRandom(onFling, 1.5f);
+                        playSoundOnceRandom("onFling", onFling, 1.5f);
                     }
                 }
 
-                //ゲームオーバーの判定
+                // ゲームオーバーの判定
                 if (player.getDamage() >= player.getInitLife()) {
                     player.setState(Player.ActionType.STANDBY);
                     manager.setAllWalkerState(walkers, Walker.ActionType.STANDBY);
                     changeScene(Scene.GAMEOVER);
                 }
+
+                // ループ終了時処理
+                playedSounds = null;
 
                 break;
             //-------------------------------------------------------------------------------------------------
@@ -360,6 +364,28 @@ public class GameScreen extends Screen {
                 remainSmash++;
             }
         }
+    }
+
+
+    /**
+     * 効果音が再生されていない場合、渡された効果音セットから、ランダムで効果音を再生する。
+     * 設定でミュートになっている場合は再生しない。
+     * 効果音が再生されているかどうかは、再生済み効果音の種類のStringリストex)["onTap", "onFling"]を参照している。
+     *
+     * @param onWhat   再生する効果音の種類　ex) onTap, onSmash
+     * @param soundMap 再生する効果音の、キー：再生基準値（0.0～1.0の間）　値：Soundインスタンス のMAP
+     * @param volume   音量
+     * @return 再生したかどうか
+     */
+    public boolean playSoundOnceRandom(String onWhat, LinkedHashMap<Double, Sound> soundMap, float volume) {
+        if (playedSounds.indexOf(onWhat) == -1) {
+            if (playSoundRandom(soundMap, volume)) {
+                playedSounds.add(onWhat);
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
