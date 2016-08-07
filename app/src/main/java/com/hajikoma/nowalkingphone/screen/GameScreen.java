@@ -85,6 +85,12 @@ public class GameScreen extends Screen {
     private int remainSmash = 3;
     /** スマッシュの最大使用可能回数 */
     private final int MAX_SMASH = 3;
+    /** スマッシュアイコンの描画先 */
+    private final Rect SMASH_DST_RECT_ARR[] = {
+            new Rect(500, 1150, 550, 1200),
+            new Rect(570, 1150, 620, 1200),
+            new Rect(640, 1150, 690, 1200)
+    };
 
     /** Walkerタップ時の、当たり判定の拡大値 */
     private final int TAP_EXPANTION = 30;
@@ -140,8 +146,9 @@ public class GameScreen extends Screen {
         gra.drawPixmap(Assets.trim_bg, 0, 0);
         txt.drawText(String.valueOf(sc.level), 20, 100, 200, Assets.map_style.get("score"));
         txt.drawText(String.valueOf(sc.combo), 20, 220, 200, Assets.map_style.get("score"));
-        txt.drawText(String.valueOf(sc.score), 20, 360, 1000, Assets.map_style.get("score"));
+        drawGraphicalNumber(sc.score, 90, 20, 320, 9);
         drawLife(player.getInitLife(), player.getDamage());
+        drawSmashIcon();
 
 
         // シーンごとの処理
@@ -183,12 +190,12 @@ public class GameScreen extends Screen {
                 // bottomの値が小さい（背面にいる）Walkerから描画
                 int size = walkers.size();
                 HashMap<Integer, Integer> bottomList = new HashMap<>();
-                for (int wi = 0; wi < size; wi++){
+                for (int wi = 0; wi < size; wi++) {
                     bottomList.put(walkers.get(wi).getLocation().bottom, wi);
                 }
                 ArrayList<Integer> keyList = new ArrayList<>(bottomList.keySet());
                 Collections.sort(keyList);//昇順
-                for (int key: keyList ){
+                for (int key : keyList) {
                     walkers.get(bottomList.get(key)).action(deltaTime);
                 }
 
@@ -207,10 +214,10 @@ public class GameScreen extends Screen {
                 for (int gi = 0; gi < gestureEvents.size(); gi++) {
                     GestureEvent ges = gestureEvents.get(gi);
 
-                    if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP && !isBounds(ges, onStepArea)) {
+                    if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
+                        // Walkerのタップ判定
                         for (Walker walker : walkers) {
                             if (isBounds(ges, walker.getLocation(), TAP_EXPANTION)) {
-                                // Walkerをタップした
                                 walker.addDamage(1);
                                 if (walker.getLife() >= 1) {
                                     walker.setState(Walker.ActionType.DAMAGE);
@@ -223,6 +230,22 @@ public class GameScreen extends Screen {
                                 }
                             }
                         }
+
+                        // smashの使用判定
+                        for (int si = 0; si < remainSmash; si++) {
+                            if (isBounds(ges, SMASH_DST_RECT_ARR[si], TAP_EXPANTION)) {
+                                player.setState(Player.ActionType.SMASH);
+                                for (Walker walker : walkers) {
+                                    walker.setState(Walker.ActionType.SMASHED);
+                                    if (sc.beatWalker(walker.getPoint())) {
+                                        lvUp();
+                                    }
+                                }
+                                remainSmash--;
+                                break;
+                            }
+                        }
+
                     } else if (ges.type == GestureEvent.GESTURE_FLING && isBounds(ges, onStepArea)) {
                         // Playerをステップさせた
                         if (ges.velocityX > 0.0f) {
@@ -237,9 +260,7 @@ public class GameScreen extends Screen {
                 //ゲームオーバーの判定
                 if (player.getDamage() >= player.getInitLife()) {
                     player.setState(Player.ActionType.STANDBY);
-                    for (Walker walker : walkers) {
-                        walker.setState(Walker.ActionType.STANDBY);
-                    }
+                    manager.setAllWalkerState(walkers, Walker.ActionType.STANDBY);
                     changeScene(Scene.GAMEOVER);
                 }
 
@@ -300,10 +321,9 @@ public class GameScreen extends Screen {
         }
         if (sc.level % 10 == 0) {
             maxWalker++;
-        }
-
-        if (remainSmash < MAX_SMASH) {
-            remainSmash++;
+            if (remainSmash < MAX_SMASH) {
+                remainSmash++;
+            }
         }
 
         playSound(Assets.voice_soko, 1.0f);
@@ -349,6 +369,7 @@ public class GameScreen extends Screen {
     }
 
 
+    /** 残りlifeゲージを描画する */
     private void drawLife(int initLife, int damage) {
         int left = 50;
         int top = 1150;
@@ -372,5 +393,14 @@ public class GameScreen extends Screen {
             color = Color.RED;
         }
         gra.drawRoundRect(left, top, width - (int) ((float) width / (float) initLife * (float) damage), height, 9.0f, color);
+    }
+
+
+    /** 残りsmash回数のアイコンを描画する */
+    private void drawSmashIcon() {
+        Rect srcRect = new Rect(0, 0, 200, 200);
+        for (int ii = 0; ii < remainSmash; ii++) {
+            gra.drawPixmap(Assets.icon_button, SMASH_DST_RECT_ARR[ii], srcRect);
+        }
     }
 }

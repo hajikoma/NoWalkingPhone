@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * ゲームのスコア・コンボ記録、Walkerの生成など、ゲームのパラメータを管理するクラス。
+ * Walkerの出現や状態を制御するクラス。
  */
 public class WalkerManager {
 
@@ -94,6 +94,14 @@ public class WalkerManager {
         replaceIndex++;
         if (replaceIndex >= replaceTable.length) {
             replaceIndex = 0;
+        }
+    }
+
+
+    /** 全てのWalkerの状態を変更する */
+    public void setAllWalkerState(ArrayList<Walker> walkers, Walker.ActionType toState){
+        for (Walker walker : walkers) {
+            walker.setState(toState);
         }
     }
 }

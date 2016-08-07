@@ -71,7 +71,7 @@ public class Walker extends SpriteImage implements Cloneable {
                 damage();
                 break;
             case SMASHED:
-                damage();
+                smashed();
                 break;
             case DEAD:
                 die();
@@ -212,7 +212,23 @@ public class Walker extends SpriteImage implements Cloneable {
      * スマッシュを受けた
      */
     protected void smashed() {
-        //return srcRects[0][0];
+        if (actionTime <= 0.05f) {
+            drawAction(0, 1);
+        } else if (actionTime <= 0.1f) {
+            drawAction(0, 0);
+        } else if (actionTime <= 0.15f) {
+            drawAction(0, 1);
+        } else if (actionTime <= 0.2f) {
+            drawAction(0, 0);
+        } else if (actionTime <= 0.25f) {
+            drawAction(0, 1);
+        } else if (actionTime <= 0.3f) {
+            drawAction(0, 0);
+        } else if (actionTime <= 0.35f) {
+            drawAction(0, 1);
+        } else {
+            vanish();
+        }
     }
 
 

@@ -5,10 +5,8 @@ import java.util.List;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
-import com.hajikoma.nowalkingphone.Player;
 import com.hajikoma.nowalkingphone.Score;
 import com.hajikoma.nowalkingphone.Settings;
-import com.hajikoma.nowalkingphone.Walker;
 import com.hajikoma.nowalkingphone.framework.Game;
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
@@ -73,7 +71,7 @@ public class ResultScreen extends Screen {
 
         gra.drawPixmap(Assets.result_bg, 0, 0);
 
-        drawGraphicalNumber(sc.score, 80, 220, 250, 6);
+        drawGraphicalNumber(sc.score, 80, 20, 250, 9);
         drawGraphicalNumber(sc.maxCombo, 80, 220, 450, 6);
         drawGraphicalNumber(sc.beatCount, 80, 220, 650, 6);
 
