@@ -48,8 +48,12 @@ abstract class SpriteImage {
     }
 
 
-    protected void drawAction(int rowIndex, int colIndex){
-        NoWalkingPhoneGame.graphics.drawPixmap(getVisual(), dstRect, srcRects[rowIndex][colIndex]);
+    protected void drawAction(int rowIndex, int colIndex) {
+        try {
+            NoWalkingPhoneGame.graphics.drawPixmap(getVisual(), dstRect, srcRects[rowIndex][colIndex]);
+        } catch (ArrayIndexOutOfBoundsException $e) {
+            throw new ArrayIndexOutOfBoundsException("描画元矩形が、画像の範囲外を指しています。");
+        }
     }
 
 

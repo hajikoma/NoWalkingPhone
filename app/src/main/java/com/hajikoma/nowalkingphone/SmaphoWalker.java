@@ -34,10 +34,12 @@ public class SmaphoWalker extends Walker {
     protected void walk() {
         if (dstRect.top <= AndroidGame.TARGET_HEIGHT) {
             if (actionTime <= 0.3f) {
-                drawAction(0, 1);
+//                drawAction(0, 1);
+                drawAction(0, 0);
                 move(1, speed);
             } else if (actionTime <= 0.6f) {
-                drawAction(0, 1);
+//                drawAction(0, 1);
+                drawAction(0, 0);
                 move(-1, speed);
             } else {
                 loopAction();

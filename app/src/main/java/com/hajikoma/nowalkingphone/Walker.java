@@ -149,13 +149,16 @@ public class Walker extends SpriteImage implements Cloneable {
     protected void walk() {
         if (dstRect.top <= AndroidGame.TARGET_HEIGHT) {
             if (actionTime <= 0.3f) {
-                drawAction(0, 1);
+//                drawAction(0, 1);
+                drawAction(0, 0);
                 move(0, speed);
             } else if (actionTime <= 0.6f) {
-                drawAction(0, 1);
+//                drawAction(0, 1);
+                drawAction(0, 0);
                 move(0, speed);
             } else {
-                drawAction(0, 1);
+//                drawAction(0, 1);
+                drawAction(0, 0);
                 move(0, speed);
                 loopAction();
                 walk();
@@ -177,9 +180,11 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void stop() {
         if (actionTime <= 1.2f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
         } else {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             endAction();
         }
     }
@@ -190,19 +195,24 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void damage() {
         if (actionTime <= 0.1f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             move(10, 0);
         } else if (actionTime <= 0.2f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             move(-10, 0);
         } else if (actionTime <= 0.3f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             move(10, 0);
         } else if (actionTime <= 0.4f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             move(-10, 0);
         } else {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             endAction();
         }
     }
@@ -213,19 +223,23 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void smashed() {
         if (actionTime <= 0.05f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
         } else if (actionTime <= 0.1f) {
             drawAction(0, 0);
         } else if (actionTime <= 0.15f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
         } else if (actionTime <= 0.2f) {
             drawAction(0, 0);
         } else if (actionTime <= 0.25f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
         } else if (actionTime <= 0.3f) {
             drawAction(0, 0);
         } else if (actionTime <= 0.35f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
         } else {
             vanish();
         }
@@ -237,7 +251,8 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void die() {
         if (dstRect.bottom > 0) {
-            drawAction(1, 1);
+//            drawAction(1, 1);
+            drawAction(0, 0);
             move(0, -20);
             scale(-7);
         } else {
@@ -251,16 +266,20 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void crash() {
         if (actionTime <= 0.1f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             move(10, 0);
         } else if (actionTime <= 0.2f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             move(-10, 0);
         } else if (actionTime <= 0.3f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             move(10, 0);
         } else if (actionTime <= 0.4f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             move(-10, 0);
         } else {
             vanish();
@@ -326,13 +345,13 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void enlargeIfPoint() {
         if (dstRect.bottom >= 500 && !isEnlarged[0]) {
-            scale(30);
+            scale(50);
             isEnlarged[0] = true;
         } else if (dstRect.bottom >= 700 && !isEnlarged[1]) {
-            scale(30);
+            scale(50);
             isEnlarged[1] = true;
         } else if (dstRect.bottom >= 900 && !isEnlarged[2]) {
-            scale(30);
+            scale(50);
             isEnlarged[2] = true;
         }
     }

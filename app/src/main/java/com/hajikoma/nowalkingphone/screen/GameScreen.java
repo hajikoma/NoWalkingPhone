@@ -130,25 +130,23 @@ public class GameScreen extends Screen {
         vib = game.getVibrate();
 
         // Playerのセットアップ
-        Assets.player = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        player = new Player(Assets.player, 400, 280);
+        Assets.player = gra.newPixmap("player/player_ready.png", PixmapFormat.ARGB4444);
+        player = new Player(Assets.player, 500, 500);
 
         // Walkerのセットアップ
-        Assets.walker = gra.newPixmap("chara/chara.png", PixmapFormat.ARGB4444);
-        manager.addWalker(manager.BASIC, new SmaphoWalker("歩きスマホ", 1, 3, 2, "普通なのがとりえ", 2, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.FRIEND, new Walker("おばあさん", 1, 2, 1, "善良な市民。タップ禁止", -5, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.SCHOOL, new SmaphoWalker("歩き小学生", 1, 5, 1, "すばしっこくぶつかりやすい", 3, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.WOMAN, new SmaphoWalker("歩きウーマン", 1, 3, 2, "たちどまったりふらついたり", 3, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.MANIA, new SmaphoWalker("歩きオタク", 2, 2, 3, "とろいがでかくて痛い", 4, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.MONSTER, new SmaphoWalker("歩きモンスター", 3, 3, 2, "予測不能な危険生物", 4, Assets.walker, 400, 280, null));
-        manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 10, 5, "もはやテロリスト", 20, Assets.walker, 400, 280, null));
+        manager.addWalker(manager.BASIC, new SmaphoWalker("歩きスマホ", 1, 3, 2, "普通なのがとりえ", 2, Assets.walker_man, 500, 500, null));
+        manager.addWalker(manager.FRIEND, new Walker("おばあさん", 1, 2, 1, "善良な市民。タップ禁止", -5, Assets.walker_grandma, 500, 500, null));
+        manager.addWalker(manager.SCHOOL, new SmaphoWalker("歩き小学生", 1, 5, 1, "すばしっこくぶつかりやすい", 3, Assets.walker_boy, 500, 500, null));
+        manager.addWalker(manager.WOMAN, new SmaphoWalker("歩き系女子", 1, 3, 2, "たちどまったりふらついたり", 3, Assets.walker_girl, 500, 500, null));
+        manager.addWalker(manager.MANIA, new SmaphoWalker("歩きオタク", 2, 2, 3, "とろいがでかくて痛い", 4, Assets.walker_mania, 500, 500, null));
+        manager.addWalker(manager.MONSTER, new SmaphoWalker("歩き外人さん", 3, 3, 2, "日本に歩きスマホしにきた", 4, Assets.walker_visitor, 500, 500, null));
+        manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 10, 5, "もはやテロリスト", 20, Assets.walker_car, 500, 500, null));
 
         //固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/trim_bg_head.jpg", PixmapFormat.RGB565);
 
         // BGM
         bgm = aud.newMusic("music/me_6777276_Race.mp3");
-//        bgm = aud.newMusic("music/me_9015790_Hoppy-the-Frog--.mp3");
         bgm.setLooping(true);
         bgm.setVolume(0.01f);
 

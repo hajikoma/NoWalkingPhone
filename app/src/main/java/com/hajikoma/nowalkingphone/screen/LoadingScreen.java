@@ -92,6 +92,14 @@ public class LoadingScreen extends Screen {
 		Assets.icon_button	= gra.newPixmap("others/icon_button.png",	PixmapFormat.ARGB4444);
 		Assets.number		= gra.newPixmap("others/number.png",		PixmapFormat.ARGB4444);
 
+		Assets.walker_boy   = gra.newPixmap("walker/walker_boy_right.png", PixmapFormat.ARGB4444);
+		Assets.walker_car   = gra.newPixmap("walker/walker_car_right.png", PixmapFormat.ARGB4444);
+		Assets.walker_girl   = gra.newPixmap("walker/walker_girl_right.png", PixmapFormat.ARGB4444);
+		Assets.walker_grandma   = gra.newPixmap("walker/walker_grandma_right.png", PixmapFormat.ARGB4444);
+		Assets.walker_man   = gra.newPixmap("walker/walker_man_right.png", PixmapFormat.ARGB4444);
+		Assets.walker_mania   = gra.newPixmap("walker/walker_mania_right.png", PixmapFormat.ARGB4444);
+		Assets.walker_visitor   = gra.newPixmap("walker/walker_visitor_right.png", PixmapFormat.ARGB4444);
+
 
 		// サウンドの読み込み(アイテム使用時のサウンドは、trimScreenにて読み込む)
         Assets.voice_amai		= aud.newSound("sound/voice_amai.mp3");

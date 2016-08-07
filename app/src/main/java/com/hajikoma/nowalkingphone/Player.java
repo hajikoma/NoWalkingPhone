@@ -36,7 +36,7 @@ public class Player extends SpriteImage {
     /** 現在位置（当たり判定のある矩形座標） */
     private Point hitArea = new Point(0, NoWalkingPhoneGame.TARGET_WIDTH);
     /** Playerの描画先 */
-    private Rect defaultDstArea = new Rect(290, 1000, 430, 1200);
+    private Rect defaultDstArea = new Rect(220, 950, 500, 1250);
 
 
     /**
@@ -102,9 +102,11 @@ public class Player extends SpriteImage {
         if (actionTime <= 0.3f) {
             drawAction(0, 0);
         } else if (actionTime <= 0.6f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
         } else {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             endAction();
         }
     }
@@ -115,13 +117,17 @@ public class Player extends SpriteImage {
      */
     public void damage() {
         if (actionTime <= 0.3f) {
-            drawAction(2, 0);
+//            drawAction(2, 0);
+            drawAction(0, 0);
         } else if (actionTime <= 0.6f) {
-            drawAction(2, 1);
+//            drawAction(2, 1);
+            drawAction(0, 0);
         } else if (actionTime <= 0.9f) {
-            drawAction(2, 0);
+//            drawAction(2, 0);
+            drawAction(0, 0);
         } else {
-            drawAction(2, 0);
+//            drawAction(2, 0);
+            drawAction(0, 0);
             endAction();
         }
     }
@@ -139,17 +145,23 @@ public class Player extends SpriteImage {
         }
 
         if (actionTime <= 0.2f) {
-            drawAction(1, 0);
+//            drawAction(1, 0);
+            drawAction(0, 0);
         } else if (actionTime <= 0.4f) {
-            drawAction(1, 1);
+//            drawAction(1, 1);
+            drawAction(0, 0);
         } else if (actionTime <= 0.6f) {
-            drawAction(1, 0);
+//            drawAction(1, 0);
+            drawAction(0, 0);
         } else if (actionTime <= 0.8f) {
-            drawAction(1, 1);
+//            drawAction(1, 1);
+            drawAction(0, 0);
         } else if (actionTime <= 1.0f) {
-            drawAction(1, 0);
+//            drawAction(1, 0);
+            drawAction(0, 0);
         } else {
-            drawAction(1, 0);
+//            drawAction(1, 0);
+            drawAction(0, 0);
             hitArea.y = NoWalkingPhoneGame.TARGET_WIDTH;
             resetDstArea();
             endAction();
@@ -169,17 +181,23 @@ public class Player extends SpriteImage {
         }
 
         if (actionTime <= 0.2f) {
-            drawAction(1, 0);
+//            drawAction(1, 0);
+            drawAction(0, 0);
         } else if (actionTime <= 0.4f) {
-            drawAction(1, 1);
+//            drawAction(1, 1);
+            drawAction(0, 0);
         } else if (actionTime <= 0.6f) {
-            drawAction(1, 0);
+//            drawAction(1, 0);
+            drawAction(0, 0);
         } else if (actionTime <= 0.8f) {
-            drawAction(1, 1);
+//            drawAction(1, 1);
+            drawAction(0, 0);
         } else if (actionTime <= 1.0f) {
-            drawAction(1, 0);
+//            drawAction(1, 0);
+            drawAction(0, 0);
         } else {
-            drawAction(1, 0);
+//            drawAction(1, 0);
+            drawAction(0, 0);
             hitArea.x = 0;
             resetDstArea();
             endAction();
@@ -192,13 +210,17 @@ public class Player extends SpriteImage {
      */
     public void smash() {
         if (actionTime <= 0.4f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
         } else if (actionTime <= 0.8f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
         } else if (actionTime <= 1.2f) {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
         } else {
-            drawAction(0, 1);
+//            drawAction(0, 1);
+            drawAction(0, 0);
             endAction();
         }
     }

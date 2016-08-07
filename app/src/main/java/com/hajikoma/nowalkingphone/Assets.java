@@ -23,10 +23,6 @@ public class Assets {
 	public static Pixmap opening_bg;
 	public static Pixmap title_bg;
 	public static Pixmap credit_bg;
-	public static Pixmap course_bg1;
-	public static Pixmap course_bg2;
-	public static Pixmap course_bg3;
-	public static Pixmap item_bg;
 	public static Pixmap data_bg;
 	public static Pixmap trim_bg;
 	public static Pixmap result_bg;
@@ -35,14 +31,16 @@ public class Assets {
 	public static Pixmap icons;
 	public static Pixmap icon_button;
 	public static Pixmap icon_button_result;
-	public static Pixmap icon_hand;
 	public static Pixmap number;
 	;
 	public static Pixmap player;
-	public static Pixmap walker;
-
-	public static Music game;
-	public static Music game2;
+	public static Pixmap walker_boy;
+	public static Pixmap walker_car;
+	public static Pixmap walker_girl;
+	public static Pixmap walker_grandma;
+	public static Pixmap walker_man;
+	public static Pixmap walker_mania;
+	public static Pixmap walker_visitor;
 
 	public static Sound voice_amai;
 	public static Sound voice_nanto;
@@ -66,12 +64,6 @@ public class Assets {
 	public static long[] vibShortRythem;
 	public static long[] vibLongRythem;
 
-	public static Pixmap item_picker1;
-	public static Pixmap item_enhancer1;
-
-	public static DefaultPicker default_picker;
-	public static ArrayList<Item> item_list = new ArrayList<Item>();
-
 	public static Pixmap onomatopee;
 
 	public static HashMap<String, Paint> map_style;
@@ -81,5 +73,4 @@ public class Assets {
 //メモリの使用量が大きく、都度生成するのが望ましくない変数のみここに定義する。
 	/** ユーザーデータ */
 	public static UserData ud;
-
 }
