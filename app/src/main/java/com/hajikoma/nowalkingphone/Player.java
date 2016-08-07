@@ -36,7 +36,7 @@ public class Player extends SpriteImage {
     /** 現在位置（当たり判定のある矩形座標） */
     private Point hitArea = new Point(0, NoWalkingPhoneGame.TARGET_WIDTH);
     /** Playerの描画先 */
-    private Rect defaultDstArea = new Rect(220, 950, 500, 1250);
+    private Rect defaultDstArea = new Rect(220, 900, 500, 1200);
 
 
     /**
@@ -47,7 +47,7 @@ public class Player extends SpriteImage {
      * @param colWidth  visualの中の、一画像の幅
      */
     public Player(Pixmap visual, Integer rowHeight, Integer colWidth) {
-        super(visual, rowHeight, colWidth, new Rect(260, 1000, 460, 1200));
+        super(visual, rowHeight, colWidth, new Rect(220, 900, 500, 1200));
         state = ActionType.WALK;
     }
 

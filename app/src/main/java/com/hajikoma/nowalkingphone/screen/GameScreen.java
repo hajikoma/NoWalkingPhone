@@ -143,7 +143,7 @@ public class GameScreen extends Screen {
         manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 10, 5, "もはやテロリスト", 20, Assets.walker_car, 500, 500, null));
 
         //固有グラフィックの読み込み
-        Assets.trim_bg = gra.newPixmap("others/trim_bg_head.jpg", PixmapFormat.RGB565);
+        Assets.trim_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
 
         // BGM
         bgm = aud.newMusic("music/me_6777276_Race.mp3");
@@ -173,8 +173,8 @@ public class GameScreen extends Screen {
         //共通部分の描画
         gra.drawPixmap(Assets.trim_bg, 0, 0);
         txt.drawText(String.valueOf(sc.level), 20, 100, 200, Assets.map_style.get("score"));
-        txt.drawText(String.valueOf(sc.combo), 20, 220, 200, Assets.map_style.get("score"));
-        drawGraphicalNumber(sc.score, 90, 20, 320, 9);
+        txt.drawText(String.valueOf(sc.combo), 400, 100, 200, Assets.map_style.get("score"));
+        drawGraphicalNumber(sc.score, 90, 20, 220, 9);
         drawLife(player.getInitLife(), player.getDamage());
         drawSmashIcon();
 
@@ -215,7 +215,7 @@ public class GameScreen extends Screen {
                 // Walkerを出現させる
                 if (walkers.size() < maxWalker) {
                     int left = 100 + random.nextInt(AndroidGame.TARGET_WIDTH - 100 - 150);
-                    walkers.add(manager.getWalker(new Rect(left, 300, left + 100, 400)));
+                    walkers.add(manager.getWalker(new Rect(left, 370, left + 100, 470)));
                 }
 
                 // playerの描画
@@ -342,7 +342,7 @@ public class GameScreen extends Screen {
 
         return walker.getState() != Walker.ActionType.CRASH
                 && walker.getState() != Walker.ActionType.VANISH
-                && location.bottom >= 1100 && location.bottom <= 1150
+                && location.bottom >= 1050 && location.bottom <= 1100
                 && location.left >= hitArea.x && location.right <= hitArea.y;
     }
 

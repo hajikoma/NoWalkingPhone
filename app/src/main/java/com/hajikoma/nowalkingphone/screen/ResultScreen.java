@@ -51,7 +51,7 @@ public class ResultScreen extends Screen {
         txt = game.getText();
 
         //固有グラフィックの読み込み
-        Assets.result_bg = gra.newPixmap("others/result_bg.jpg", PixmapFormat.RGB565);
+        Assets.result_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
 
         //データを保存
         Assets.ud.setGameResult(sc);
