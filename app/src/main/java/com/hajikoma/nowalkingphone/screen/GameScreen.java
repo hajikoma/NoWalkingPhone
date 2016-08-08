@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 
+import com.hajikoma.nowalkingphone.AlphaGenerator;
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.Effect;
 import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
@@ -117,8 +118,9 @@ public class GameScreen extends Screen {
     private LinkedHashMap<Double, Sound> onCrash = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onSmash = new LinkedHashMap<>();
 
-    /** アイテムエフェクトに使用する変化するalpha値 */
-    private int[] argb = new int[]{0, 0, 0, 0};
+    /** エフェクトに使用する変化するalpha値 */
+    private AlphaGenerator agLifeWarning = new AlphaGenerator(100, 200, 3);
+    private AlphaGenerator agLifeDanger = new AlphaGenerator(100, 200, 15);
 
 
     /**
@@ -246,12 +248,7 @@ public class GameScreen extends Screen {
                 // WalkerとPlayerの衝突処理
                 for (Walker walker : walkers) {
                     if (isCrash(walker)) {
-                        player.addDamage(walker.getPower());
-                        player.setState(Player.ActionType.DAMAGE);
-                        walker.setState(Walker.ActionType.CRASH);
-                        sc.combo = 0;
-                        lifeReduceEffect.on(new Rect(50, 1150, 300, 1230));
-                        playSoundOnceRandom("onCrash", onCrash, 1.5f);
+                        processCrash(walker);
                     }
                 }
 
@@ -341,6 +338,24 @@ public class GameScreen extends Screen {
                 break;
             //-------------------------------------------------------------------------------------------------
 
+        }
+    }
+
+
+    /** 衝突時の一連の処理 */
+    private void processCrash(Walker walker) {
+        int power = walker.getPower();
+
+        player.addDamage(power);
+        player.setState(Player.ActionType.DAMAGE);
+        walker.setState(Walker.ActionType.CRASH);
+        sc.combo = 0;
+        lifeReduceEffect.on(new Rect(50, 1150, 300, 1230));
+        playSoundOnceRandom("onCrash", onCrash, 1.5f);
+        if (power >= 5) {
+            vib.vibrate(Assets.vibLongOnce);
+        } else {
+            vib.vibrate(Assets.vibShortOnce);
         }
     }
 
@@ -451,9 +466,17 @@ public class GameScreen extends Screen {
         int top = 1150;
         int width = 250;
         int height = 80;
+        int warningZone = initLife / 2;
+        int dangerZone = initLife * 4 / 5;
 
         // lifeゲージ背景
-        gra.drawRoundRect(left, top, width, height, 10.0f, Color.LTGRAY);
+        if (damage < warningZone) {
+            gra.drawRoundRect(left, top, width, height, 10.0f, Color.LTGRAY);
+        } else if (damage < dangerZone) {
+            gra.drawRoundRect(left, top, width, height, 10.0f, Color.argb(agLifeWarning.getAlpha(), 255, 0, 0));
+        } else {
+            gra.drawRoundRect(left, top, width, height, 10.0f, Color.argb(agLifeDanger.getAlpha(), 255, 0, 0));
+        }
 
         // lifeゲージ残り
         left += 5;
@@ -461,9 +484,9 @@ public class GameScreen extends Screen {
         width -= 10;
         height -= 10;
         int color;
-        if (damage < initLife / 2) {
+        if (damage < warningZone) {
             color = Color.GREEN;
-        } else if (damage < initLife * 4 / 5) {
+        } else if (damage < dangerZone) {
             color = Color.YELLOW;
         } else {
             color = Color.RED;

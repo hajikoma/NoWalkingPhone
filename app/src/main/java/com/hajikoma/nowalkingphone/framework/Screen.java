@@ -265,18 +265,4 @@ public abstract class Screen {
             }
         }
     }
-
-
-    /**
-     * チュートリアル画面の背景を描画する
-     *
-     * @param gra Graphicインスタンス
-     * @param txt Textインスタンス
-     */
-    public static void drawTutorialBG(Graphics gra, Text txt) {
-        gra.drawRoundRect(30, 240, 660, 800, 15.0f, Color.argb(250, 255, 255, 255));
-        txt.drawText("～チュートリアル～", 140, 320, 600, Assets.map_style.get("title"));
-        txt.drawText("→画面タッチで進む", 400, 1010, 400, Assets.map_style.get("general"));
-    }
-
 }
