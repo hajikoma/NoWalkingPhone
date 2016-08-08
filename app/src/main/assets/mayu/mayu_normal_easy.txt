@@ -1,9 +1,0 @@
-標準のまゆ毛セット
-name(S),explain(S),visual(S),rare(f),width(i),maxLength(i),rootLength(i),vitality(i),weakness(i),lifeSpan(f),point(i)
-ふつうの毛,-,mayu_normal,100,50,210,40,20,30,20.0f,10
-早い毛,-,mayu_normal,15,50,210,40,40,35,15.0f,15
-遅い毛,-,mayu_normal,15,50,210,40,10,25,25.0f,15
-強い毛,-,mayu_normal,15,50,210,40,25,20,20.0f,15
-弱い毛,-,mayu_normal,15,50,210,40,20,40,20.0f,15
-白髪,-,mayu_white,10,50,210,40,15,35,20.0f,20
-高得点,-,mayu_normal,5,50,210,40,15,30,10.0f,30
