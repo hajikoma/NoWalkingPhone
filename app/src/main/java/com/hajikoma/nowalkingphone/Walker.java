@@ -147,7 +147,7 @@ public class Walker extends SpriteImage implements Cloneable {
      * 歩く
      */
     protected void walk() {
-        if (dstRect.top <= AndroidGame.TARGET_HEIGHT) {
+        if (dstRect.top <= 1200) {
             if (actionTime <= 0.3f) {
 //                drawAction(0, 1);
                 drawAction(0, 0);
@@ -165,7 +165,7 @@ public class Walker extends SpriteImage implements Cloneable {
             }
 
             // たまに立ち止まる
-            if (Math.random() > 0.999) {
+            if (Math.random() > 0.999f) {
                 setState(ActionType.STOP);
             }
         } else {

@@ -32,7 +32,7 @@ public class SmaphoWalker extends Walker {
      */
     @Override
     protected void walk() {
-        if (dstRect.top <= AndroidGame.TARGET_HEIGHT) {
+        if (dstRect.top <= 1200) {
             if (actionTime <= 0.3f) {
 //                drawAction(0, 1);
                 drawAction(0, 0);

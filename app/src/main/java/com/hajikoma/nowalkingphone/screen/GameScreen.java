@@ -117,6 +117,7 @@ public class GameScreen extends Screen {
     private LinkedHashMap<Double, Sound> onFling = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onCrash = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onSmash = new LinkedHashMap<>();
+    private LinkedHashMap<Double, Sound> onLvUpMany = new LinkedHashMap<>();
 
     /** エフェクトに使用する変化するalpha値 */
     private AlphaGenerator agLifeWarning = new AlphaGenerator(100, 200, 3);
@@ -160,7 +161,7 @@ public class GameScreen extends Screen {
         bgm.setLooping(true);
         bgm.setVolume(0.01f);
 
-        // 効果音
+        // 効果音セット
         onTap.put(0.5, Assets.voice_soko);
         onTap.put(1.0, Assets.punchMiddle2);
         onFling.put(0.5, Assets.voice_mieru);
@@ -169,6 +170,8 @@ public class GameScreen extends Screen {
         onSmash.put(1.0, Assets.bomb1);
         onCrash.put(0.5, Assets.voice_nanto);
         onCrash.put(1.0, Assets.punchMiddle2);
+        onLvUpMany.put(0.5, Assets.peoplePerformanceCheer1);
+        onLvUpMany.put(1.0, Assets.peopleStadiumCheer1);
 
         changeScene(Scene.READY);
     }
@@ -228,21 +231,9 @@ public class GameScreen extends Screen {
                     walkers.add(manager.getWalker(new Rect(left, 370, left + 100, 470)));
                 }
 
-                // playerの描画
+                // 描画処理
                 player.action(deltaTime);
-                // bottomの値が小さい（背面にいる）Walkerから描画
-                int size = walkers.size();
-                HashMap<Integer, Integer> bottomList = new HashMap<>();
-                for (int wi = 0; wi < size; wi++) {
-                    bottomList.put(walkers.get(wi).getLocation().bottom, wi);
-                }
-                ArrayList<Integer> keyList = new ArrayList<>(bottomList.keySet());
-                Collections.sort(keyList);//昇順
-                for (int key : keyList) {
-                    walkers.get(bottomList.get(key)).action(deltaTime);
-                }
-
-                // Effectの描画
+                actWalkerBehindToForward(deltaTime);
                 lifeReduceEffect.play(deltaTime);
 
                 // WalkerとPlayerの衝突処理
@@ -283,7 +274,7 @@ public class GameScreen extends Screen {
                                         lvUp();
                                     }
                                 }
-                                playSoundOnceRandom("onSmash", onSmash, 1.5f);
+                                playSoundOnceRandom("onSmash", onSmash, 1.2f);
                                 remainSmash--;
                                 break;
                             }
@@ -342,6 +333,21 @@ public class GameScreen extends Screen {
     }
 
 
+    /** bottomの値が小さい（背面にいる）Walkerから描画する */
+    private void actWalkerBehindToForward(float deltaTime) {
+        int size = walkers.size();
+        HashMap<Integer, Integer> bottomList = new HashMap<>();
+        for (int wi = 0; wi < size; wi++) {
+            bottomList.put(walkers.get(wi).getLocation().bottom, wi);
+        }
+        ArrayList<Integer> keyList = new ArrayList<>(bottomList.keySet());
+        Collections.sort(keyList);//昇順
+        for (int key : keyList) {
+            walkers.get(bottomList.get(key)).action(deltaTime);
+        }
+    }
+
+
     /** 衝突時の一連の処理 */
     private void processCrash(Walker walker) {
         int power = walker.getPower();
@@ -387,33 +393,11 @@ public class GameScreen extends Screen {
             maxWalker++;
         }
         if (sc.level % 25 == 0) {
-            playSound(Assets.peoplePerformanceCheer1, 0.8f);
+            playSoundRandom(onLvUpMany, 0.7f);
             if (remainSmash < MAX_SMASH) {
                 remainSmash++;
             }
         }
-    }
-
-
-    /**
-     * 効果音が再生されていない場合、渡された効果音セットから、ランダムで効果音を再生する。
-     * 設定でミュートになっている場合は再生しない。
-     * 効果音が再生されているかどうかは、再生済み効果音の種類のStringリストex)["onTap", "onFling"]を参照している。
-     *
-     * @param onWhat   再生する効果音の種類　ex) onTap, onSmash
-     * @param soundMap 再生する効果音の、キー：再生基準値（0.0～1.0の間）　値：Soundインスタンス のMAP
-     * @param volume   音量
-     * @return 再生したかどうか
-     */
-    public boolean playSoundOnceRandom(String onWhat, LinkedHashMap<Double, Sound> soundMap, float volume) {
-        if (playedSounds.indexOf(onWhat) == -1) {
-            if (playSoundRandom(soundMap, volume)) {
-                playedSounds.add(onWhat);
-                return true;
-            }
-        }
-
-        return false;
     }
 
 
@@ -463,7 +447,7 @@ public class GameScreen extends Screen {
     /** 残りlifeゲージを描画する */
     private void drawLife(int initLife, int damage) {
         int left = 50;
-        int top = 1150;
+        int top = 1185;
         int width = 250;
         int height = 80;
         int warningZone = initLife / 2;
@@ -501,5 +485,27 @@ public class GameScreen extends Screen {
         for (int ii = 0; ii < remainSmash; ii++) {
             gra.drawPixmap(Assets.icon_button, SMASH_DST_RECT_ARR[ii], srcRect);
         }
+    }
+
+
+    /**
+     * 効果音が再生されていない場合、渡された効果音セットから、ランダムで効果音を再生する。
+     * 設定でミュートになっている場合は再生しない。
+     * 効果音が再生されているかどうかは、再生済み効果音の種類のStringリストex)["onTap", "onFling"]を参照している。
+     *
+     * @param onWhat   再生する効果音の種類　ex) onTap, onSmash
+     * @param soundMap 再生する効果音の、キー：再生基準値（0.0～1.0の間）　値：Soundインスタンス のMAP
+     * @param volume   音量
+     * @return 再生したかどうか
+     */
+    public boolean playSoundOnceRandom(String onWhat, LinkedHashMap<Double, Sound> soundMap, float volume) {
+        if (playedSounds.indexOf(onWhat) == -1) {
+            if (playSoundRandom(soundMap, volume)) {
+                playedSounds.add(onWhat);
+                return true;
+            }
+        }
+
+        return false;
     }
 }
