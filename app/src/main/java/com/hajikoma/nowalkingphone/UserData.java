@@ -28,7 +28,7 @@ public class UserData implements Serializable {
 	private int beatCount = 0;
 
     /** 設定の状況（ミュート） */
-    private boolean mute = true;
+    private boolean mute = false;
     /** 設定の状況（バイブレーション） */
 	private boolean vibe = true;
 

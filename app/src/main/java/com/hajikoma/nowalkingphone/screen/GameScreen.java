@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
+import com.hajikoma.nowalkingphone.Effect;
 import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.Player;
 import com.hajikoma.nowalkingphone.Score;
@@ -100,6 +101,10 @@ public class GameScreen extends Screen {
     /** Walkerタップ時の、当たり判定の拡大値 */
     private final int TAP_EXPANTION = 30;
 
+    /** Effect */
+    private Effect lifeReduceEffect;
+    private Effect smashEffect;
+
     /** BGM */
     private Music bgm;
 
@@ -142,8 +147,11 @@ public class GameScreen extends Screen {
         manager.addWalker(manager.MONSTER, new SmaphoWalker("歩き外人さん", 3, 3, 2, "日本に歩きスマホしにきた", 4, Assets.walker_visitor, 500, 500, null));
         manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 10, 5, "もはやテロリスト", 20, Assets.walker_car, 500, 500, null));
 
-        //固有グラフィックの読み込み
+        // 固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
+
+        // Effect
+        lifeReduceEffect = new Effect(Assets.onomatopee, 180, new float[]{0.25f, 0.25f, 0.25f, 0.25f});
 
         // BGM
         bgm = aud.newMusic("music/me_6777276_Race.mp3");
@@ -232,6 +240,9 @@ public class GameScreen extends Screen {
                     walkers.get(bottomList.get(key)).action(deltaTime);
                 }
 
+                // Effectの描画
+                lifeReduceEffect.play(deltaTime);
+
                 // WalkerとPlayerの衝突処理
                 for (Walker walker : walkers) {
                     if (isCrash(walker)) {
@@ -239,6 +250,7 @@ public class GameScreen extends Screen {
                         player.setState(Player.ActionType.DAMAGE);
                         walker.setState(Walker.ActionType.CRASH);
                         sc.combo = 0;
+                        lifeReduceEffect.on(new Rect(50, 1150, 300, 1230));
                         playSoundOnceRandom("onCrash", onCrash, 1.5f);
                     }
                 }

@@ -88,6 +88,7 @@ public class LoadingScreen extends Screen {
 
 
 		//共有グラフィックの読み込み
+		Assets.onomatopee		= gra.newPixmap("others/onomatopee.png",			PixmapFormat.ARGB4444);
 		Assets.icons		= gra.newPixmap("others/icons.png",			PixmapFormat.ARGB4444);
 		Assets.icon_button	= gra.newPixmap("others/icon_button.png",	PixmapFormat.ARGB4444);
 		Assets.number		= gra.newPixmap("others/number.png",		PixmapFormat.ARGB4444);
