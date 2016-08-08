@@ -158,7 +158,7 @@ public class GameScreen extends Screen {
         onSmash.put(0.5, Assets.magicElectron2);
         onSmash.put(1.0, Assets.bomb1);
         onCrash.put(0.5, Assets.voice_nanto);
-        onCrash.put(1.0, Assets.voice_amai);
+        onCrash.put(1.0, Assets.punchMiddle2);
 
         changeScene(Scene.READY);
     }
@@ -358,6 +358,9 @@ public class GameScreen extends Screen {
         }
         if (sc.level % 10 == 0) {
             maxWalker++;
+        }
+        if (sc.level % 25 == 0) {
+            playSound(Assets.peoplePerformanceCheer1, 0.8f);
             if (remainSmash < MAX_SMASH) {
                 remainSmash++;
             }
