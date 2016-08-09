@@ -1,114 +1,255 @@
 package com.hajikoma.nowalkingphone;
 
-import java.io.Serializable;
-
-import com.hajikoma.nowalkingphone.item.DefaultPicker;
+import android.content.SharedPreferences;
 
 /**
- * ユーザーのデータを格納するクラス。 データの保存時にはこのクラスを直列化する。
+ * ユーザーのデータを格納するクラス。ユーザーデータはこのクラスで一元管理する。
+ * <p/>
  * データがおかしくなるとユーザーは大変なストレスを感じるため、このクラスの設計は データの安全性を優先して設計する。
- * ・シングルトンなクラスとする（インスタンスの取得はgetUserDataメソッドで行う）
+ * ・シングルトンデザイン
  * ・全てのフィールド変数をカプセル化し、規定範囲外の値が入らないようにする
- * ・staticな列挙型による定数管理 ・例外処理の追加
- * またこのクラスインスタンスへのアクセス数は極力少ない方が良い。
+ * ・staticな列挙型による定数管理
+ * ・例外処理の追加
  */
-public class UserData implements Serializable {
+public class UserData {
 
-	/** serialVersionUID(YYYYMMDDHHMM+L) */
-	private static final long serialVersionUID = 201502212356L;
+    /** SharedPreferenceのキー：ユーザーID */
+    public static final String PREF_STR_USER_ID = "user_id";
+    /** SharedPreferenceのキー：ユーザー名 */
+    public static final String PREF_STR_USER_NAME = "user_name";
+    /** SharedPreferenceのキー：チュートリアル見たか */
+    public static final String PREF_BOOL_TUTORIAL_SHOW = "tutorial_show";
+    /** SharedPreferenceのキー：レビューしたか */
+    public static final String PREF_BOOL_REVIEW = "review";
+    /** SharedPreferenceのキー：起動回数 */
+    public static final String PREF_INT_LAUNCH_TIME = "launch_time";
+    /** SharedPreferenceのキー：ゲームした回数 */
+    public static final String PREF_INT_PLAY_TIME = "play_time";
+    /** SharedPreferenceのキー：最後に発生した例外から、ゲームした回数 */
+    public static final String PREF_INT_EXCEPTION_BACKWARD = "exception_backward";
+    /** SharedPreferenceのキー：ミュートかどうか */
+    public static final String PREF_BOOL_MUTE = "mute";
+    /** SharedPreferenceのキー：バイブするかどうか */
+    public static final String PREF_BOOL_VIBE = "vibe";
+    /** SharedPreferenceのキー：個人スコア1位 */
+    public static final String PREF_INT_FIRST_SCORE = "first_score";
+    /** SharedPreferenceのキー：個人スコア2位 */
+    public static final String PREF_INT_SECOND_SCORE = "second_score";
+    /** SharedPreferenceのキー：個人スコア3位 */
+    public static final String PREF_INT_THIRD_SCORE = "third_score";
+    /** SharedPreferenceのキー：合計スコア */
+    public static final String PREF_LONG_GRAND_SCORE = "grand_score";
+
+    /** ユーザーId */
+    private String userId = "";
+    /** ユーザー名 */
+    private String userName = "";
+    /** チュートリアル見たか */
+    private boolean tutorialShow = false;
+    /** レビューしたか */
+    private boolean review = false;
+    /** 起動回数 */
+    private int launchTime = 0;
+    /** ゲームした回数 */
+    private int playTime = 0;
+    /** 最後に発生した例外から、ゲームした回数 */
+    private int exceptionBackward = 0;
+    /** 設定の状況（ミュート） */
+    private boolean mute = false;
+    /** 設定の状況（バイブレーション） */
+    private boolean vibe = true;
+
+    /** 個人スコア1位 */
+    private int firstScore = 0;
+    /** 個人スコア2位 */
+    private int secondScore = 0;
+    /** 個人スコア3位 */
+    private int thirdScore = 0;
+    /** 合計スコア */
+    private long grandScore = 0L;
 
     /** 唯一のUserDataインスタンス */
     private static UserData ud = new UserData();
 
-    /** トータルポイント */
-    private int totalPoint = 0;
-    /** 最大コンボ数 */
-    private int maxCombo = 0;
-    /** 倒したWalkerの数 */
-	private int beatCount = 0;
-
-    /** 設定の状況（ミュート） */
-    private boolean mute = false;
-    /** 設定の状況（バイブレーション） */
-	private boolean vibe = true;
-
 
     /**
-	 * コンストラクタ。このクラスはシングルトンなクラスなので、このメソッドは外部から利用できない。
+     * コンストラクタ。このクラスはシングルトンなクラスなので、このメソッドは外部から利用できない。
      * ミッションとアイテムの初期化を行う。
      */
-    private UserData(){
+    private UserData() {
     }
 
 
     /** UserDataインスタンスを取得する。複数回このメソッドを実行しても返されるインスタンスは同一である。 */
-    public static UserData getUserData(){
+    public static UserData getUserData() {
         return ud;
     }
 
 
-    /**
-     * ゲームの結果を格納する。
-     *
-     * @param sc Scoreインスタンス
-     */
-    public void setGameResult(Score sc) {
-        totalPoint += sc.score;
-
-        if(maxCombo < sc.maxCombo){
-            maxCombo = sc.maxCombo;
+    /** UserDataインスタンス内のすべての値をSharedPreferenceから読み込む */
+    public boolean getAllFromPref(SharedPreferences preference) {
+        try {
+            userId = preference.getString(PREF_STR_USER_ID, userId);
+            userName = preference.getString(PREF_STR_USER_NAME, userName);
+            tutorialShow = preference.getBoolean(PREF_BOOL_TUTORIAL_SHOW, tutorialShow);
+            review = preference.getBoolean(PREF_BOOL_REVIEW, review);
+            launchTime = preference.getInt(PREF_INT_LAUNCH_TIME, launchTime);
+            playTime = preference.getInt(PREF_INT_PLAY_TIME, playTime);
+            exceptionBackward = preference.getInt(PREF_INT_EXCEPTION_BACKWARD, exceptionBackward);
+            mute = preference.getBoolean(PREF_BOOL_MUTE, mute);
+            vibe = preference.getBoolean(PREF_BOOL_VIBE, vibe);
+            firstScore = preference.getInt(PREF_INT_FIRST_SCORE, firstScore);
+            secondScore = preference.getInt(PREF_INT_SECOND_SCORE, secondScore);
+            thirdScore = preference.getInt(PREF_INT_THIRD_SCORE, thirdScore);
+            grandScore = preference.getLong(PREF_LONG_GRAND_SCORE, grandScore);
+        } catch (ExceptionInInitializerError e) {
+            e.getCause().printStackTrace();
+            return false;
         }
 
-        beatCount += sc.beatCount;
+        return true;
     }
 
 
+    /** UserDataインスタンス内のすべての値を保存する */
+    public void saveAllToPref(SharedPreferences preference) {
+        SharedPreferences.Editor editor = preference.edit();
 
-    public int getTotalPoint() {
-        return totalPoint;
+        editor.putString(PREF_STR_USER_ID, userId);
+        editor.putString(PREF_STR_USER_NAME, userName);
+        editor.putBoolean(PREF_BOOL_TUTORIAL_SHOW, tutorialShow);
+        editor.putBoolean(PREF_BOOL_REVIEW, review);
+        editor.putInt(PREF_INT_LAUNCH_TIME, launchTime);
+        editor.putInt(PREF_INT_PLAY_TIME, playTime);
+        editor.putInt(PREF_INT_EXCEPTION_BACKWARD, exceptionBackward);
+        editor.putBoolean(PREF_BOOL_MUTE, mute);
+        editor.putBoolean(PREF_BOOL_VIBE, vibe);
+        editor.putInt(PREF_INT_FIRST_SCORE, firstScore);
+        editor.putInt(PREF_INT_SECOND_SCORE, secondScore);
+        editor.putInt(PREF_INT_THIRD_SCORE, thirdScore);
+        editor.putLong(PREF_LONG_GRAND_SCORE, grandScore);
+
+        editor.commit();
     }
 
-    public void setTotalPoint(int totalPoint) {
-        this.totalPoint = totalPoint;
+
+    public String getUserId() {
+        return userId;
     }
 
-    public int getBeatCount() {
-        return beatCount;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public void setBeatCount(int beatCount) {
-        this.beatCount = beatCount;
+    public String getUserName() {
+        return userName;
     }
 
-    public int getMaxCombo() {
-        return maxCombo;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public void setMaxCombo(int maxCombo) {
-        this.maxCombo = maxCombo;
+    public boolean isTutorialShow() {
+        return tutorialShow;
     }
 
-	public boolean isMute() {
-		return mute;
-	}
+    public void setTutorialShow(boolean tutorialShow) {
+        this.tutorialShow = tutorialShow;
+    }
 
-	public void mute() {
-		mute = true;
-	}
+    public boolean isReview() {
+        return review;
+    }
 
-	public void unMute() {
-		mute = false;
-	}
+    public void setReview(boolean review) {
+        this.review = review;
+    }
 
-	public boolean isVibeOn() {
-		return vibe;
-	}
+    public int getLaunchTime() {
+        return launchTime;
+    }
 
-	public void vibeOn() {
-		vibe = true;
-	}
+    public void setLaunchTime(int launchTime) {
+        this.launchTime = launchTime;
+    }
 
-	public void vibeOff() {
-		vibe = false;
-	}
+    public int getPlayTime() {
+        return playTime;
+    }
+
+    public void setPlayTime(int playTime) {
+        this.playTime = playTime;
+    }
+
+    public int getExceptionBackward() {
+        return exceptionBackward;
+    }
+
+    public void setExceptionBackward(int exceptionBackward) {
+        this.exceptionBackward = exceptionBackward;
+    }
+
+    public boolean isMute() {
+        return mute;
+    }
+
+    public void setMute(boolean mute) {
+        this.mute = mute;
+    }
+
+    public boolean isVibe() {
+        return vibe;
+    }
+
+    public void setVibe(boolean vibe) {
+        this.vibe = vibe;
+    }
+
+    public int getFirstScore() {
+        return firstScore;
+    }
+
+    public void setFirstScore(int firstScore) {
+        this.firstScore = firstScore;
+    }
+
+    public int getSecondScore() {
+        return secondScore;
+    }
+
+    public void setSecondScore(int secondScore) {
+        this.secondScore = secondScore;
+    }
+
+    public int getThirdScore() {
+        return thirdScore;
+    }
+
+    public void setThirdScore(int thirdScore) {
+        this.thirdScore = thirdScore;
+    }
+
+    public long getGrandScore() {
+        return grandScore;
+    }
+
+    public void setGrandScore(long grandScore) {
+        this.grandScore = grandScore;
+    }
+
+    public void mute() {
+        mute = true;
+    }
+
+    public void unMute() {
+        mute = false;
+    }
+
+    public void vibeOn() {
+        vibe = true;
+    }
+
+    public void vibeOff() {
+        vibe = false;
+    }
 }

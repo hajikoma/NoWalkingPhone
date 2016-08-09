@@ -6,7 +6,7 @@ import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.Score;
-import com.hajikoma.nowalkingphone.Settings;
+import com.hajikoma.nowalkingphone.UserData;
 import com.hajikoma.nowalkingphone.framework.Game;
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
@@ -50,12 +50,25 @@ public class ResultScreen extends Screen {
         gra = game.getGraphics();
         txt = game.getText();
 
+        UserData ud = Assets.ud;
+
         //固有グラフィックの読み込み
         Assets.result_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
 
         //データを保存
-        Assets.ud.setGameResult(sc);
-        Settings.save(game.getFileIO(), Assets.ud);
+        if (sc.score >= ud.getFirstScore()) {
+            ud.setThirdScore(ud.getSecondScore());
+            ud.setSecondScore(ud.getFirstScore());
+            ud.setFirstScore(sc.score);
+        } else if (sc.score >= ud.getSecondScore()) {
+            ud.setThirdScore(ud.getSecondScore());
+            ud.setSecondScore(sc.score);
+        } else if (sc.score >= ud.getThirdScore()) {
+            ud.setThirdScore(sc.score);
+        }
+        Assets.ud.setPlayTime(Assets.ud.getPlayTime() + 1);
+        Assets.ud.setGrandScore(Assets.ud.getGrandScore() + sc.score);
+        Assets.ud.saveAllToPref(getSharedPreference());
     }
 
     @Override
@@ -107,7 +120,6 @@ public class ResultScreen extends Screen {
     @Override
     public void dispose() {
         Assets.result_bg = null;
-        Assets.icon_button_result = null;
     }
 
     /** 効果音を一度だけ再生するヘルパー */

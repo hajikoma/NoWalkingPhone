@@ -8,8 +8,6 @@ import android.graphics.Paint;
 import com.hajikoma.nowalkingphone.framework.Music;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
 import com.hajikoma.nowalkingphone.framework.Sound;
-import com.hajikoma.nowalkingphone.item.DefaultPicker;
-import com.hajikoma.nowalkingphone.item.Item;
 
 /**
  * Assetsフォルダのリソースを格納する変数のみで構成され、リソースの利用方法を一元化している。
@@ -28,11 +26,9 @@ public class Assets {
 	public static Pixmap result_bg;
 
 	public static Pixmap settings;
-	public static Pixmap icons;
-	public static Pixmap icon_button;
-	public static Pixmap icon_button_result;
+	public static Pixmap icon_hand;
 	public static Pixmap number;
-	;
+
 	public static Pixmap player;
 	public static Pixmap walker_boy;
 	public static Pixmap walker_car;

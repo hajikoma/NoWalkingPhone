@@ -3,17 +3,13 @@ package com.hajikoma.nowalkingphone.framework;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.graphics.Color;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public abstract class Screen {
     protected final Game game;
@@ -36,37 +32,152 @@ public abstract class Screen {
     public abstract String toString();
 
 
+    /** SharedPreferencesインスタンスを取得する */
+    public SharedPreferences getSharedPreference() {
+        return ((AndroidGame) game).getSharedPreferences("NoWalkingPhone", Context.MODE_PRIVATE);
+    }
+
     /**
-     * boolean型のSharedPreferencesの値を調べる。
+     * String型のSharedPreferencesの値を取得する。
      *
-     * @param preferenceName 調べるPreferenceの名前
-     * @return 指定のPreferenceのboolean値。指定のPreferenceが存在しない場合は常にfalse
+     * @param preferenceName Preferenceのキー名
+     * @return Preferenceの値。Preferenceの取得に失敗した場合""
      */
-    public boolean checkPreferenceState(String preferenceName) {
-        SharedPreferences preference = ((AndroidGame) game).getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
+    public String getStringFromPref(String preferenceName) {
         try {
-            if (preference.getBoolean(preferenceName, false) == false) {
-                return false;
-            } else {
-                return true;
-            }
+            return getSharedPreference().getString(preferenceName, "");
         } catch (ExceptionInInitializerError e) {
             e.getCause().printStackTrace();
+            return "";
         }
-        return false;
+    }
+
+
+    /**
+     * Float型のSharedPreferencesの値を取得する。
+     *
+     * @param preferenceName Preferenceのキー名
+     * @return Preferenceの値。Preferenceの取得に失敗した場合0.0f
+     */
+    public float getFloatFromPref(String preferenceName) {
+        try {
+            return getSharedPreference().getFloat(preferenceName, 0.0f);
+        } catch (ExceptionInInitializerError e) {
+            e.getCause().printStackTrace();
+            return 0.0f;
+        }
+    }
+
+
+    /**
+     * Int型のSharedPreferencesの値を取得する。
+     *
+     * @param preferenceName Preferenceのキー名
+     * @return Preferenceの値。Preferenceの取得に失敗した場合0
+     */
+    public int getIntFromPref(String preferenceName) {
+        try {
+            return getSharedPreference().getInt(preferenceName, 0);
+        } catch (ExceptionInInitializerError e) {
+            e.getCause().printStackTrace();
+            return 0;
+        }
+    }
+
+
+    /**
+     * Long型のSharedPreferencesの値を取得する。
+     *
+     * @param preferenceName Preferenceのキー名
+     * @return Preferenceの値。Preferenceの取得に失敗した場合0L
+     */
+    public long getLongFromPref(String preferenceName) {
+        try {
+            return getSharedPreference().getLong(preferenceName, 0L);
+        } catch (ExceptionInInitializerError e) {
+            e.getCause().printStackTrace();
+            return 0L;
+        }
+    }
+
+
+    /**
+     * Boolean型のSharedPreferencesの値を取得する。
+     *
+     * @param preferenceName Preferenceのキー名
+     * @return Preferenceの値。Preferenceの取得に失敗した場合false
+     */
+    public boolean getBoolFromPref(String preferenceName) {
+        try {
+            return getSharedPreference().getBoolean(preferenceName, false);
+        } catch (ExceptionInInitializerError e) {
+            e.getCause().printStackTrace();
+            return false;
+        }
+    }
+
+
+    /**
+     * String型のSharedPreferencesの値を変更する。
+     *
+     * @param preferenceName Preferenceのキー名
+     * @param val            Preferenceに格納する値
+     */
+    public void setStringToPref(String preferenceName, String val) {
+        Editor editor = getSharedPreference().edit();
+        editor.putString(preferenceName, val);
+        editor.commit();
+    }
+
+
+    /**
+     * float型のSharedPreferencesの値を変更する。
+     *
+     * @param preferenceName Preferenceのキー名
+     * @param val            Preferenceに格納する値
+     */
+    public void setFloatToPref(String preferenceName, float val) {
+        Editor editor = getSharedPreference().edit();
+        editor.putFloat(preferenceName, val);
+        editor.commit();
+    }
+
+
+    /**
+     * int型のSharedPreferencesの値を変更する。
+     *
+     * @param preferenceName Preferenceのキー名
+     * @param val            Preferenceに格納する値
+     */
+    public void setIntToPref(String preferenceName, int val) {
+        Editor editor = getSharedPreference().edit();
+        editor.putInt(preferenceName, val);
+        editor.commit();
+    }
+
+
+    /**
+     * long型のSharedPreferencesの値を変更する。
+     *
+     * @param preferenceName Preferenceのキー名
+     * @param val            Preferenceに格納する値
+     */
+    public void setLongToPref(String preferenceName, long val) {
+        Editor editor = getSharedPreference().edit();
+        editor.putLong(preferenceName, val);
+        editor.commit();
     }
 
 
     /**
      * boolean型のSharedPreferencesの値を変更する。
      *
-     * @param preferenceName 対象のPreferenceの名前
-     * @param switchTo       対象のPreferenceに格納するboolean値
+     * @param preferenceName Preferenceのキー名
+     * @param val            Preferenceに格納する値
      */
-    public void switchPreferenceFlag(String preferenceName, boolean switchTo) {
-        SharedPreferences preference = ((AndroidGame) game).getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
-        Editor editor = preference.edit();
-        editor.putBoolean(preferenceName, switchTo);
+    public void setBoolToPref(String preferenceName, boolean val) {
+        Editor editor = getSharedPreference().edit();
+        editor.putBoolean(preferenceName, val);
         editor.commit();
     }
 
@@ -153,14 +264,14 @@ public abstract class Screen {
      * 渡された効果音セットから、ランダムで効果音を再生する。
      * 設定でミュートになっている場合は再生しない。
      *
-     * @param soundMap  再生する効果音の、キー：再生基準値（0.0～1.0の間）　値：Soundインスタンス のMAP
-     * @param volume 音量
+     * @param soundMap 再生する効果音の、キー：再生基準値（0.0～1.0の間）　値：Soundインスタンス のMAP
+     * @param volume   音量
      * @return 再生した場合true、ミュートで再生しなかった場合false
      */
     public static boolean playSoundRandom(LinkedHashMap<Double, Sound> soundMap, float volume) {
         double rand = Math.random();
-        for (Double key: soundMap.keySet()){
-            if(rand < key){
+        for (Double key : soundMap.keySet()) {
+            if (rand < key) {
                 return playSound(soundMap.get(key), volume);
             }
         }
@@ -195,7 +306,7 @@ public abstract class Screen {
      * @return 振動させた場合true、バイブOFFにより振動させなかった場合false
      */
     public static boolean doVibrate(Vibrate vib, int milliseconds) {
-        if (Assets.ud.isVibeOn()) {
+        if (Assets.ud.isVibe()) {
             vib.vibrate(milliseconds);
             return true;
         } else {
@@ -213,7 +324,7 @@ public abstract class Screen {
      * @return 振動させた場合true、バイブOFFにより振動させなかった場合false
      */
     public static boolean doVibrate(Vibrate vib, long[] pattern, int repeat) {
-        if (!Assets.ud.isVibeOn()) {
+        if (!Assets.ud.isVibe()) {
             return false;
         } else {
             vib.vibrate(pattern, repeat);
@@ -244,7 +355,7 @@ public abstract class Screen {
             // 表示指定,桁数に数値の長さが満たない場合、足りない分だけ描画位置をオフセット
             if (digit <= maxDigit - numStr.length()) {
                 offsetX += atWidthPx;
-                if((maxDigit - digit) % 3 == 0){
+                if ((maxDigit - digit) % 3 == 0) {
                     offsetX += atHeightPx / 3;    //カンマの解像度は10px*40pxで、数字の横幅/3
                 }
                 continue;

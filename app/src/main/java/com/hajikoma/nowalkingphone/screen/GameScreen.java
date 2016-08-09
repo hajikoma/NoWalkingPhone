@@ -359,9 +359,9 @@ public class GameScreen extends Screen {
         lifeReduceEffect.on(new Rect(50, 1150, 300, 1230));
         playSoundOnceRandom("onCrash", onCrash, 1.5f);
         if (power >= 5) {
-            vib.vibrate(Assets.vibLongOnce);
+            doVibrate(vib, Assets.vibLongOnce);
         } else {
-            vib.vibrate(Assets.vibShortOnce);
+            doVibrate(vib, Assets.vibShortOnce);
         }
     }
 
@@ -483,7 +483,7 @@ public class GameScreen extends Screen {
     private void drawSmashIcon() {
         Rect srcRect = new Rect(0, 0, 200, 200);
         for (int ii = 0; ii < remainSmash; ii++) {
-            gra.drawPixmap(Assets.icon_button, SMASH_DST_RECT_ARR[ii], srcRect);
+            gra.drawPixmap(Assets.icon_hand, SMASH_DST_RECT_ARR[ii], srcRect);
         }
     }
 
