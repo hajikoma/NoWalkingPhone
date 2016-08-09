@@ -5,10 +5,10 @@ android {
     buildToolsVersion '24.0.1'
     defaultConfig {
         applicationId "com.hajikoma.nowalkingphone"
-        minSdkVersion 15
-        targetSdkVersion 21
+        minSdkVersion 14
+        targetSdkVersion 16
         versionCode 1
-        versionName "1.0"
+        versionName "0.1.0"
     }
     buildTypes {
         release {
@@ -28,4 +28,13 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:support-v4:24.1.1'
+
+    // ADD Firebase
+    compile 'com.google.firebase:firebase-core:9.4.0'
+    compile 'com.google.firebase:firebase-database:9.4.0'
+    compile 'com.google.firebase:firebase-crash:9.4.0'
+    compile 'com.google.firebase:firebase-messaging:9.4.0'
+    compile 'com.google.firebase:firebase-config:9.4.0'
 }
+
+apply plugin: 'com.google.gms.google-services'

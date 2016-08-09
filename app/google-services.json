@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1011831151305",
+    "firebase_url": "https://nowalkingphone.firebaseio.com",
+    "project_id": "nowalkingphone",
+    "storage_bucket": "nowalkingphone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011831151305:android:df1350b2d2e32597",
+        "android_client_info": {
+          "package_name": "com.hajikoma.nowalkingphone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1011831151305-s3i08get887v2kf8pun926s7f1nvla5o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6y4vuFIhH7NwhKmDlQ0wKFz6FetskZU4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
