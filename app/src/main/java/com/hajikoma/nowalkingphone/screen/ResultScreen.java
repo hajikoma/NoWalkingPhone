@@ -161,7 +161,7 @@ public class ResultScreen extends Screen {
                 GestureEvent ges = gestureEvents.get(gi);
 
                 if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
-                    game.setScreen(new GameScreen(game));
+                    game.setScreen(new GameScreen(game, sc));
                 }
             }
         }

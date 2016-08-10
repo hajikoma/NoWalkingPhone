@@ -126,8 +126,6 @@ public class GameScreen extends Screen {
 
     /**
      * GameScreenを生成する
-     *
-     * @param game 共通のgameアクティビティ
      */
     public GameScreen(Game game) {
         super(game);
@@ -175,6 +173,17 @@ public class GameScreen extends Screen {
         onLvUpMany.put(1.0, Assets.peopleStadiumCheer1);
 
         changeScene(Scene.READY);
+    }
+
+
+    /**
+     * コンティニュー時のGameScreenを生成する
+     *
+     * @param score 前回ゲームのスコア
+     */
+    public GameScreen(Game game, Score score) {
+        this(game);
+        sc = score;
     }
 
 
