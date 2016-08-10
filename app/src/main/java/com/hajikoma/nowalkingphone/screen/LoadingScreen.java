@@ -3,9 +3,12 @@ package com.hajikoma.nowalkingphone.screen;
 import java.util.HashMap;
 import java.util.List;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.net.Uri;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.UserData;
@@ -16,6 +19,7 @@ import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
 import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Text;
+import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
 
 /**

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="androidwebviewmediation-interstitial-nend-unspecified">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/NoWalkingPhone/androidwebviewmediation-interstitial-nend/unspecified/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/NoWalkingPhone/androidwebviewmediation-interstitial-nend/unspecified/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

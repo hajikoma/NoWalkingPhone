@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="maio.maio">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/maio/maio.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

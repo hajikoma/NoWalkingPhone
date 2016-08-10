@@ -28,13 +28,32 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:support-v4:24.1.1'
-
     // ADD Firebase
     compile 'com.google.firebase:firebase-core:9.4.0'
     compile 'com.google.firebase:firebase-database:9.4.0'
     compile 'com.google.firebase:firebase-crash:9.4.0'
     compile 'com.google.firebase:firebase-messaging:9.4.0'
     compile 'com.google.firebase:firebase-config:9.4.0'
+    // Adstir
+    compile 'com.google.android.gms:play-services-ads:9.4.0'
+    compile project(':adcolony')
+    compile project(':adstirwebview')
+    compile project(':androidwebviewmediation-interstitial-imobile')
+    compile project(':androidwebviewmediation-interstitial-nend')
+    compile project(':androidwebviewmediation-videoreward-adcolony')
+    compile project(':androidwebviewmediation-videoreward-applovin')
+    compile project(':androidwebviewmediation-videoreward-maio')
+    compile project(':androidwebviewmediation-videoreward-unityads')
+    compile project(':androidwebviewmediation-videoreward-vungle')
+    compile project(':applovin-sdk-6.1.5')
+    compile project(':dagger-2.1')
+    compile project(':imobileSdkAds')
+    compile project(':javax.inject-1')
+    compile project(':legacyinterstitial')
+    compile project(':maio')
+    compile project(':nendSDK-2.6.3')
+    compile project(':unity-ads')
+    compile project(':vungle-publisher-adaptive-id-3.3.5')
 }
 
 apply plugin: 'com.google.gms.google-services'

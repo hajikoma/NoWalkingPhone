@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('javax.inject-1.jar'))

@@ -24,7 +24,7 @@ public class Player extends SpriteImage {
 
 
     /** lifeの初期値 */
-    private int initLife = 30;
+    private int initLife = 1;
     /** 受けたダメージ量 */
     private int damage = 0;
 

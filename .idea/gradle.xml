@@ -9,13 +9,49 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/adcolony" />
+            <option value="$PROJECT_DIR$/adstirwebview" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-interstitial-imobile" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-interstitial-nend" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-videoreward-adcolony" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-videoreward-applovin" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-videoreward-maio" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-videoreward-unityads" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-videoreward-vungle" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/applovin-sdk-6.1.5" />
+            <option value="$PROJECT_DIR$/dagger-2.1" />
+            <option value="$PROJECT_DIR$/imobileSdkAds" />
+            <option value="$PROJECT_DIR$/javax.inject-1" />
+            <option value="$PROJECT_DIR$/legacyinterstitial" />
+            <option value="$PROJECT_DIR$/maio" />
+            <option value="$PROJECT_DIR$/nendSDK-2.6.3" />
+            <option value="$PROJECT_DIR$/unity-ads" />
+            <option value="$PROJECT_DIR$/vungle-publisher-adaptive-id-3.3.5" />
           </set>
         </option>
         <option name="myModules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/adcolony" />
+            <option value="$PROJECT_DIR$/adstirwebview" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-interstitial-imobile" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-interstitial-nend" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-videoreward-adcolony" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-videoreward-applovin" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-videoreward-maio" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-videoreward-unityads" />
+            <option value="$PROJECT_DIR$/androidwebviewmediation-videoreward-vungle" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/applovin-sdk-6.1.5" />
+            <option value="$PROJECT_DIR$/dagger-2.1" />
+            <option value="$PROJECT_DIR$/imobileSdkAds" />
+            <option value="$PROJECT_DIR$/javax.inject-1" />
+            <option value="$PROJECT_DIR$/legacyinterstitial" />
+            <option value="$PROJECT_DIR$/maio" />
+            <option value="$PROJECT_DIR$/nendSDK-2.6.3" />
+            <option value="$PROJECT_DIR$/unity-ads" />
+            <option value="$PROJECT_DIR$/vungle-publisher-adaptive-id-3.3.5" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -8,6 +8,7 @@ import android.view.KeyEvent;
 
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
+import com.hajikoma.nowalkingphone.screen.AdActivity;
 import com.hajikoma.nowalkingphone.screen.GameScreen;
 import com.hajikoma.nowalkingphone.screen.LoadingScreen;
 
@@ -19,6 +20,9 @@ import com.hajikoma.nowalkingphone.screen.LoadingScreen;
  * ライフサイクルに沿ってメインループを管理しデータを保存する。
  */
 public class NoWalkingPhoneGame extends AndroidGame{
+
+    /** 広告表示アクティビティ */
+    private Intent adIntent;
 
 	/** 初期スクリーンを取得する(このクラスのonCreateで呼ばれる) */
 	@Override
@@ -80,6 +84,32 @@ public class NoWalkingPhoneGame extends AndroidGame{
 		AlertDialog aD = aDB.create();
 		aD.show();
 	}
+
+	/**
+	 * 広告表示アクティビティを生成（準備）する。
+	 * 広告データの受信に時間がかかるため、準備と表示のメソッドを分離している
+	 */
+	public void adActivityPrepare(){
+		if(adIntent == null){
+			adIntent = new Intent(getApplicationContext(), AdActivity.class);
+		}
+	}
+
+	/**
+	 * 広告表示アクティビティを開始する
+	 * 広告データの受信に時間がかかるため、準備と表示のメソッドを分離している
+	 * @exception NullPointerException 事前にadActivityPrepareメソッドを呼んでいない場合スロー
+	 */
+	public void adActivityForward(){
+		if(adIntent != null){
+			startActivity(adIntent);
+
+			adIntent = null;
+		}else{
+			throw new NullPointerException("adActivityPrepareメソッドを事前に呼び出してください");
+		}
+	}
+
 
 }
 

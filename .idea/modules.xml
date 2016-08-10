@@ -3,7 +3,25 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/NoWalkingPhone.iml" filepath="$PROJECT_DIR$/NoWalkingPhone.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adcolony/adcolony.iml" filepath="$PROJECT_DIR$/adcolony/adcolony.iml" />
+      <module fileurl="file://$PROJECT_DIR$/adstirwebview/adstirwebview.iml" filepath="$PROJECT_DIR$/adstirwebview/adstirwebview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidwebviewmediation-interstitial-imobile/androidwebviewmediation-interstitial-imobile.iml" filepath="$PROJECT_DIR$/androidwebviewmediation-interstitial-imobile/androidwebviewmediation-interstitial-imobile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidwebviewmediation-interstitial-nend/androidwebviewmediation-interstitial-nend.iml" filepath="$PROJECT_DIR$/androidwebviewmediation-interstitial-nend/androidwebviewmediation-interstitial-nend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidwebviewmediation-videoreward-adcolony/androidwebviewmediation-videoreward-adcolony.iml" filepath="$PROJECT_DIR$/androidwebviewmediation-videoreward-adcolony/androidwebviewmediation-videoreward-adcolony.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidwebviewmediation-videoreward-applovin/androidwebviewmediation-videoreward-applovin.iml" filepath="$PROJECT_DIR$/androidwebviewmediation-videoreward-applovin/androidwebviewmediation-videoreward-applovin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidwebviewmediation-videoreward-maio/androidwebviewmediation-videoreward-maio.iml" filepath="$PROJECT_DIR$/androidwebviewmediation-videoreward-maio/androidwebviewmediation-videoreward-maio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidwebviewmediation-videoreward-unityads/androidwebviewmediation-videoreward-unityads.iml" filepath="$PROJECT_DIR$/androidwebviewmediation-videoreward-unityads/androidwebviewmediation-videoreward-unityads.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidwebviewmediation-videoreward-vungle/androidwebviewmediation-videoreward-vungle.iml" filepath="$PROJECT_DIR$/androidwebviewmediation-videoreward-vungle/androidwebviewmediation-videoreward-vungle.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/applovin-sdk-6.1.5/applovin-sdk-6.1.5.iml" filepath="$PROJECT_DIR$/applovin-sdk-6.1.5/applovin-sdk-6.1.5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dagger-2.1/dagger-2.1.iml" filepath="$PROJECT_DIR$/dagger-2.1/dagger-2.1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imobileSdkAds/imobileSdkAds.iml" filepath="$PROJECT_DIR$/imobileSdkAds/imobileSdkAds.iml" />
+      <module fileurl="file://$PROJECT_DIR$/javax.inject-1/javax.inject-1.iml" filepath="$PROJECT_DIR$/javax.inject-1/javax.inject-1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/legacyinterstitial/legacyinterstitial.iml" filepath="$PROJECT_DIR$/legacyinterstitial/legacyinterstitial.iml" />
+      <module fileurl="file://$PROJECT_DIR$/maio/maio.iml" filepath="$PROJECT_DIR$/maio/maio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nendSDK-2.6.3/nendSDK-2.6.3.iml" filepath="$PROJECT_DIR$/nendSDK-2.6.3/nendSDK-2.6.3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/unity-ads/unity-ads.iml" filepath="$PROJECT_DIR$/unity-ads/unity-ads.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vungle-publisher-adaptive-id-3.3.5/vungle-publisher-adaptive-id-3.3.5.iml" filepath="$PROJECT_DIR$/vungle-publisher-adaptive-id-3.3.5/vungle-publisher-adaptive-id-3.3.5.iml" />
     </modules>
   </component>
 </project>

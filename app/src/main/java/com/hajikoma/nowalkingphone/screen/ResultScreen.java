@@ -5,6 +5,7 @@ import java.util.List;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
+import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.Score;
 import com.hajikoma.nowalkingphone.UserData;
 import com.hajikoma.nowalkingphone.framework.Game;
@@ -40,6 +41,9 @@ public class ResultScreen extends Screen {
     /** 個別結果を表示する際の効果音を鳴らしたかどうかのフラグ */
     private boolean[] isSoundPlayed = new boolean[]{false, false, false, false};
 
+    /** 広告表示をしたかのフラグ */
+    private boolean isAdShown;
+
 
     /** ResultScreenを生成する */
     public ResultScreen(Game game, Score sc) {
@@ -69,6 +73,9 @@ public class ResultScreen extends Screen {
         Assets.ud.setPlayTime(Assets.ud.getPlayTime() + 1);
         Assets.ud.setGrandScore(Assets.ud.getGrandScore() + sc.score);
         Assets.ud.saveAllToPref(getSharedPreference());
+
+        // 広告
+        ((NoWalkingPhoneGame) game).adActivityPrepare();
     }
 
     @Override
@@ -88,8 +95,13 @@ public class ResultScreen extends Screen {
         drawGraphicalNumber(sc.maxCombo, 80, 220, 450, 6);
         drawGraphicalNumber(sc.beatCount, 80, 220, 650, 6);
 
+
         if (timer >= 4.5f) {
             txt.drawText("コンティニュー？", 220, 950, 500, Assets.map_style.get("big"));
+            if (!isAdShown) {
+                ((NoWalkingPhoneGame) game).adActivityForward();
+                isAdShown = true;
+            }
         }
 
 

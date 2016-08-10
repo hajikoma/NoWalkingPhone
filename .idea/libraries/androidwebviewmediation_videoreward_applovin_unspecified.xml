@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="androidwebviewmediation-videoreward-applovin-unspecified">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/NoWalkingPhone/androidwebviewmediation-videoreward-applovin/unspecified/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/NoWalkingPhone/androidwebviewmediation-videoreward-applovin/unspecified/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

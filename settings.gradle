@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':adcolony', ':adstirwebview', ':androidwebviewmediation-interstitial-imobile', ':androidwebviewmediation-interstitial-nend', ':androidwebviewmediation-videoreward-adcolony', ':androidwebviewmediation-videoreward-applovin', ':androidwebviewmediation-videoreward-maio', ':androidwebviewmediation-videoreward-unityads', ':androidwebviewmediation-videoreward-vungle', ':applovin-sdk-6.1.5', ':dagger-2.1', ':imobileSdkAds', ':javax.inject-1', ':legacyinterstitial', ':maio', ':nendSDK-2.6.3', ':unity-ads', ':vungle-publisher-adaptive-id-3.3.5'
