@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 
 /**
  * ユーザーのデータを格納するクラス。ユーザーデータはこのクラスで一元管理する。
- * <p/>
  * データがおかしくなるとユーザーは大変なストレスを感じるため、このクラスの設計は データの安全性を優先して設計する。
  * ・シングルトンデザイン
  * ・全てのフィールド変数をカプセル化し、規定範囲外の値が入らないようにする
@@ -21,6 +20,8 @@ public class UserData {
     public static final String PREF_BOOL_TUTORIAL_SHOW = "tutorial_show";
     /** SharedPreferenceのキー：レビューしたか */
     public static final String PREF_BOOL_REVIEW = "review";
+    /** SharedPreferenceのキー：レビュー依頼表示までのゲーム回数 */
+    public static final String PREF_INT_REVIEW_REMAIN = "review_remain";
     /** SharedPreferenceのキー：起動回数 */
     public static final String PREF_INT_LAUNCH_TIME = "launch_time";
     /** SharedPreferenceのキー：ゲームした回数 */
@@ -48,6 +49,8 @@ public class UserData {
     private boolean tutorialShow = false;
     /** レビューしたか */
     private boolean review = false;
+    /** レビュー依頼表示までのゲーム回数 */
+    private int reviewRemain = 3;
     /** 起動回数 */
     private int launchTime = 0;
     /** ゲームした回数 */
@@ -93,6 +96,7 @@ public class UserData {
             userName = preference.getString(PREF_STR_USER_NAME, userName);
             tutorialShow = preference.getBoolean(PREF_BOOL_TUTORIAL_SHOW, tutorialShow);
             review = preference.getBoolean(PREF_BOOL_REVIEW, review);
+            reviewRemain = preference.getInt(PREF_INT_REVIEW_REMAIN, reviewRemain);
             launchTime = preference.getInt(PREF_INT_LAUNCH_TIME, launchTime);
             playTime = preference.getInt(PREF_INT_PLAY_TIME, playTime);
             exceptionBackward = preference.getInt(PREF_INT_EXCEPTION_BACKWARD, exceptionBackward);
@@ -119,6 +123,7 @@ public class UserData {
         editor.putString(PREF_STR_USER_NAME, userName);
         editor.putBoolean(PREF_BOOL_TUTORIAL_SHOW, tutorialShow);
         editor.putBoolean(PREF_BOOL_REVIEW, review);
+        editor.putInt(PREF_INT_REVIEW_REMAIN, reviewRemain);
         editor.putInt(PREF_INT_LAUNCH_TIME, launchTime);
         editor.putInt(PREF_INT_PLAY_TIME, playTime);
         editor.putInt(PREF_INT_EXCEPTION_BACKWARD, exceptionBackward);
@@ -165,28 +170,46 @@ public class UserData {
         this.review = review;
     }
 
+    public int getReviewRemain() {
+        return reviewRemain;
+    }
+
+    public void setReviewRemain(int reviewRemain) {
+        this.reviewRemain = reviewRemain;
+    }
+
+    public void reduceReviewRemain() {
+        if (reviewRemain > 0) {
+            reviewRemain--;
+        }
+    }
+
     public int getLaunchTime() {
         return launchTime;
     }
 
-    public void setLaunchTime(int launchTime) {
-        this.launchTime = launchTime;
+    public void addLaunchTime() {
+        launchTime++;
     }
 
     public int getPlayTime() {
         return playTime;
     }
 
-    public void setPlayTime(int playTime) {
-        this.playTime = playTime;
+    public void addPlayTime() {
+        playTime++;
     }
 
     public int getExceptionBackward() {
         return exceptionBackward;
     }
 
-    public void setExceptionBackward(int exceptionBackward) {
-        this.exceptionBackward = exceptionBackward;
+    public void addExceptionBackward() {
+        exceptionBackward++;
+    }
+
+    public void exceptionOccurred() {
+        exceptionBackward = 0;
     }
 
     public boolean isMute() {
@@ -233,8 +256,8 @@ public class UserData {
         return grandScore;
     }
 
-    public void setGrandScore(long grandScore) {
-        this.grandScore = grandScore;
+    public void addGrandScore(int score) {
+        grandScore += (long) score;
     }
 
     public void mute() {

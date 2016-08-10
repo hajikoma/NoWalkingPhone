@@ -152,6 +152,7 @@ public class GameScreen extends Screen {
 
         // 固有グラフィックの読み込み
         Assets.trim_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
+        Assets.onomatopee = gra.newPixmap("others/onomatopee.png", PixmapFormat.ARGB4444);
 
         // Effect
         lifeReduceEffect = new Effect(Assets.onomatopee, 180, new float[]{0.25f, 0.25f, 0.25f, 0.25f});
@@ -306,15 +307,6 @@ public class GameScreen extends Screen {
 
             case PAUSE://-----------------------------------------------------------------------------------
                 //再開待機画面
-                gra.drawRoundRect(40, 40, 640, 1200, 15.0f, Color.argb(230, 255, 204, 204));
-                txt.drawText("画面タッチで再開！", 140, 650, 500, Assets.map_style.get("title"));
-
-                for (int i = 0; i < gestureEvents.size(); i++) {
-                    GestureEvent ges = gestureEvents.get(i);
-                    if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
-                        changeScene(Scene.PLAYING);
-                    }
-                }
                 break;
             //-------------------------------------------------------------------------------------------------
 
@@ -417,9 +409,13 @@ public class GameScreen extends Screen {
     }
 
 
-    /** このスクリーンでの処理はない */
+    /** 再開時の処理 */
     @Override
     public void resume() {
+        if (!bgm.isPlaying()) {
+            bgm.play();
+        }
+        scene = Scene.PLAYING;
     }
 
 

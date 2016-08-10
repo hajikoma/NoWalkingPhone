@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -11,6 +12,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 
 import com.hajikoma.nowalkingphone.Assets;
+import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.UserData;
 import com.hajikoma.nowalkingphone.framework.Audio;
 import com.hajikoma.nowalkingphone.framework.Game;
@@ -50,13 +52,12 @@ public class LoadingScreen extends Screen {
         if (getIntFromPref(UserData.PREF_INT_LAUNCH_TIME) == 0) {
             // 初回起動時の処理
             isLoadOK = true;
-            Assets.ud.setLaunchTime(1);
             Assets.ud.saveAllToPref(getSharedPreference());
         } else {
             // 二回目以降の処理。読み込み失敗時は初期値をそのまま使用
             isLoadOK = Assets.ud.getAllFromPref(getSharedPreference());
-            Assets.ud.setLaunchTime(Assets.ud.getLaunchTime() + 1);
         }
+        Assets.ud.addLaunchTime();
 
         //テスト用のUserData初期化-------------------------------
 /*		int testItemState = 10;
@@ -70,7 +71,6 @@ public class LoadingScreen extends Screen {
 
 
         //共有グラフィックの読み込み
-        Assets.onomatopee = gra.newPixmap("others/onomatopee.png", PixmapFormat.ARGB4444);
         Assets.icon_hand = gra.newPixmap("others/icon_hand.png", PixmapFormat.ARGB4444);
         Assets.number = gra.newPixmap("others/number.png", PixmapFormat.ARGB4444);
 
@@ -130,23 +130,43 @@ public class LoadingScreen extends Screen {
         big.setAntiAlias(true);
         styleMap.put("big", big);
         Assets.map_style = styleMap;
-
     }
 
     /** 次のスクリーンに処理を移す。 */
     @Override
     public void update(float deltaTime) {
         if (!isLoadOK) {
-            List<GestureEvent> gestureEvents = game.getInput().getGestureEvents();
-            game.getInput().getKeyEvents();
-
-            for (int i = 0; i < gestureEvents.size(); i++) {
-                GestureEvent ges = gestureEvents.get(i);
-                if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
-                    game.setScreen(new GameScreen(game));
+            final NoWalkingPhoneGame nwp = (NoWalkingPhoneGame) game;
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    StringBuilder strBuilder = new StringBuilder();
+                    String separator = System.getProperty("line.separator");
+                    strBuilder.append("セーブデータの読み込みに失敗しました。");
+                    strBuilder.append(separator);
+                    strBuilder.append("主な原因");
+                    strBuilder.append(separator);
+                    strBuilder.append("・SDカードが挿さっていない、または認識されていない");
+                    strBuilder.append(separator);
+                    strBuilder.append("・何らかの操作によりセーブデータが消去された");
+                    strBuilder.append(separator);
+                    strBuilder.append(separator);
+                    strBuilder.append("初期状態でゲームを開始します...");
+                    nwp.showConfirmDialog(
+                            "セーブデータの読み込みに失敗しました",
+                            strBuilder.toString(),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //描画を再開
+                                    nwp.getCurrentScreen().resume();
+                                    nwp.getRenderView().resume();
+                                }
+                            }
+                    );
                 }
-            }
-
+            };
+            nwp.postRunnable(run);
+            isLoadOK = true;
         } else {
             game.setScreen(new GameScreen(game));
         }
@@ -155,14 +175,6 @@ public class LoadingScreen extends Screen {
     /** セーブデータ読み込み失敗時のみ、エラーをユーザーに通知 */
     @Override
     public void present(float deltaTime) {
-        if (!isLoadOK) {
-            gra.drawRoundRect(new Rect(60, 300, 60 + 600, 300 + 680), 15.0f, Color.LTGRAY);
-            txt.drawText("セーブデータの読み込みに失敗しました。", 80, 380, 540, Assets.map_style.get("title"));
-            txt.drawText("主な原因：", 80, 680, 540, Assets.map_style.get("general"));
-            txt.drawText("・SDカードが挿さっていない、または認識されていない", 100, 730, 520, Assets.map_style.get("general"));
-            txt.drawText("・何らかの操作によりセーブデータが消去された", 100, 810, 520, Assets.map_style.get("general"));
-            txt.drawText("初期データでゲームを開始します...", 80, 920, 540, Assets.map_style.get("general"));
-        }
     }
 
     /** このスクリーンでの処理はない */

@@ -8,6 +8,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -32,7 +33,9 @@ public abstract class AndroidGame extends Activity implements Game {
 	public static final int TARGET_WIDTH = 720;
 	/** Y軸方向のターゲット画面解像度 */
 	public static final int TARGET_HEIGHT = 1280;
-	/** メインループスレッドを処理するSurfaceView */
+	/** mainループスレッドを扱う処理するSurfaceView */
+	private Handler mainThreadHandler = new Handler();
+	/** 高速に描画を行うサブスレッド2つを処理するSurfaceView */
 	private AndroidFastRenderView renderView;
 	/** 画像処理モジュール */
 	public static Graphics graphics;
@@ -178,4 +181,9 @@ public abstract class AndroidGame extends Activity implements Game {
 		return screen;
 	}
 
+
+	public void postRunnable(final Runnable run)
+	{
+		mainThreadHandler.post(run);
+	}
 }
