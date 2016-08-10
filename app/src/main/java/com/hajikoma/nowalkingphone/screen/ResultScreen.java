@@ -25,15 +25,13 @@ public class ResultScreen extends Screen {
 
 
     /** コンティニューボタン描画先 */
-    Rect continueDstArea = new Rect(40, 1040, 40 + 400, 1040 + 200);
+    private Rect continueDstArea = new Rect(40, 1040, 40 + 400, 1040 + 200);
     /** タイトルへボタン描画先 */
     private Rect goMenuDstArea = new Rect(40 + 400 + 30, 1040, 40 + 400 + 10 + 200, 1020 + 200);
 
-    /** 共通して使用するゲームクラス */
+    /** 共通して使用するインスタンス */
     private final Game game;
-    /** Graphicインスタンス */
     private final Graphics gra;
-    /** Textインスタンス */
     private final Text txt;
 
     /** スコア */

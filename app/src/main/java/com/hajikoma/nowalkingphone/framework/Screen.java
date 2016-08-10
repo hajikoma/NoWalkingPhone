@@ -299,6 +299,25 @@ public abstract class Screen {
 
 
     /**
+     * BGMを再生する。設定でミュートになっている場合は再生しない。
+     *
+     * @param music  再生するBGM
+     * @return 再生した場合true、ミュートで再生しなかった場合false
+     */
+    public static boolean playMusic(Music music) {
+        if (Assets.ud.isMute()) {
+            if(music.isPlaying()){
+                music.stop();
+            }
+            return false;
+        } else {
+            music.play();
+            return true;
+        }
+    }
+
+
+    /**
      * 振動（バイブレーション）させる。設定でバイブOFFになっている場合は再生しない。
      *
      * @param vib          Vibrateインスタンス

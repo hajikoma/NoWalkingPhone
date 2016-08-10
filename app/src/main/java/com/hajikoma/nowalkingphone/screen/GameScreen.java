@@ -157,8 +157,8 @@ public class GameScreen extends Screen {
 
         // BGM
         bgm = aud.newMusic("music/me_6777276_Race.mp3");
+        bgm.setVolume(0.1f);
         bgm.setLooping(true);
-        bgm.setVolume(0.01f);
 
         // 効果音セット
         onTap.put(0.5, Assets.voice_soko);
@@ -201,9 +201,6 @@ public class GameScreen extends Screen {
         drawLife(player.getInitLife(), player.getDamage());
         drawSmashIcon();
 
-        // bgm
-        bgm.play();
-
         // シーンごとの処理
         switch (scene) {
             case READY://-----------------------------------------------------------------------------------
@@ -227,17 +224,14 @@ public class GameScreen extends Screen {
 
                 // Walkerの状態に応じた処理
                 for (int i = 0; i < walkers.size(); i++) {
-                    Walker.ActionType walkerState = walkers.get(i).getState();
-                    switch (walkerState) {
-                        case VANISH:
+                    if (walkers.get(i).getState() == Walker.ActionType.VANISH) {
                             walkers.remove(i);
-                            break;
                     }
                 }
 
                 // Walkerを出現させる
                 if (walkers.size() < maxWalker) {
-                    int left = 100 + random.nextInt(AndroidGame.TARGET_WIDTH - 100 - 150);
+                    int left = 50 + random.nextInt(AndroidGame.TARGET_WIDTH - 100 - 50);
                     walkers.add(manager.getWalker(new Rect(left, 370, left + 100, 470)));
                 }
 
@@ -334,6 +328,53 @@ public class GameScreen extends Screen {
     }
 
 
+    /** このスクリーンでの処理はない */
+    @Override
+    public void present(float deltaTime) {
+        playMusic(bgm);
+    }
+
+    /** 一時停止状態をセットする */
+    @Override
+    public void pause() {
+        if (bgm.isPlaying()) {
+            bgm.pause();
+        }
+        scene = Scene.PAUSE;
+    }
+
+
+    /** 再開時の処理 */
+    @Override
+    public void resume() {
+        if (!bgm.isPlaying()) {
+            playMusic(bgm);
+        }
+        scene = Scene.PLAYING;
+    }
+
+
+    /** 固有の参照を明示的に切る */
+    @Override
+    public void dispose() {
+        Assets.trim_bg = null;
+        Assets.onomatopee = null;
+        bgm.dispose();
+    }
+
+
+    @Override
+    public String toString() {
+        return "GameScreen";
+    }
+
+
+    private void changeScene(Scene toScene) {
+        this.scene = toScene;
+        timer = 0.0f;
+    }
+
+
     /** bottomの値が小さい（背面にいる）Walkerから描画する */
     private void actWalkerBehindToForward(float deltaTime) {
         int size = walkers.size();
@@ -399,53 +440,6 @@ public class GameScreen extends Screen {
                 remainSmash++;
             }
         }
-    }
-
-
-    /** このスクリーンでの処理はない */
-    @Override
-    public void present(float deltaTime) {
-
-    }
-
-    /** 一時停止状態をセットする */
-    @Override
-    public void pause() {
-        if (bgm.isPlaying()) {
-            bgm.pause();
-        }
-        scene = Scene.PAUSE;
-    }
-
-
-    /** 再開時の処理 */
-    @Override
-    public void resume() {
-        if (!bgm.isPlaying()) {
-            bgm.play();
-        }
-        scene = Scene.PLAYING;
-    }
-
-
-    /** 固有の参照を明示的に切る */
-    @Override
-    public void dispose() {
-        Assets.trim_bg = null;
-        Assets.onomatopee = null;
-        bgm.dispose();
-    }
-
-
-    @Override
-    public String toString() {
-        return "GameScreen";
-    }
-
-
-    private void changeScene(Scene toScene) {
-        this.scene = toScene;
-        timer = 0.0f;
     }
 
 
