@@ -17,6 +17,7 @@ import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
 import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Text;
+import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
 /**
  * ゲームの結果を表示するスクリーン
@@ -59,11 +60,12 @@ public class ResultScreen extends Screen {
 
         UserData ud = Assets.ud;
 
-        //固有グラフィックの読み込み
+        // 固有グラフィックの読み込み
         Assets.result_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
 
-        //データを保存
+        // データを保存
         if (sc.score >= ud.getFirstScore()) {
+            ((AndroidGame)game).dbManager.saveFirstScore(ud.getUserId(), ud.getFirstScore(), sc.score); //DBにも保存
             ud.setThirdScore(ud.getSecondScore());
             ud.setSecondScore(ud.getFirstScore());
             ud.setFirstScore(sc.score);

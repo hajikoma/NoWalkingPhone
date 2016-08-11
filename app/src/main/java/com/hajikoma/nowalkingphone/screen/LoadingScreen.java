@@ -3,6 +3,7 @@ package com.hajikoma.nowalkingphone.screen;
 import java.util.HashMap;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 
 import com.hajikoma.nowalkingphone.Assets;
@@ -39,6 +40,10 @@ public class LoadingScreen extends Screen {
         gra = game.getGraphics();
         txt = game.getText();
         Audio aud = game.getAudio();
+
+        // デバッグ用：preferenceを削除
+        SharedPreferences.Editor editor = getSharedPreference().edit();
+        editor.clear().apply();
 
         // ユーザーデータのロード処理
         Assets.ud = UserData.getUserData();
