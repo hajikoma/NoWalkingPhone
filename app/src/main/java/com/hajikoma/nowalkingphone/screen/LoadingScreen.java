@@ -1,15 +1,9 @@
 package com.hajikoma.nowalkingphone.screen;
 
 import java.util.HashMap;
-import java.util.List;
 
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.net.Uri;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
@@ -18,7 +12,6 @@ import com.hajikoma.nowalkingphone.framework.Audio;
 import com.hajikoma.nowalkingphone.framework.Game;
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
-import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
@@ -31,7 +24,7 @@ import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
  */
 public class LoadingScreen extends Screen {
 
-    protected final Game game;
+    private Game game;
     private Graphics gra;
     private Text txt;
 
@@ -59,15 +52,12 @@ public class LoadingScreen extends Screen {
         }
         Assets.ud.addLaunchTime();
 
-        //テスト用のUserData初期化-------------------------------
-/*		int testItemState = 10;
-        int[] test = Assets.ud.getAllItemState();
-		for(int i = 0; i < test.length; i++){
-			Assets.ud.itemUnlock(i);
-			Log.d(""+i, "" + Assets.ud.setItemNumber(i, testItemState));
-		}*/
-        //Assets.ud.setTotalMP(111111);
-        //-------------------------------テスト用のUserData初期化
+        // user_idがなければ、DBから新規に取得。同時に、usersテーブル内にユーザー専用の階層を作成する
+        if(Assets.ud.getUserId().equals("")){
+            String userId;
+            userId = ((AndroidGame)game).dbManager.getUserId(Assets.ud.getUserName(), Assets.ud.getFirstScore());
+            Assets.ud.setUserId(userId);
+        }
 
 
         //共有グラフィックの読み込み
@@ -135,6 +125,7 @@ public class LoadingScreen extends Screen {
     /** 次のスクリーンに処理を移す。 */
     @Override
     public void update(float deltaTime) {
+        // データ読み込み失敗時、ダイアログに警告表示
         if (!isLoadOK) {
             final NoWalkingPhoneGame nwp = (NoWalkingPhoneGame) game;
             Runnable run = new Runnable() {
@@ -172,22 +163,18 @@ public class LoadingScreen extends Screen {
         }
     }
 
-    /** セーブデータ読み込み失敗時のみ、エラーをユーザーに通知 */
     @Override
     public void present(float deltaTime) {
     }
 
-    /** このスクリーンでの処理はない */
     @Override
     public void pause() {
     }
 
-    /** このスクリーンでの処理はない */
     @Override
     public void resume() {
     }
 
-    /** このスクリーンでの処理はない */
     @Override
     public void dispose() {
     }
