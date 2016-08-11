@@ -1,4 +1,4 @@
-package com.hajikoma.nowalkingphone.screen;
+package com.hajikoma.nowalkingphone;
 
 import android.app.Activity;
 import android.os.Bundle;

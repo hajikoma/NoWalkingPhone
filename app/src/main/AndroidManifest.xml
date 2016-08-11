@@ -27,19 +27,11 @@
         </activity>
         <!-- [START Adstir_acti] -->
         <activity
-            android:name=".screen.AdActivity"
+            android:name=".AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
-        <!-- [ firebase_service] -->
-        <!-- [START firebase_service] -->
-        <service
-            android:name=".MyFirebaseMessagingService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-        <!-- [ firebase_service] -->
+        <!-- [ Adstir_acti] -->
     </application>
 </manifest>

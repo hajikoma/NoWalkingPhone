@@ -1,19 +1,13 @@
 package com.hajikoma.nowalkingphone;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.KeyEvent;
 
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
-import com.hajikoma.nowalkingphone.screen.AdActivity;
-import com.hajikoma.nowalkingphone.screen.GameScreen;
 import com.hajikoma.nowalkingphone.screen.LoadingScreen;
 
 
