@@ -13,34 +13,41 @@ import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
+
+/**
+ * FirebaseのDBへのアクセス全般を担当する。
+ *
+ * FirebaseDBは複数ユーザーによる同時read/writeが行われるため、対象のテーブルに同期処理が必要でないか気を付けること。
+ *
+ * Firebaseとの通信は非同期で行われるため、処理タイミングにも注意し、適宜同期化などすること。
+ * これら条件により、このクラスのメンバは可能な限り隠蔽すること。
+ */
 public class DBManager {
 
     private final String TAG = "DBManager";
 
-    // FirebaseDBへのアクセス
-    private Firebase mFirebaseRef;
-    // usersテーブルへのアクセス
+    /** usersテーブルへのアクセス */
     private Firebase t_users;
-    // scoresテーブルへのアクセス
+    /** scoresテーブルへのアクセス */
     private Firebase t_scores;
 
-    // scoresテーブルの値
-    Map<String, ArrayList<String>> scores = new LinkedHashMap<>();
+    /** scoresテーブルのデータ */
+    private Map<String, ArrayList<String>> scores = new LinkedHashMap<>();
+    /** scoresテーブルから取得するレコード上限 */
+    public static final int MAX_FETCH_SCORES = 1000;
+    /** scoresテーブルからの同期処理に使用 */
+    private final Object scoresLock = new Object();
 
 
     public DBManager(Activity activity) {
-        // クライアントライブラリにコンテキスト(Activity)をセット
+        // Firebaseデータベースへの参照を取得
         Firebase.setAndroidContext(activity);
-        // Firebaseアプリへの参照を取得
-        mFirebaseRef = new Firebase("https://nowalkingphone.firebaseio.com/");
+        Firebase mFirebaseRef = new Firebase("https://nowalkingphone.firebaseio.com/");
         t_users = mFirebaseRef.child("users");
         t_scores = mFirebaseRef.child("scores");
 
@@ -65,7 +72,8 @@ public class DBManager {
 
 
     /**
-     * DBにアクセスし、自動で発行されるidを元にユーザーのレコードを作成する
+     * DBにアクセスし、自動で発行される一意の文字列をユーザーIDとして、にユーザーのレコードを作成する
+     * push()を使用すると、タイムスタンプを基にした一意の文字列が返されることを利用している
      *
      * @return ユーザーID
      */
@@ -85,7 +93,6 @@ public class DBManager {
         t_users.child(userId).updateChildren(uSender);
 
         // scoresには同時アクセスの可能性があるため、トランザクションで処理
-        final String user_id = userId;
         // 古いスコアの削除
         t_scores.child(Integer.toString(oldFirstScore)).runTransaction(new Transaction.Handler() {
             @Override
@@ -94,7 +101,7 @@ public class DBManager {
                     // 古いスコアのレコードからuser_idを削除
                     ArrayList<String> ids = mutableData.getValue(ArrayList.class);
                     for (String id : ids) {
-                        if (id.equals(user_id)) {
+                        if (id.equals(userId)) {
                             ids.remove(id);
                         }
                     }
@@ -118,13 +125,13 @@ public class DBManager {
                 ArrayList<String> ids = new ArrayList<>();
                 if (mutableData.getValue() == null) {
                     // そのスコアのレコードを新規作成
-                    ids.add(user_id);
+                    ids.add(userId);
                     mutableData.setValue(ids);
                 } else {
                     // 同スコアのレコードが存在する場合、値にuser_idを追加
                     ids = mutableData.getValue(ArrayList.class);
-                    if (ids.indexOf(user_id) == -1) {
-                        ids.add(user_id);
+                    if (ids.indexOf(userId) == -1) {
+                        ids.add(userId);
                         mutableData.setValue(ids);
                     }
                 }
@@ -143,45 +150,62 @@ public class DBManager {
 
 
     /**
-     * first_scoreを、usersテーブルとscoresテーブルに保存する
+     * scoresテーブルから取得した降順のレコードを返す
+     *
+     * @return キー：スコア　値：そのスコアのid一覧
      */
-    public Map<String, ArrayList<String>> fetchScoresData() {
-        // 一度だけデータを取得し、リスナー解除
-        t_scores.limitToLast(10).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                Map<String, ArrayList<String>> data = snapshot.getValue(LinkedHashMap.class);
-                ArrayList<String> keys = new ArrayList<>(data.keySet());
-                Integer keys_i[] = new Integer[keys.size()];
-                // keyをintに
-                for (int i = 0; i < keys.size(); i++){
-                    keys_i[i] = Integer.valueOf(keys.get(i));
-                }
-                // 降順で並べ替え
-                Arrays.sort(keys_i, new Comparator<Integer>() {
-                    @Override
-                    public int compare(Integer lhs, Integer rhs) {
-                        if (lhs < rhs) {
-                            return 1;
-                        } else if (lhs > rhs) {
-                            return -1;
-                        }
+    public Map<String, ArrayList<String>> fetchScores() {
+        fetchScoresData();
 
-                        return 0;
-                    }
-                });
-                // 格納
-                for (int i = 0; i < keys_i.length; i++){
-                    scores.put(String.valueOf(keys_i[i]), data.get(String.valueOf(keys_i[i])));
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Log.e(TAG, firebaseError.getMessage(), firebaseError.toException());
-            }
-        });
-
+        // scoresLockはfetchScoresData()により、lockされる。
+        // scoresLockに意図的にアクセスすることで、fetchScoresData()の処理完了後にreturnされる
+        Log.i(TAG, scoresLock.toString());
         return scores;
+    }
+
+
+    /**
+     * scoresテーブルからレコードを取得し、降順でscoresメンバに格納する
+     * 格納処理が終わったら、isScoreLoadedをtrueにする
+     * レコード取得は別スレッドで行われるため、同期処理している
+     */
+    private void fetchScoresData() {
+        // 一度だけデータを取得し、リスナー解除
+        synchronized (scoresLock) {
+            t_scores.limitToLast(MAX_FETCH_SCORES).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    Map<String, ArrayList<String>> data = snapshot.getValue(LinkedHashMap.class);
+                    ArrayList<String> keys = new ArrayList<>(data.keySet());
+                    Integer keys_i[] = new Integer[keys.size()];
+                    // keyをIntegerに
+                    for (int i = 0; i < keys.size(); i++) {
+                        keys_i[i] = Integer.valueOf(keys.get(i));
+                    }
+                    // 降順で並べ替え
+                    Arrays.sort(keys_i, new Comparator<Integer>() {
+                        @Override
+                        public int compare(Integer lhs, Integer rhs) {
+                            if (lhs < rhs) {
+                                return 1;
+                            } else if (lhs > rhs) {
+                                return -1;
+                            }
+
+                            return 0;
+                        }
+                    });
+                    // 格納
+                    for (Integer key_i : keys_i) {
+                        scores.put(String.valueOf(key_i), data.get(String.valueOf(key_i)));
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    Log.e(TAG, firebaseError.getMessage(), firebaseError.toException());
+                }
+            });
+        }
     }
 }

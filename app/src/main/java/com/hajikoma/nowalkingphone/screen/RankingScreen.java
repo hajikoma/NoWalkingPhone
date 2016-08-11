@@ -41,7 +41,7 @@ public class RankingScreen extends Screen {
     // scoresテーブルの値
     Map<String, ArrayList<String>> scores = new LinkedHashMap<>();
     // 順位
-    private int userRank = 1000;
+    private int userRank = ((AndroidGame) game).dbManager.MAX_FETCH_SCORES;
 
 
     /** RankingScreenを生成する */
@@ -53,12 +53,12 @@ public class RankingScreen extends Screen {
 
         UserData ud = Assets.ud;
 
-        scores = ((AndroidGame) game).dbManager.fetchScoresData();
 
         // 固有グラフィックの読み込み
         Assets.result_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
 
         // データを取得
+        scores = ((AndroidGame) game).dbManager.fetchScores();
         int firstScore = ud.getFirstScore();
         int rank = 1;
         for (String score : scores.keySet()) {
