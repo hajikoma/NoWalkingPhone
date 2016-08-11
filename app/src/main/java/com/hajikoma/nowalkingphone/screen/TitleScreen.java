@@ -37,7 +37,7 @@ public class TitleScreen extends Screen {
     /** スタートボタン描画先 */
     private Rect startDstArea = new Rect(80, 700, 640, 700 + 150);
     /** ランキングボタン描画先 */
-    private Rect lankingDstArea = new Rect(80, 890, 640, 890 + 150);
+    private Rect rankingDstArea = new Rect(80, 890, 640, 890 + 150);
     /** 遊びかたボタン描画先 */
     private Rect tutorialDstArea = new Rect(80, 1080, 640, 1080 + 100);
     /** ミュートボタン描画先 */
@@ -102,9 +102,9 @@ public class TitleScreen extends Screen {
                 if (isBounds(ges, startDstArea)) {
                     playSound(Assets.decision15, 1.0f);
                     game.setScreen(new GameScreen(game));
-                } else if (isBounds(ges, lankingDstArea)) {
+                } else if (isBounds(ges, rankingDstArea)) {
                     playSound(Assets.decision15, 1.0f);
-                    game.setScreen(new GameScreen(game));
+                    game.setScreen(new RankingScreen(game));
                 } else if (isBounds(ges, tutorialDstArea)) {
                     playSound(Assets.decision15, 1.0f);
                     game.setScreen(new GameScreen(game));
@@ -158,7 +158,7 @@ public class TitleScreen extends Screen {
         txt.drawText("歩きスマホ撃退アクション", 80, 100, 540, Assets.map_style.get("score"));
         txt.drawText("スマ歩NO!", 100, 360, 520, Assets.map_style.get("big"));
         gra.drawRoundRect(startDstArea, 15.0f, Color.MAGENTA);
-        gra.drawRoundRect(lankingDstArea, 15.0f, Color.YELLOW);
+        gra.drawRoundRect(rankingDstArea, 15.0f, Color.YELLOW);
         gra.drawRoundRect(tutorialDstArea, 15.0f, Color.GREEN);
         gra.drawRoundRect(tutorialDstArea, 15.0f, Color.GREEN);
         if(Assets.ud.isMute()){

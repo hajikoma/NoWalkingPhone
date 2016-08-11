@@ -3,7 +3,6 @@ package com.hajikoma.nowalkingphone;
 
 import android.app.Activity;
 import android.util.Log;
-import android.util.SparseArray;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -12,9 +11,9 @@ import com.firebase.client.MutableData;
 import com.firebase.client.Transaction;
 import com.firebase.client.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class DBManager {
@@ -27,6 +26,9 @@ public class DBManager {
     private Firebase t_users;
     // scoresテーブルへのアクセス
     private Firebase t_scores;
+
+    // scoresテーブルの値
+    Map<String, ArrayList<String>> scores = new LinkedHashMap<>();
 
 
     public DBManager(Activity activity) {
@@ -132,5 +134,25 @@ public class DBManager {
                 }
             }
         });
+    }
+
+
+    /**
+     * first_scoreを、usersテーブルとscoresテーブルに保存する
+     */
+    public Map<String, ArrayList<String>> fetchScoresData() {
+        // 一度だけデータを取得し、リスナー解除
+        t_scores.orderByKey().limitToLast(10).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                scores = snapshot.getValue(LinkedHashMap.class);
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.e(TAG, firebaseError.getMessage(), firebaseError.toException());
+            }
+        });
+
+        return scores;
     }
 }
