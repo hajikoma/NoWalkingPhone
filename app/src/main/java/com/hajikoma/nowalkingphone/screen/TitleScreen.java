@@ -111,7 +111,6 @@ public class TitleScreen extends Screen {
                 } else if (isBounds(ges, muteDstArea)) {
                     if (Assets.ud.isMute()) {
                         Assets.ud.unMute();
-                        playSound(Assets.decision22, 0.5f);
                         break;
                     } else {
                         Assets.ud.mute();

@@ -12,9 +12,14 @@ import com.firebase.client.Transaction;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class DBManager {
 
@@ -142,11 +147,35 @@ public class DBManager {
      */
     public Map<String, ArrayList<String>> fetchScoresData() {
         // 一度だけデータを取得し、リスナー解除
-        t_scores.orderByKey().limitToLast(10).addListenerForSingleValueEvent(new ValueEventListener() {
+        t_scores.limitToLast(10).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                scores = snapshot.getValue(LinkedHashMap.class);
+                Map<String, ArrayList<String>> data = snapshot.getValue(LinkedHashMap.class);
+                ArrayList<String> keys = new ArrayList<>(data.keySet());
+                Integer keys_i[] = new Integer[keys.size()];
+                // keyをintに
+                for (int i = 0; i < keys.size(); i++){
+                    keys_i[i] = Integer.valueOf(keys.get(i));
+                }
+                // 降順で並べ替え
+                Arrays.sort(keys_i, new Comparator<Integer>() {
+                    @Override
+                    public int compare(Integer lhs, Integer rhs) {
+                        if (lhs < rhs) {
+                            return 1;
+                        } else if (lhs > rhs) {
+                            return -1;
+                        }
+
+                        return 0;
+                    }
+                });
+                // 格納
+                for (int i = 0; i < keys_i.length; i++){
+                    scores.put(String.valueOf(keys_i[i]), data.get(String.valueOf(keys_i[i])));
+                }
             }
+
             @Override
             public void onCancelled(FirebaseError firebaseError) {
                 Log.e(TAG, firebaseError.getMessage(), firebaseError.toException());
