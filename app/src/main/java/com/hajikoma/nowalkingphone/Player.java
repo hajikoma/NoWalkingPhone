@@ -137,13 +137,6 @@ public class Player extends SpriteImage {
      * 左にステップをした
      */
     public void stepLeft() {
-        if (hitArea.y == NoWalkingPhoneGame.TARGET_WIDTH) {
-            // 中央と右側の当たり判定をなくす
-            hitArea.y = NoWalkingPhoneGame.TARGET_WIDTH - 500;
-            dstRect.left -= 220;
-            dstRect.right -= 220;
-        }
-
         if (actionTime <= 0.2f) {
 //            drawAction(1, 0);
             drawAction(0, 0);
@@ -173,13 +166,6 @@ public class Player extends SpriteImage {
      * 右にステップをした
      */
     public void stepRight() {
-        if (hitArea.x == 0) {
-            // 中央と左側の当たり判定をなくす
-            hitArea.x = 500;
-            dstRect.left += 220;
-            dstRect.right += 220;
-        }
-
         if (actionTime <= 0.2f) {
 //            drawAction(1, 0);
             drawAction(0, 0);
@@ -198,7 +184,6 @@ public class Player extends SpriteImage {
         } else {
 //            drawAction(1, 0);
             drawAction(0, 0);
-            hitArea.x = 0;
             resetDstArea();
             endAction();
         }
@@ -221,6 +206,7 @@ public class Player extends SpriteImage {
         } else {
 //            drawAction(0, 1);
             drawAction(0, 0);
+            resetDstArea();
             endAction();
         }
     }
@@ -234,8 +220,7 @@ public class Player extends SpriteImage {
 
 
     public void endAction() {
-        state = ActionType.WALK;
-        actionTime = 0.0f;
+        setState(ActionType.WALK);
     }
 
 
@@ -258,6 +243,18 @@ public class Player extends SpriteImage {
         hitArea.x = 0;
         hitArea.y = NoWalkingPhoneGame.TARGET_WIDTH;
         resetDstArea();
+
+        if (state == ActionType.STEP_LEFT){
+            hitArea.y = 0;
+            dstRect.left -= 220;
+            dstRect.right -= 220;
+        }else if(state == ActionType.STEP_RIGHT){
+            dstRect.left += 220;
+            dstRect.right += 220;
+        }else if(state == ActionType.SMASH) {
+            dstRect.left += 220;
+            dstRect.right += 220;
+        }
     }
 
 

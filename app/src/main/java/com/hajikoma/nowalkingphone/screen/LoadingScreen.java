@@ -78,7 +78,7 @@ public class LoadingScreen extends Screen {
         Assets.walker_visitor = gra.newPixmap("walker/walker_visitor_right.png", PixmapFormat.ARGB4444);
 
 
-        // サウンドの読み込み(アイテム使用時のサウンドは、trimScreenにて読み込む)
+        // サウンドの読み込み
         Assets.voice_amai = aud.newSound("sound/voice_amai.mp3");
         Assets.voice_nanto = aud.newSound("sound/voice_nanto.mp3");
         Assets.voice_mieru = aud.newSound("sound/voice_mieru.mp3");
@@ -95,6 +95,8 @@ public class LoadingScreen extends Screen {
         Assets.kickLow1 = aud.newSound("sound/kick-low1.mp3");
         Assets.punchMiddle2 = aud.newSound("sound/punch-middle2.mp3");
         Assets.magicElectron2 = aud.newSound("sound/magic-electron2.mp3");
+        Assets.weak = aud.newSound("sound/weak.mp3");
+        Assets.weak = aud.newSound("sound/laser3.mp3");
 
         //バイブパターンのセットアップ
         Assets.vibShortOnce = 50;

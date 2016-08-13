@@ -38,7 +38,7 @@ import java.util.Random;
 public class GameScreen extends Screen {
 
     /** 現在のシーンを表す列挙型 */
-    private static enum Scene {
+    private enum Scene {
         /** お手入れ開始準備、セットアップに使用 */
         READY,
         /** お手入れ開始直後、カウントダウンに使用 */
@@ -48,7 +48,7 @@ public class GameScreen extends Screen {
         /** 一時停止 */
         PAUSE,
         /** ゲームオーバー */
-        GAMEOVER;
+        GAME_OVER;
     }
 
     /** 共通して使用するインスタンス */
@@ -83,10 +83,6 @@ public class GameScreen extends Screen {
 
     /** 各スコアを格納 */
     private Score sc = new Score();
-    /** コンボ数の表示座標 */
-    private Point comboXY = new Point();
-    /** コンボ数の表示座標 */
-    private float comboTime = 0.0f;
 
     /** スマッシュの使用可能回数 */
     private int remainSmash = 3;
@@ -105,6 +101,7 @@ public class GameScreen extends Screen {
     /** Effect */
     private Effect lifeReduceEffect;
     private Effect smashEffect;
+    private Effect crashEffect;
 
     /** BGM */
     private Music bgm;
@@ -116,7 +113,9 @@ public class GameScreen extends Screen {
     private LinkedHashMap<Double, Sound> onTap = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onFling = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onCrash = new LinkedHashMap<>();
+    private LinkedHashMap<Double, Sound> onBarrier = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onSmash = new LinkedHashMap<>();
+    private LinkedHashMap<Double, Sound> onNoSmash = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onLvUpMany = new LinkedHashMap<>();
 
     /** エフェクトに使用する変化するalpha値 */
@@ -165,10 +164,12 @@ public class GameScreen extends Screen {
         onTap.put(1.0, Assets.punchMiddle2);
         onFling.put(0.5, Assets.voice_mieru);
         onFling.put(1.0, Assets.punchSwing1);
-        onSmash.put(0.5, Assets.magicElectron2);
-        onSmash.put(1.0, Assets.bomb1);
         onCrash.put(0.5, Assets.voice_nanto);
         onCrash.put(1.0, Assets.punchMiddle2);
+        onBarrier.put(1.0, Assets.laser3);
+        onSmash.put(0.5, Assets.magicElectron2);
+        onSmash.put(1.0, Assets.bomb1);
+        onNoSmash.put(1.0, Assets.weak);
         onLvUpMany.put(0.5, Assets.peoplePerformanceCheer1);
         onLvUpMany.put(1.0, Assets.peopleStadiumCheer1);
 
@@ -222,10 +223,29 @@ public class GameScreen extends Screen {
                 // 再生済み効果音を初期化
                 playedSounds = new ArrayList<>();
 
+                // Playerの状態に応じた処理
+                if (player.getState() == Player.ActionType.STEP_RIGHT) {
+                    // 右ステップでsmash使用
+                    if (remainSmash >= 1) {
+                        player.setState(Player.ActionType.SMASH);
+                        for (Walker walker : walkers) {
+                            walker.setState(Walker.ActionType.SMASHED);
+                            if (sc.beatWalker(walker.getPoint())) {
+                                lvUp();
+                            }
+                        }
+                        playSoundOnceRandom("onSmash", onSmash, 1.2f);
+                        remainSmash--;
+                    } else {
+                        player.setState(Player.ActionType.WALK);
+                        playSoundOnceRandom("onNoSmash", onNoSmash, 1.2f);
+                    }
+                }
+
                 // Walkerの状態に応じた処理
                 for (int i = 0; i < walkers.size(); i++) {
                     if (walkers.get(i).getState() == Walker.ActionType.VANISH) {
-                            walkers.remove(i);
+                        walkers.remove(i);
                     }
                 }
 
@@ -243,7 +263,12 @@ public class GameScreen extends Screen {
                 // WalkerとPlayerの衝突処理
                 for (Walker walker : walkers) {
                     if (isCrash(walker)) {
-                        processCrash(walker);
+                        if (player.getState() == Player.ActionType.STEP_LEFT) {
+                            // 左ステップ中は無敵
+                            processBarrier(walker);
+                        } else {
+                            processCrash(walker);
+                        }
                     }
                 }
 
@@ -268,22 +293,6 @@ public class GameScreen extends Screen {
                             }
                         }
 
-                        // smashの使用判定
-                        for (int si = 0; si < remainSmash; si++) {
-                            if (isBounds(ges, SMASH_DST_RECT_ARR[si], TAP_EXPANTION)) {
-                                player.setState(Player.ActionType.SMASH);
-                                for (Walker walker : walkers) {
-                                    walker.setState(Walker.ActionType.SMASHED);
-                                    if (sc.beatWalker(walker.getPoint())) {
-                                        lvUp();
-                                    }
-                                }
-                                playSoundOnceRandom("onSmash", onSmash, 1.2f);
-                                remainSmash--;
-                                break;
-                            }
-                        }
-
                     } else if (ges.type == GestureEvent.GESTURE_FLING && isBounds(ges, onStepArea)) {
                         // Playerをステップさせた
                         if (ges.velocityX > 0.0f) {
@@ -299,7 +308,7 @@ public class GameScreen extends Screen {
                 if (player.getDamage() >= player.getInitLife()) {
                     player.setState(Player.ActionType.STANDBY);
                     manager.setAllWalkerState(walkers, Walker.ActionType.STANDBY);
-                    changeScene(Scene.GAMEOVER);
+                    changeScene(Scene.GAME_OVER);
                 }
 
                 // ループ終了時処理
@@ -313,7 +322,7 @@ public class GameScreen extends Screen {
                 break;
             //-------------------------------------------------------------------------------------------------
 
-            case GAMEOVER://-----------------------------------------------------------------------------------
+            case GAME_OVER://-----------------------------------------------------------------------------------
                 //お手入れ終了表示
                 if (timer <= 3.0f) {
                     txt.drawText("お手入れ終了", 5, 700, 620, Assets.map_style.get("big"));
@@ -387,6 +396,13 @@ public class GameScreen extends Screen {
         for (int key : keyList) {
             walkers.get(bottomList.get(key)).action(deltaTime);
         }
+    }
+
+
+    /** ステップ中に衝突した時の一連の処理 */
+    private void processBarrier(Walker walker) {
+        walker.setState(Walker.ActionType.VANISH);
+        playSoundOnceRandom("onBarrier", onBarrier, 1.5f);
     }
 
 

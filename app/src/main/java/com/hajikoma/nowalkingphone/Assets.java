@@ -54,6 +54,8 @@ public class Assets {
 	public static Sound kickLow1;
 	public static Sound punchMiddle2;
 	public static Sound magicElectron2;
+	public static Sound weak;
+	public static Sound laser3;
 
 	public static int vibShortOnce;
 	public static int vibLongOnce;
