@@ -70,6 +70,11 @@ public class TitleScreen extends Screen {
         aud = game.getAudio();
         vib = game.getVibrate();
 
+        // ランキングデータを先行して読み込み
+        if (((AndroidGame) game).isNetworkConnected()) {
+            ((AndroidGame) game).dbManager.fetchScoresDataUnsync();
+        }
+
         // Walkerのセットアップ
         manager.addWalker(manager.BASIC, new SmaphoWalker("歩きスマホ", 1, 3, 2, "普通なのがとりえ", 2, Assets.walker_man, 500, 500, null));
         manager.addWalker(manager.FRIEND, new Walker("おばあさん", 1, 2, 1, "善良な市民。タップ禁止", -5, Assets.walker_grandma, 500, 500, null));

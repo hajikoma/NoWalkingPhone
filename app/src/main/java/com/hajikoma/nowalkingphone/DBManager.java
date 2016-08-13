@@ -21,9 +21,7 @@ import java.util.Map;
 
 /**
  * FirebaseのDBへのアクセス全般を担当する。
- *
  * FirebaseDBは複数ユーザーによる同時read/writeが行われるため、対象のテーブルに同期処理が必要でないか気を付けること。
- *
  * Firebaseとの通信は非同期で行われるため、処理タイミングにも注意し、適宜同期化などすること。
  * これら条件により、このクラスのメンバは可能な限り隠蔽すること。
  */
@@ -40,8 +38,6 @@ public class DBManager {
     private Map<String, ArrayList<String>> scores = new LinkedHashMap<>();
     /** scoresテーブルから取得するレコード上限 */
     public static final int MAX_FETCH_SCORES = 1000;
-    /** scoresテーブルからの同期処理に使用 */
-    private final Object scoresLock = new Object();
 
 
     public DBManager(Activity activity) {
@@ -154,58 +150,60 @@ public class DBManager {
      *
      * @return キー：スコア　値：そのスコアのid一覧
      */
-    public Map<String, ArrayList<String>> fetchScores() {
-        fetchScoresData();
-
-        // scoresLockはfetchScoresData()により、lockされる。
-        // scoresLockに意図的にアクセスすることで、fetchScoresData()の処理完了後にreturnされる
-        Log.i(TAG, scoresLock.toString());
+    public Map<String, ArrayList<String>> getLoadedScore() {
         return scores;
     }
 
 
     /**
-     * scoresテーブルからレコードを取得し、降順でscoresメンバに格納する
-     * 格納処理が終わったら、isScoreLoadedをtrueにする
-     * レコード取得は別スレッドで行われるため、同期処理している
+     * scoresテーブルからデータが取得できているかどうかを返す
      */
-    private void fetchScoresData() {
+    public boolean isScoreLoaded() {
+        return scores.size() >= 1;
+    }
+
+
+    /**
+     * scoresテーブルからレコードを取得し、降順でscoresメンバに格納する
+     * レコード取得は別スレッドで行われるため、非同期処理である
+     */
+    public void fetchScoresDataUnsync() {
         // 一度だけデータを取得し、リスナー解除
-        synchronized (scoresLock) {
-            t_scores.limitToLast(MAX_FETCH_SCORES).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    Map<String, ArrayList<String>> data = snapshot.getValue(LinkedHashMap.class);
-                    ArrayList<String> keys = new ArrayList<>(data.keySet());
-                    Integer keys_i[] = new Integer[keys.size()];
-                    // keyをIntegerに
-                    for (int i = 0; i < keys.size(); i++) {
-                        keys_i[i] = Integer.valueOf(keys.get(i));
-                    }
-                    // 降順で並べ替え
-                    Arrays.sort(keys_i, new Comparator<Integer>() {
-                        @Override
-                        public int compare(Integer lhs, Integer rhs) {
-                            if (lhs < rhs) {
-                                return 1;
-                            } else if (lhs > rhs) {
-                                return -1;
-                            }
-
-                            return 0;
+        t_scores.limitToLast(MAX_FETCH_SCORES).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Log.i(TAG, "start on data change");
+                scores.clear();
+                Map<String, ArrayList<String>> data = snapshot.getValue(LinkedHashMap.class);
+                ArrayList<String> keys = new ArrayList<>(data.keySet());
+                Integer keys_i[] = new Integer[keys.size()];
+                // keyをIntegerに
+                for (int i = 0; i < keys.size(); i++) {
+                    keys_i[i] = Integer.valueOf(keys.get(i));
+                }
+                // 降順で並べ替え
+                Arrays.sort(keys_i, new Comparator<Integer>() {
+                    @Override
+                    public int compare(Integer lhs, Integer rhs) {
+                        if (lhs < rhs) {
+                            return 1;
+                        } else if (lhs > rhs) {
+                            return -1;
                         }
-                    });
-                    // 格納
-                    for (Integer key_i : keys_i) {
-                        scores.put(String.valueOf(key_i), data.get(String.valueOf(key_i)));
-                    }
-                }
 
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-                    Log.e(TAG, firebaseError.getMessage(), firebaseError.toException());
+                        return 0;
+                    }
+                });
+                // 格納
+                for (Integer key_i : keys_i) {
+                    scores.put(String.valueOf(key_i), data.get(String.valueOf(key_i)));
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.e(TAG, firebaseError.getMessage(), firebaseError.toException());
+            }
+        });
     }
 }

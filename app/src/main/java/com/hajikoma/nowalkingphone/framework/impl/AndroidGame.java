@@ -6,6 +6,8 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Point;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -59,6 +61,8 @@ public abstract class AndroidGame extends Activity implements Game {
 
     /** FirebaseDBへの接続を持つマネージャ */
     public DBManager dbManager;
+    /** ネットワーク状態を扱うためのマネージャ */
+    public ConnectivityManager conManager;
 
 
     /** アクティビティ生成時に呼ばれる */
@@ -68,6 +72,7 @@ public abstract class AndroidGame extends Activity implements Game {
         super.onCreate(savedInstanceState);
 
         dbManager = new DBManager(this);
+        conManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 
 
         //全画面表示に設定
@@ -197,7 +202,21 @@ public abstract class AndroidGame extends Activity implements Game {
     }
 
 
+    /**
+     * mainスレッドにrunの処理を依頼する
+     *
+     * @param run 処理を書いたrunオブジェクト
+     */
     public void postRunnable(final Runnable run) {
         mainThreadHandler.post(run);
+    }
+
+
+    /**
+     * 何かしらのネットワークに接続しているかどうかを取得する
+     */
+    public boolean isNetworkConnected() {
+        NetworkInfo info = conManager.getActiveNetworkInfo();
+        return info != null && info.isConnected();
     }
 }

@@ -42,8 +42,8 @@ public class LoadingScreen extends Screen {
         Audio aud = game.getAudio();
 
         // デバッグ用：preferenceを削除
-//        SharedPreferences.Editor editor = getSharedPreference().edit();
-//        editor.clear().apply();
+        SharedPreferences.Editor editor = getSharedPreference().edit();
+        editor.clear().apply();
 
         // ユーザーデータのロード処理
         Assets.ud = UserData.getUserData();

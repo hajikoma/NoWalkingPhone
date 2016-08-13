@@ -1,13 +1,9 @@
 package com.hajikoma.nowalkingphone.screen;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Rect;
-import android.net.Uri;
 
 import com.hajikoma.nowalkingphone.Assets;
-import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
-import com.hajikoma.nowalkingphone.Score;
+import com.hajikoma.nowalkingphone.DBManager;
 import com.hajikoma.nowalkingphone.UserData;
 import com.hajikoma.nowalkingphone.framework.Game;
 import com.hajikoma.nowalkingphone.framework.Graphics;
@@ -34,14 +30,22 @@ public class RankingScreen extends Screen {
     private Rect goMenuDstArea = new Rect(40 + 400 + 30, 1040, 40 + 400 + 10 + 200, 1020 + 200);
 
     /** 共通して使用するインスタンス */
-    private final Game game;
-    private final Graphics gra;
-    private final Text txt;
+    private Game game;
+    private Graphics gra;
+    private Text txt;
 
-    // scoresテーブルの値
+    /** scoresテーブルの値 */
     Map<String, ArrayList<String>> scores = new LinkedHashMap<>();
-    // 順位
-    private int userRank = ((AndroidGame) game).dbManager.MAX_FETCH_SCORES;
+    /** 1～10位のスコアscoresテーブルの値 */
+    private int[] topTen = new int[10];
+    /** ユーザーの順位 */
+    private int userRank;
+    /** ユーザーの順位（表示用） */
+    private String userRankStr;
+    /** DBからデータを取得できたかどうか */
+    private boolean isScoreLoaded;
+    /** ランキングデータを処理したかどうか */
+    private boolean isScoreProcessed = false;
 
 
     /** RankingScreenを生成する */
@@ -51,31 +55,10 @@ public class RankingScreen extends Screen {
         gra = game.getGraphics();
         txt = game.getText();
 
-        UserData ud = Assets.ud;
-
-
         // 固有グラフィックの読み込み
         Assets.result_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
-
-        // データを取得
-        scores = ((AndroidGame) game).dbManager.fetchScores();
-        int firstScore = ud.getFirstScore();
-        int rank = 1;
-        for (String score : scores.keySet()) {
-            // 1000位までカウント
-            if (rank >= 1000) {
-                break;
-            }
-
-            if (firstScore < Integer.valueOf(score)) {
-                // そのscoreの人数分カウントアップ
-                rank += scores.get(score).size();
-            } else {
-                userRank = rank;
-                break;
-            }
-        }
     }
+
 
     @Override
     public void update(float deltaTime) {
@@ -89,28 +72,37 @@ public class RankingScreen extends Screen {
         game.getInput().getKeyEvents();
 
         gra.drawPixmap(Assets.result_bg, 0, 0);
-
         txt.drawText("全国ランキング", 80, 80, 700, Assets.map_style.get("title"));
+        txt.drawText("あなたの順位", 80, 1000, 700, Assets.map_style.get("title"));
+        txt.drawText("タップで戻る", 200, 1240, 700, Assets.map_style.get("title"));
 
-        int counter = 1;
-        for (String score : scores.keySet()) {
-            if (counter <= 3) {
-                txt.drawText(counter + "位：" + score, 40, 200 + counter * 80, 700, Assets.map_style.get("score"));
-            } else {
-                txt.drawText(counter + "位：" + score, 40, 200 + counter * 80, 700, Assets.map_style.get("title"));
+
+        // スコアデータの処理
+        isScoreLoaded = ((AndroidGame) game).dbManager.isScoreLoaded();
+        if (isScoreLoaded) {
+            if(!isScoreProcessed) {
+                processScore();
             }
 
-            if (counter < 10) {
-                counter++;
+            for (int ri = 0; ri < topTen.length; ri++) {
+                if (ri < 3) {
+                    txt.drawText(ri + 1 + "位：" + topTen[ri], 40, 200 + ri * 80, 700, Assets.map_style.get("score"));
+                } else {
+                    txt.drawText(ri + 1 + "位：" + topTen[ri], 40, 200 + ri * 80, 700, Assets.map_style.get("title"));
+                }
+            }
+        } else {
+            userRankStr = "-位";
+            if (!((AndroidGame) game).isNetworkConnected()) {
+                txt.drawText("データの取得に失敗しました", 70, 500, 700, Assets.map_style.get("title"));
+                txt.drawText("ネットワーク接続を確認して下さい", 40, 600, 700, Assets.map_style.get("title"));
             } else {
-                break;
+                txt.drawText("ランキング取得中...", 150, 500, 700, Assets.map_style.get("title"));
             }
         }
 
-        String rankStr = userRank < 1000 ? userRank + "位" : userRank + "位以下";
-        txt.drawText("あなたの順位", 80, 1000, 700, Assets.map_style.get("title"));
-        txt.drawText(rankStr, 40, 1120, 280, Assets.map_style.get("title"));
-        txt.drawText(Integer.toString(Assets.ud.getFirstScore()), 340, 1100, 700, Assets.map_style.get("score"));
+        txt.drawText(userRankStr, 40, 1120, 280, Assets.map_style.get("title"));
+        txt.drawText(Integer.toString(Assets.ud.getFirstScore()), 340, 1130, 700, Assets.map_style.get("score"));
 
         // タッチイベントの処理
         for (int gi = 0; gi < gestureEvents.size(); gi++) {
@@ -142,4 +134,50 @@ public class RankingScreen extends Screen {
         return "ResultScreen";
     }
 
+
+    /** scoreデータをランキング用に処理する */
+    private void processScore() {
+        scores = ((AndroidGame) game).dbManager.getLoadedScore();
+
+        // 上位10スコアを格納
+        int rank = 1;
+        for (String score : scores.keySet()) {
+            if (rank <= 10) {
+                int size = scores.get(score).size();
+                for (int i = 0; i < size; i++) {
+                    topTen[rank - 1] = Integer.valueOf(score);
+                    rank++;
+                    if (rank > 10) {
+                        break;
+                    }
+                }
+            } else {
+                break;
+            }
+        }
+
+        // ユーザーの順位を計算
+        rank = 1;
+        int firstScore = Assets.ud.getFirstScore();
+        userRank = DBManager.MAX_FETCH_SCORES;
+        if (scores.containsKey(String.valueOf(firstScore))) {
+            for (String score : scores.keySet()) {
+                // 1000位までカウント
+                if (rank >= 1000) {
+                    break;
+                }
+
+                if (firstScore < Integer.valueOf(score)) {
+                    // そのscoreの人数分カウントアップ
+                    rank += scores.get(score).size();
+                } else {
+                    userRank = rank;
+                    break;
+                }
+            }
+        }
+        userRankStr = userRank < 1000 ? userRank + "位" : userRank + "位以下";
+
+        isScoreProcessed = true;
+    }
 }
