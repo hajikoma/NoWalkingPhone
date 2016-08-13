@@ -1,9 +1,8 @@
 package com.hajikoma.nowalkingphone.screen;
 
-import java.util.HashMap;
-
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.hajikoma.nowalkingphone.Assets;
@@ -98,35 +97,20 @@ public class LoadingScreen extends Screen {
         Assets.weak = aud.newSound("sound/weak.mp3");
         Assets.weak = aud.newSound("sound/laser3.mp3");
 
-        //バイブパターンのセットアップ
+        // バイブパターンのセットアップ
         Assets.vibShortOnce = 50;
         Assets.vibLongOnce = 150;
         Assets.vibShortRythem = new long[]{50, 50};
         Assets.vibLongRythem = new long[]{150, 150};
 
-        // テキストスタイルのセットアップ
-        HashMap<String, Paint> styleMap = new HashMap<String, Paint>();
-
-        Paint general = new Paint();
-        general.setTextSize(30);
-        general.setAntiAlias(true);
-        styleMap.put("general", general);
-
-        Paint title = new Paint();
-        title.setTextSize(50);
-        title.setAntiAlias(true);
-        styleMap.put("title", title);
-
-        Paint score = new Paint();
-        score.setTextSize(100);
-        score.setAntiAlias(true);
-        styleMap.put("score", score);
-
-        Paint big = new Paint();
-        big.setTextSize(120);
-        big.setAntiAlias(true);
-        styleMap.put("big", big);
-        Assets.map_style = styleMap;
+        // スタイルのセットアップ
+        Assets.style_general_black = new Paint();
+        Assets.style_general_black.setAntiAlias(true);
+        Assets.style_general_black.setTextSize(NoWalkingPhoneGame.FONT_SIZE_GENERAL);
+        Assets.style_general_white = new Paint();
+        Assets.style_general_white.setAntiAlias(true);
+        Assets.style_general_white.setTextSize(NoWalkingPhoneGame.FONT_SIZE_GENERAL);
+        Assets.style_general_white.setColor(Color.WHITE);
     }
 
     /** 次のスクリーンに処理を移す。 */

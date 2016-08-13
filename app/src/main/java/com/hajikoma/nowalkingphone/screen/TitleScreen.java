@@ -37,9 +37,9 @@ public class TitleScreen extends Screen {
     /** スタートボタン描画先 */
     private Rect startDstArea = new Rect(80, 700, 640, 700 + 150);
     /** ランキングボタン描画先 */
-    private Rect rankingDstArea = new Rect(80, 890, 640, 890 + 150);
+    private Rect rankingDstArea = new Rect(80, 890, 640, 890 + 100);
     /** 遊びかたボタン描画先 */
-    private Rect tutorialDstArea = new Rect(80, 1080, 640, 1080 + 100);
+    private Rect tutorialDstArea = new Rect(80, 1030, 640, 1030 + 100);
     /** ミュートボタン描画先 */
     private Rect muteDstArea = new Rect(80, 1200, 80 + 60, 1200 + 60);
     /** バイブボタン描画先 */
@@ -90,7 +90,7 @@ public class TitleScreen extends Screen {
         bgm.setLooping(true);
 
         //固有グラフィックの読み込み
-        Assets.title_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
+        Assets.bg_title = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
         Assets.settings = gra.newPixmap("others/settings.png", PixmapFormat.ARGB4444);
     }
 
@@ -142,7 +142,7 @@ public class TitleScreen extends Screen {
         playMusic(bgm);
 
         // 背景の描画
-        gra.drawPixmap(Assets.title_bg, 0, 0);
+        gra.drawPixmap(Assets.bg_title, 0, 0);
 
         // Walkerの処理
         for (int i = 0; i < walkers.size(); i++) {
@@ -159,8 +159,8 @@ public class TitleScreen extends Screen {
         }
 
         // 共通部分の描画
-        txt.drawText("歩きスマホ撃退アクション", 80, 100, 540, Assets.map_style.get("score"));
-        txt.drawText("スマ歩NO!", 100, 360, 520, Assets.map_style.get("big"));
+        txt.drawText("歩きスマホ撃退アクション", 80, 100, 540, Assets.style_general_black);
+        txt.drawText("スマ歩NO!", 100, 360, 520, Assets.style_general_black);
         gra.drawRoundRect(startDstArea, 15.0f, Color.MAGENTA);
         gra.drawRoundRect(rankingDstArea, 15.0f, Color.YELLOW);
         gra.drawRoundRect(tutorialDstArea, 15.0f, Color.GREEN);
@@ -199,7 +199,7 @@ public class TitleScreen extends Screen {
     /** 固有の参照を明示的に切る */
     @Override
     public void dispose() {
-        Assets.title_bg = null;
+        Assets.bg_title = null;
         Assets.settings = null;
         bgm.dispose();
     }

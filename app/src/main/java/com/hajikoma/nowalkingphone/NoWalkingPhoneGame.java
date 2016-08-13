@@ -19,6 +19,13 @@ import com.hajikoma.nowalkingphone.screen.LoadingScreen;
  */
 public class NoWalkingPhoneGame extends AndroidGame {
 
+    // 汎用文字サイズ
+    public static final int FONT_SIZE_GENERAL = 40;
+    public static final int FONT_SIZE_S = 60;
+    public static final int FONT_SIZE_M = 80;
+    public static final int FONT_SIZE_L = 100;
+    public static final int FONT_SIZE_XL = 120;
+
     /** 広告表示アクティビティ */
     private Intent adIntent;
 

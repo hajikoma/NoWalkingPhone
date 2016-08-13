@@ -18,16 +18,15 @@ import com.hajikoma.nowalkingphone.framework.Sound;
  */
 public class Assets {
 
-	public static Pixmap opening_bg;
-	public static Pixmap title_bg;
-	public static Pixmap credit_bg;
-	public static Pixmap data_bg;
-	public static Pixmap trim_bg;
-	public static Pixmap result_bg;
+	public static Pixmap bg_title;
+	public static Pixmap bg_ranking;
+	public static Pixmap bg_game;
+	public static Pixmap bg_result;
 
 	public static Pixmap settings;
 	public static Pixmap icon_hand;
 	public static Pixmap number;
+	public static Pixmap onomatopee;
 
 	public static Pixmap player;
 	public static Pixmap walker_boy;
@@ -62,9 +61,8 @@ public class Assets {
 	public static long[] vibShortRythem;
 	public static long[] vibLongRythem;
 
-	public static Pixmap onomatopee;
-
-	public static HashMap<String, Paint> map_style;
+	public static Paint style_general_black;
+	public static Paint style_general_white;
 
 
 //各Screenで共有する変数。Screenが遷移しても値を保持しておきたい変数や、

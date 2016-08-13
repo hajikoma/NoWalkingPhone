@@ -1,6 +1,7 @@
 package com.hajikoma.nowalkingphone.screen;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 
@@ -98,6 +99,10 @@ public class GameScreen extends Screen {
     /** Walkerタップ時の、当たり判定の拡大値 */
     private final int TAP_EXPANTION = 30;
 
+    /** Font */
+    private Paint fontNumber;
+    private Paint fontScore;
+
     /** Effect */
     private Effect lifeReduceEffect;
     private Effect smashEffect;
@@ -148,8 +153,16 @@ public class GameScreen extends Screen {
         manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 10, 5, "もはやテロリスト", 20, Assets.walker_car, 500, 500, null));
 
         // 固有グラフィックの読み込み
-        Assets.trim_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
+        Assets.bg_game = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
         Assets.onomatopee = gra.newPixmap("others/onomatopee.png", PixmapFormat.ARGB4444);
+
+        // Font
+        fontNumber = new Paint();
+        fontNumber.setAntiAlias(true);
+        fontNumber.setTextSize(NoWalkingPhoneGame.FONT_SIZE_M);
+        fontScore = new Paint();
+        fontScore.setAntiAlias(true);
+        fontScore.setTextSize(NoWalkingPhoneGame.FONT_SIZE_L);
 
         // Effect
         lifeReduceEffect = new Effect(Assets.onomatopee, 180, new float[]{0.25f, 0.25f, 0.25f, 0.25f});
@@ -195,9 +208,9 @@ public class GameScreen extends Screen {
         game.getInput().getKeyEvents();
 
         //共通部分の描画
-        gra.drawPixmap(Assets.trim_bg, 0, 0);
-        txt.drawText(String.valueOf(sc.level), 20, 100, 200, Assets.map_style.get("score"));
-        txt.drawText(String.valueOf(sc.combo), 400, 100, 200, Assets.map_style.get("score"));
+        gra.drawPixmap(Assets.bg_game, 0, 0);
+        txt.drawText(String.valueOf(sc.level), 20, 100, 200, fontNumber);
+        txt.drawText(String.valueOf(sc.combo), 400, 100, 200, fontNumber);
         drawGraphicalNumber(sc.score, 90, 20, 220, 9);
         drawLife(player.getInitLife(), player.getDamage());
         drawSmashIcon();
@@ -325,7 +338,7 @@ public class GameScreen extends Screen {
             case GAME_OVER://-----------------------------------------------------------------------------------
                 //お手入れ終了表示
                 if (timer <= 3.0f) {
-                    txt.drawText("お手入れ終了", 5, 700, 620, Assets.map_style.get("big"));
+                    txt.drawText("もう歩けない…", 5, 700, 620, Assets.style_general_black);
                     timer += deltaTime;
                 } else {
                     game.setScreen(new ResultScreen(game, sc));
@@ -366,7 +379,7 @@ public class GameScreen extends Screen {
     /** 固有の参照を明示的に切る */
     @Override
     public void dispose() {
-        Assets.trim_bg = null;
+        Assets.bg_game = null;
         Assets.onomatopee = null;
         bgm.dispose();
     }

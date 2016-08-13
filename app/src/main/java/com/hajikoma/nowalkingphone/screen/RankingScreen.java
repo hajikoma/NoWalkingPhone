@@ -1,10 +1,12 @@
 package com.hajikoma.nowalkingphone.screen;
 
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.DBManager;
-import com.hajikoma.nowalkingphone.UserData;
+import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.framework.Game;
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
@@ -34,16 +36,17 @@ public class RankingScreen extends Screen {
     private Graphics gra;
     private Text txt;
 
+    /** ランキング用フォント（大文字） */
+    private Paint rankingLarge;
+    /** ランキング用フォント（小文字） */
+    private Paint rankingSmall;
+
     /** scoresテーブルの値 */
     Map<String, ArrayList<String>> scores = new LinkedHashMap<>();
     /** 1～10位のスコアscoresテーブルの値 */
     private int[] topTen = new int[10];
-    /** ユーザーの順位 */
-    private int userRank;
     /** ユーザーの順位（表示用） */
     private String userRankStr;
-    /** DBからデータを取得できたかどうか */
-    private boolean isScoreLoaded;
     /** ランキングデータを処理したかどうか */
     private boolean isScoreProcessed = false;
 
@@ -55,8 +58,18 @@ public class RankingScreen extends Screen {
         gra = game.getGraphics();
         txt = game.getText();
 
+        rankingLarge = new Paint();
+        rankingLarge.setTextSize(NoWalkingPhoneGame.FONT_SIZE_M);
+        rankingLarge.setAntiAlias(true);
+        rankingLarge.setColor(Color.WHITE);
+
+        rankingSmall = new Paint();
+        rankingSmall.setTextSize(NoWalkingPhoneGame.FONT_SIZE_S);
+        rankingSmall.setAntiAlias(true);
+        rankingSmall.setColor(Color.WHITE);
+
         // 固有グラフィックの読み込み
-        Assets.result_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
+        Assets.bg_ranking = gra.newPixmap("others/bg_ranking.jpg", PixmapFormat.RGB565);
     }
 
 
@@ -71,14 +84,11 @@ public class RankingScreen extends Screen {
         List<GestureEvent> gestureEvents = game.getInput().getGestureEvents();
         game.getInput().getKeyEvents();
 
-        gra.drawPixmap(Assets.result_bg, 0, 0);
-        txt.drawText("全国ランキング", 80, 80, 700, Assets.map_style.get("title"));
-        txt.drawText("あなたの順位", 80, 1000, 700, Assets.map_style.get("title"));
-        txt.drawText("タップで戻る", 200, 1240, 700, Assets.map_style.get("title"));
+        gra.drawPixmap(Assets.bg_ranking, 0, 0);
 
 
         // スコアデータの処理
-        isScoreLoaded = ((AndroidGame) game).dbManager.isScoreLoaded();
+        boolean isScoreLoaded = ((AndroidGame) game).dbManager.isScoreLoaded();
         if (isScoreLoaded) {
             if(!isScoreProcessed) {
                 processScore();
@@ -86,23 +96,23 @@ public class RankingScreen extends Screen {
 
             for (int ri = 0; ri < topTen.length; ri++) {
                 if (ri < 3) {
-                    txt.drawText(ri + 1 + "位：" + topTen[ri], 40, 200 + ri * 80, 700, Assets.map_style.get("score"));
+                    txt.drawText(Integer.toString(topTen[ri]), 260, 235 + ri * 80, 700, rankingLarge);
                 } else {
-                    txt.drawText(ri + 1 + "位：" + topTen[ri], 40, 200 + ri * 80, 700, Assets.map_style.get("title"));
+                    txt.drawText(Integer.toString(topTen[ri]), 260, 460 + (ri - 3) * 60, 700, rankingSmall);
                 }
             }
         } else {
-            userRankStr = "-位";
+            userRankStr = "-";
             if (!((AndroidGame) game).isNetworkConnected()) {
-                txt.drawText("データの取得に失敗しました", 70, 500, 700, Assets.map_style.get("title"));
-                txt.drawText("ネットワーク接続を確認して下さい", 40, 600, 700, Assets.map_style.get("title"));
+                txt.drawText("データの取得に失敗しました", 70, 500, 700, Assets.style_general_white);
+                txt.drawText("ネットワーク接続を確認して下さい", 40, 600, 700, Assets.style_general_white);
             } else {
-                txt.drawText("ランキング取得中...", 150, 500, 700, Assets.map_style.get("title"));
+                txt.drawText("ランキング取得中...", 200, 500, 700, Assets.style_general_white);
             }
         }
 
-        txt.drawText(userRankStr, 40, 1120, 280, Assets.map_style.get("title"));
-        txt.drawText(Integer.toString(Assets.ud.getFirstScore()), 340, 1130, 700, Assets.map_style.get("score"));
+        txt.drawText(userRankStr, 200, 1030, 280, rankingSmall);
+        txt.drawText(Integer.toString(Assets.ud.getFirstScore()), 260, 1130, 700, rankingLarge);
 
         // タッチイベントの処理
         for (int gi = 0; gi < gestureEvents.size(); gi++) {
@@ -126,7 +136,7 @@ public class RankingScreen extends Screen {
     /** 固有の参照を明示的に切る */
     @Override
     public void dispose() {
-        Assets.result_bg = null;
+        Assets.bg_ranking = null;
     }
 
     @Override
@@ -159,7 +169,7 @@ public class RankingScreen extends Screen {
         // ユーザーの順位を計算
         rank = 1;
         int firstScore = Assets.ud.getFirstScore();
-        userRank = DBManager.MAX_FETCH_SCORES;
+        int userRank = DBManager.MAX_FETCH_SCORES;
         if (scores.containsKey(String.valueOf(firstScore))) {
             for (String score : scores.keySet()) {
                 // 1000位までカウント

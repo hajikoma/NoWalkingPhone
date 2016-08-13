@@ -61,7 +61,7 @@ public class ResultScreen extends Screen {
         UserData ud = Assets.ud;
 
         // 固有グラフィックの読み込み
-        Assets.result_bg = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
+        Assets.bg_result = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
 
         // データを保存
         if (sc.score >= ud.getFirstScore()) {
@@ -96,7 +96,7 @@ public class ResultScreen extends Screen {
         List<GestureEvent> gestureEvents = game.getInput().getGestureEvents();
         game.getInput().getKeyEvents();
 
-        gra.drawPixmap(Assets.result_bg, 0, 0);
+        gra.drawPixmap(Assets.bg_result, 0, 0);
 
         drawGraphicalNumber(sc.score, 80, 20, 250, 9);
         drawGraphicalNumber(sc.maxCombo, 80, 220, 450, 6);
@@ -154,7 +154,7 @@ public class ResultScreen extends Screen {
                 ((NoWalkingPhoneGame) game).adActivityForward();
                 isAdShow = true;
             }
-            txt.drawText("コンティニュー？", 220, 950, 500, Assets.map_style.get("big"));
+            txt.drawText("コンティニュー？", 220, 950, 500, Assets.style_general_black);
 
             // タッチイベントの処理
             for (int gi = 0; gi < gestureEvents.size(); gi++) {
@@ -183,7 +183,7 @@ public class ResultScreen extends Screen {
     /** 固有の参照を明示的に切る */
     @Override
     public void dispose() {
-        Assets.result_bg = null;
+        Assets.bg_result = null;
     }
 
     /** 効果音を一度だけ再生するヘルパー */
