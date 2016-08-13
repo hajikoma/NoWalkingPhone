@@ -50,7 +50,7 @@ public class GestureHandler implements OnTouchListener {
 		};
 		gestureEventPool = new Pool<GestureEvent>(factory, 100);
 		scaleGestureDetector = new ScaleGestureDetector(context, new ScaleGestureListener());
-		gestureDetector = new GestureDetector(context, new GesutureListener());
+		gestureDetector = new GestureDetector(context, new GestureListener());
 		view.setOnTouchListener(this);
 
 		this.scaleX = scaleX;
@@ -128,10 +128,10 @@ public class GestureHandler implements OnTouchListener {
 	}
 
 	/**
-	 * 内部クラス GesutureListener
+	 * 内部クラス GestureListener
 	 * SimpleOnGestureListenerを継承し、ジェスチャーイベントの処理内容を実装する。
 	 */
-	private class GesutureListener extends SimpleOnGestureListener{
+	private class GestureListener extends SimpleOnGestureListener{
 		@Override
 		public boolean onDown(MotionEvent event) {
 			GestureEvent gestureEvent = gestureEventPool.newObject();
