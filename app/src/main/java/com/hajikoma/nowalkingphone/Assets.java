@@ -1,13 +1,11 @@
 package com.hajikoma.nowalkingphone;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.graphics.Paint;
 
-import com.hajikoma.nowalkingphone.framework.Music;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
 import com.hajikoma.nowalkingphone.framework.Sound;
+
 
 /**
  * Assetsフォルダのリソースを格納する変数のみで構成され、リソースの利用方法を一元化している。
@@ -18,16 +16,8 @@ import com.hajikoma.nowalkingphone.framework.Sound;
  */
 public class Assets {
 
-	public static Pixmap bg_title;
-	public static Pixmap bg_ranking;
-	public static Pixmap bg_game;
-	public static Pixmap bg_result;
-
-	public static Pixmap crash;
-	public static Pixmap settings;
 	public static Pixmap icon_hand;
 	public static Pixmap number;
-	public static Pixmap onomatopee;
 
 	public static Pixmap player;
 	public static Pixmap walker_boy;
