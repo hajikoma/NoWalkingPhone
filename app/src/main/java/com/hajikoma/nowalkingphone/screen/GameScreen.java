@@ -441,13 +441,13 @@ public class GameScreen extends Screen {
      * PlayerとWalkerが衝突したかどうか判定する
      */
     protected boolean isCrash(Walker walker) {
+        Walker.ActionType walkerState = walker.getState();
         Rect location = walker.getLocation();
-        Point hitArea = player.getHitArea();
 
-        return walker.getState() != Walker.ActionType.CRASH
-                && walker.getState() != Walker.ActionType.VANISH
-                && location.bottom >= 1050 && location.bottom <= 1100
-                && location.left >= hitArea.x && location.right <= hitArea.y;
+        return walkerState != Walker.ActionType.CRASH
+                && walkerState != Walker.ActionType.VANISH
+                && player.getState() != Player.ActionType.STEP_LEFT
+                && location.bottom >= 950 && location.bottom <= 1000;
     }
 
 

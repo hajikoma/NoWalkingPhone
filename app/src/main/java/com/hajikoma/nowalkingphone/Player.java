@@ -1,6 +1,5 @@
 package com.hajikoma.nowalkingphone;
 
-import android.graphics.Point;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.framework.Pixmap;
@@ -12,7 +11,7 @@ public class Player extends SpriteImage {
 
 
     /** アクションの種類を表す定数 */
-    public static enum ActionType {
+    public enum ActionType {
         STANDBY,
         WALK,
         DAMAGE,
@@ -24,7 +23,7 @@ public class Player extends SpriteImage {
 
 
     /** lifeの初期値 */
-    private int initLife = 30;
+    private static final int INIT_LIFE = 30;
     /** 受けたダメージ量 */
     private int damage = 0;
 
@@ -33,8 +32,6 @@ public class Player extends SpriteImage {
     /** アクションの経過時間 */
     private float actionTime = 0.0f;
 
-    /** 現在位置（当たり判定のある矩形座標） */
-    private Point hitArea = new Point(0, NoWalkingPhoneGame.TARGET_WIDTH);
     /** Playerの描画先 */
     private Rect defaultDstArea = new Rect(220, 900, 500, 1200);
 
@@ -155,7 +152,6 @@ public class Player extends SpriteImage {
         } else {
 //            drawAction(1, 0);
             drawAction(0, 0);
-            hitArea.y = NoWalkingPhoneGame.TARGET_WIDTH;
             resetDstArea();
             endAction();
         }
@@ -240,12 +236,9 @@ public class Player extends SpriteImage {
     public void setState(Player.ActionType actionType) {
         state = actionType;
         actionTime = 0.0f;
-        hitArea.x = 0;
-        hitArea.y = NoWalkingPhoneGame.TARGET_WIDTH;
         resetDstArea();
 
         if (state == ActionType.STEP_LEFT){
-            hitArea.y = 0;
             dstRect.left -= 220;
             dstRect.right -= 220;
         }else if(state == ActionType.STEP_RIGHT){
@@ -272,13 +265,8 @@ public class Player extends SpriteImage {
     }
 
 
-    public Point getHitArea() {
-        return hitArea;
-    }
-
-
     public int getInitLife() {
-        return initLife;
+        return INIT_LIFE;
     }
 
 
