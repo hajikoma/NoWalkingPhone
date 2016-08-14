@@ -19,6 +19,7 @@ import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
 import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
 import com.hajikoma.nowalkingphone.framework.Music;
+import com.hajikoma.nowalkingphone.framework.Pixmap;
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Sound;
 import com.hajikoma.nowalkingphone.framework.Text;
@@ -90,9 +91,9 @@ public class GameScreen extends Screen {
     private static final int MAX_SMASH = 3;
     /** スマッシュアイコンの描画先 */
     private final Rect SMASH_DST_RECT_ARR[] = {
-            new Rect(500, 1150, 550, 1200),
-            new Rect(570, 1150, 620, 1200),
-            new Rect(640, 1150, 690, 1200)
+            new Rect(420, 1185, 500, 1265),
+            new Rect(520, 1185, 600, 1265),
+            new Rect(620, 1185, 700, 1265)
     };
 
     /** Walkerタップ時の、当たり判定の拡大値 */
@@ -103,7 +104,6 @@ public class GameScreen extends Screen {
     private Paint fontScore;
 
     /** Effect */
-    private Effect lifeReduceEffect;
     private Effect smashEffect;
     private Effect crashEffect;
 
@@ -125,6 +125,11 @@ public class GameScreen extends Screen {
     /** エフェクトに使用する変化するalpha値 */
     private AlphaGenerator agLifeWarning = new AlphaGenerator(100, 200, 3);
     private AlphaGenerator agLifeDanger = new AlphaGenerator(100, 200, 15);
+
+    /** 固有画像 */
+    private Pixmap bg;
+    private Pixmap effect_crash;
+    private Pixmap icon_smash;
 
 
     /**
@@ -152,9 +157,9 @@ public class GameScreen extends Screen {
         manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 10, 5, "もはやテロリスト", 20, Assets.walker_car, 500, 500, null));
 
         // 固有グラフィックの読み込み
-        Assets.bg_game = gra.newPixmap("others/bg_game.jpg", PixmapFormat.RGB565);
-        Assets.crash = gra.newPixmap("others/crash.png", PixmapFormat.ARGB4444);
-        Assets.onomatopee = gra.newPixmap("others/onomatopee.png", PixmapFormat.ARGB4444);
+        bg = gra.newPixmap("others/bg_game.jpg", PixmapFormat.RGB565);
+        effect_crash = gra.newPixmap("others/crash.png", PixmapFormat.ARGB4444);
+        icon_smash = gra.newPixmap("others/icon_smash2.png", PixmapFormat.ARGB4444);
 
         // Font
         fontNumber = new Paint();
@@ -165,12 +170,11 @@ public class GameScreen extends Screen {
         fontScore.setTextSize(NoWalkingPhoneGame.FONT_SIZE_L);
 
         // Effect
-        crashEffect = new Effect(Assets.crash, 620, new float[]{0.5f});
-        lifeReduceEffect = new Effect(Assets.onomatopee, 180, new float[]{0.25f, 0.25f, 0.25f, 0.25f});
+        crashEffect = new Effect(effect_crash, 620, new float[]{0.5f});
 
         // BGM
         bgm = aud.newMusic("music/me_6777276_Race.mp3");
-        bgm.setVolume(0.1f);
+        bgm.setVolume(0.05f);
         bgm.setLooping(true);
 
         // 効果音セット
@@ -209,7 +213,7 @@ public class GameScreen extends Screen {
         game.getInput().getKeyEvents();
 
         //共通部分の描画
-        gra.drawPixmap(Assets.bg_game, 0, 0);
+        gra.drawPixmap(bg, 0, 0);
         txt.drawText(String.valueOf(sc.level), 20, 130, 200, fontNumber);
         txt.drawText(String.valueOf(sc.combo), 400, 130, 200, fontNumber);
         drawGraphicalNumber(sc.score, 90, 20, 220, 9);
@@ -273,7 +277,6 @@ public class GameScreen extends Screen {
                 player.action(deltaTime);
                 actWalkerBehindToForward(deltaTime);
                 crashEffect.play(deltaTime);
-                lifeReduceEffect.play(deltaTime);
 
                 // WalkerとPlayerの衝突処理
                 for (Walker walker : walkers) {
@@ -357,7 +360,6 @@ public class GameScreen extends Screen {
     }
 
 
-    /** このスクリーンでの処理はない */
     @Override
     public void present(float deltaTime) {
         playMusic(bgm);
@@ -386,8 +388,6 @@ public class GameScreen extends Screen {
     /** 固有の参照を明示的に切る */
     @Override
     public void dispose() {
-        Assets.bg_game = null;
-        Assets.onomatopee = null;
         bgm.dispose();
     }
 
@@ -435,7 +435,6 @@ public class GameScreen extends Screen {
         walker.setState(Walker.ActionType.CRASH);
         sc.combo = 0;
         crashEffect.on(new Rect(0, 0, 720, 1280));
-        lifeReduceEffect.on(new Rect(50, 1150, 300, 1230));
         playSoundOnceRandom("onCrash", onCrash, 1.5f);
         if (power >= 5) {
             doVibrate(vib, Assets.vibLongOnce);
@@ -515,11 +514,11 @@ public class GameScreen extends Screen {
     }
 
 
-    /** 残りsmash回数のアイコンを描画する */
+    /** 残りsmash回数分、アイコンを描画する */
     private void drawSmashIcon() {
-        Rect srcRect = new Rect(0, 0, 200, 200);
+        Rect srcRect = new Rect(0, 0, 143, 143);
         for (int ii = 0; ii < remainSmash; ii++) {
-            gra.drawPixmap(Assets.icon_hand, SMASH_DST_RECT_ARR[ii], srcRect);
+            gra.drawPixmap(icon_smash, SMASH_DST_RECT_ARR[ii], srcRect);
         }
     }
 

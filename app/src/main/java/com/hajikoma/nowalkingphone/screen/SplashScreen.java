@@ -39,6 +39,9 @@ public class SplashScreen extends Screen {
     public void update(float deltaTime) {
         timer += deltaTime;
 
+        // タッチイベントを捨てる
+        game.getInput().getGestureEvents();
+
         if (timer < 3.0f) {
             gra.drawRect(0, 0, NoWalkingPhoneGame.TARGET_WIDTH, NoWalkingPhoneGame.TARGET_HEIGHT, Color.WHITE);
             gra.drawPixmap(hajikoma, 20, 500);
