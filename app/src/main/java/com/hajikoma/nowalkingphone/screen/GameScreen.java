@@ -149,7 +149,7 @@ public class GameScreen extends Screen {
 
         // Walkerのセットアップ
         manager.addWalker(manager.BASIC, new SmaphoWalker(1, 3, 2, 2, Assets.walker_man, 500, 500, null));
-        manager.addWalker(manager.FRIEND, new Walker(1, 2, 1, -5, Assets.walker_grandma, 500, 500, null));
+        manager.addWalker(manager.GRANDMA, new Walker(1, 2, 1, -5, Assets.walker_grandma, 500, 500, null));
         manager.addWalker(manager.SCHOOL, new SmaphoWalker(1, 5, 1, 3, Assets.walker_boy, 500, 500, null));
         manager.addWalker(manager.WOMAN, new SmaphoWalker(1, 3, 2, 3, Assets.walker_girl, 500, 500, null));
         manager.addWalker(manager.MANIA, new SmaphoWalker(2, 2, 3, 4, Assets.walker_mania, 500, 500, null));

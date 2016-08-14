@@ -13,7 +13,7 @@ public class WalkerManager {
 
     /** Walkerの種類別定数 */
     public final int BASIC = 0;
-    public final int FRIEND = 1;
+    public final int GRANDMA = 1;
     public final int SCHOOL = 2;
     public final int WOMAN = 3;
     public final int MANIA = 4;
@@ -56,7 +56,7 @@ public class WalkerManager {
         beatenArray = new int[7];
 
         Arrays.fill(generateTable, 0, 1, BASIC);
-        generateTable[44] = FRIEND;
+        generateTable[44] = GRANDMA;
         generateTable[45] = SCHOOL;
         generateTable[46] = WOMAN;
         generateTable[47] = MANIA;
