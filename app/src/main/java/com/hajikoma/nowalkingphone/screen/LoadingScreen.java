@@ -150,7 +150,7 @@ public class LoadingScreen extends Screen {
             nwp.postRunnable(run);
             isLoadOK = true;
         } else {
-            game.setScreen(new TitleScreen(game));
+            game.setScreen(new SplashScreen(game));
         }
     }
 
