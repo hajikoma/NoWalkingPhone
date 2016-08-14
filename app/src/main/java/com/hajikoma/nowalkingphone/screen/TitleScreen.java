@@ -13,6 +13,7 @@ import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
 import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
 import com.hajikoma.nowalkingphone.framework.Music;
+import com.hajikoma.nowalkingphone.framework.Pixmap;
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.Vibrate;
@@ -30,7 +31,6 @@ public class TitleScreen extends Screen {
     /** 共通して使用するインスタンス */
     private final Game game;
     private final Graphics gra;
-    private final Text txt;
     private final Audio aud;
     private final Vibrate vib;
 
@@ -45,8 +45,6 @@ public class TitleScreen extends Screen {
     /** バイブボタン描画先 */
     private Rect vibDstArea = new Rect(560, 1190, 560 + 80, 1190 + 80);
 
-    /** 経過時間 */
-    private float timer;
     /** ランダムな数を得るのに使用 */
     private Random random = new Random();
 
@@ -55,10 +53,14 @@ public class TitleScreen extends Screen {
     /** WalkerManager */
     private WalkerManager manager = new WalkerManager();
     /** Walkerの同時出現上限数 */
-    private int maxWalker = 1;
+    private static final int MAX_WALKER = 1;
 
     /** BGM */
     private Music bgm;
+
+    /** 固有画像 */
+    private Pixmap bg;
+    private Pixmap icon_settings;
 
 
     /** TitleScreenを生成する */
@@ -66,7 +68,6 @@ public class TitleScreen extends Screen {
         super(game);
         this.game = game;
         gra = game.getGraphics();
-        txt = game.getText();
         aud = game.getAudio();
         vib = game.getVibrate();
 
@@ -90,8 +91,8 @@ public class TitleScreen extends Screen {
         bgm.setLooping(true);
 
         //固有グラフィックの読み込み
-        Assets.bg_title = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
-        Assets.settings = gra.newPixmap("others/settings.png", PixmapFormat.ARGB4444);
+        bg = gra.newPixmap("others/bg_title.jpg", PixmapFormat.RGB565);
+        icon_settings= gra.newPixmap("others/settings.png", PixmapFormat.ARGB4444);
     }
 
     @Override
@@ -107,12 +108,15 @@ public class TitleScreen extends Screen {
                 if (isBounds(ges, startDstArea)) {
                     playSound(Assets.decision15, 1.0f);
                     game.setScreen(new GameScreen(game));
+                    break;
                 } else if (isBounds(ges, rankingDstArea)) {
                     playSound(Assets.decision15, 1.0f);
                     game.setScreen(new RankingScreen(game));
+                    break;
                 } else if (isBounds(ges, tutorialDstArea)) {
                     playSound(Assets.decision15, 1.0f);
                     game.setScreen(new GameScreen(game));
+                    break;
                 } else if (isBounds(ges, muteDstArea)) {
                     if (Assets.ud.isMute()) {
                         Assets.ud.unMute();
@@ -138,11 +142,10 @@ public class TitleScreen extends Screen {
 
     @Override
     public void present(float deltaTime) {
-        timer += deltaTime;
         playMusic(bgm);
 
         // 背景の描画
-        gra.drawPixmap(Assets.bg_title, 0, 0);
+        gra.drawPixmap(bg, 0, 0);
 
         // Walkerの処理
         for (int i = 0; i < walkers.size(); i++) {
@@ -150,7 +153,7 @@ public class TitleScreen extends Screen {
                 walkers.remove(i);
             }
         }
-        if (walkers.size() < maxWalker) {
+        if (walkers.size() < MAX_WALKER) {
             int left = 100 + random.nextInt(AndroidGame.TARGET_WIDTH - 100 - 150);
             walkers.add(manager.getWalker(new Rect(left, 370, left + 100, 470)));
         }
@@ -159,21 +162,15 @@ public class TitleScreen extends Screen {
         }
 
         // 共通部分の描画
-        txt.drawText("歩きスマホ撃退アクション", 80, 100, 540, Assets.style_general_black);
-        txt.drawText("スマ歩NO!", 100, 360, 520, Assets.style_general_black);
-        gra.drawRoundRect(startDstArea, 15.0f, Color.MAGENTA);
-        gra.drawRoundRect(rankingDstArea, 15.0f, Color.YELLOW);
-        gra.drawRoundRect(tutorialDstArea, 15.0f, Color.GREEN);
-        gra.drawRoundRect(tutorialDstArea, 15.0f, Color.GREEN);
         if(Assets.ud.isMute()){
-            gra.drawPixmap(Assets.settings, muteDstArea, 200, 0, 200, 200);
+            gra.drawPixmap(icon_settings, muteDstArea, 200, 0, 200, 200);
         }else{
-            gra.drawPixmap(Assets.settings, muteDstArea, 0, 0, 200, 200);
+            gra.drawPixmap(icon_settings, muteDstArea, 0, 0, 200, 200);
         }
         if(Assets.ud.isVibe()){
-            gra.drawPixmap(Assets.settings, vibDstArea, 0, 200, 200, 200);
+            gra.drawPixmap(icon_settings, vibDstArea, 0, 200, 200, 200);
         }else{
-            gra.drawPixmap(Assets.settings, vibDstArea, 200, 200, 200, 200);
+            gra.drawPixmap(icon_settings, vibDstArea, 200, 200, 200, 200);
         }
     }
 
@@ -199,8 +196,6 @@ public class TitleScreen extends Screen {
     /** 固有の参照を明示的に切る */
     @Override
     public void dispose() {
-        Assets.bg_title = null;
-        Assets.settings = null;
         bgm.dispose();
     }
 
