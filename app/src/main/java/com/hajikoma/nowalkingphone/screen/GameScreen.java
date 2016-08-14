@@ -165,7 +165,7 @@ public class GameScreen extends Screen {
         fontScore.setTextSize(NoWalkingPhoneGame.FONT_SIZE_L);
 
         // Effect
-        crashEffect = new Effect(Assets.crash, 720, new float[]{3.0f});
+        crashEffect = new Effect(Assets.crash, 620, new float[]{0.5f});
         lifeReduceEffect = new Effect(Assets.onomatopee, 180, new float[]{0.25f, 0.25f, 0.25f, 0.25f});
 
         // BGM
@@ -292,7 +292,7 @@ public class GameScreen extends Screen {
                     GestureEvent ges = gestureEvents.get(gi);
 
                     // 稀にgesが正しく格納されないことがあることへの対処
-                    if(ges == null){
+                    if (ges == null) {
                         continue;
                     }
 
