@@ -16,6 +16,7 @@ import com.hajikoma.nowalkingphone.framework.Game;
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
 import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
+import com.hajikoma.nowalkingphone.framework.Pixmap;
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
@@ -26,10 +27,10 @@ import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 public class ResultScreen extends Screen {
 
 
-    /** コンティニューボタン描画先 */
-    private Rect continueDstArea = new Rect(40, 1040, 40 + 400, 1040 + 200);
     /** タイトルへボタン描画先 */
-    private Rect goMenuDstArea = new Rect(40 + 400 + 30, 1040, 40 + 400 + 10 + 200, 1020 + 200);
+    private Rect goTitleDstArea = new Rect(0, 1180, 280, 1280);
+    /** コンティニューボタン描画先 */
+    private Rect continueDstArea = new Rect(320, 1180, 400, 1280);
 
     /** 共通して使用するインスタンス */
     private final Game game;
@@ -41,8 +42,9 @@ public class ResultScreen extends Screen {
 
     /** 経過時間 */
     private float timer;
-    /** 個別結果を表示する際の効果音を鳴らしたかどうかのフラグ */
-    private boolean[] isSoundPlayed = new boolean[]{false, false, false, false};
+
+    /** 固有画像 */
+    private Pixmap bg;
 
     /** 広告表示フラグ */
     private boolean isAdShow = false;
@@ -62,7 +64,7 @@ public class ResultScreen extends Screen {
         UserData ud = Assets.ud;
 
         // 固有グラフィックの読み込み
-        Assets.bg_result = gra.newPixmap("others/bg_result.jpg", PixmapFormat.RGB565);
+        bg = gra.newPixmap("others/bg_result.jpg", PixmapFormat.RGB565);
 
         // データを保存
         if (sc.score >= ud.getFirstScore()) {
@@ -76,13 +78,13 @@ public class ResultScreen extends Screen {
         } else if (sc.score >= ud.getThirdScore()) {
             ud.setThirdScore(sc.score);
         }
-        Assets.ud.addPlayTime();
-        Assets.ud.reduceReviewRemain();
-        Assets.ud.addExceptionBackward();
-        Assets.ud.addGrandScore(sc.score);
-        Assets.ud.saveAllToPref(getSharedPreference());
+        ud.addPlayTime();
+        ud.reduceReviewRemain();
+        ud.addExceptionBackward();
+        ud.addGrandScore(sc.score);
+        ud.saveAllToPref(getSharedPreference());
 
-        // 広告
+        // 広告読み込み
         ((NoWalkingPhoneGame) game).adActivityPrepare();
     }
 
@@ -97,7 +99,7 @@ public class ResultScreen extends Screen {
         List<GestureEvent> gestureEvents = game.getInput().getGestureEvents();
         game.getInput().getKeyEvents();
 
-        gra.drawPixmap(Assets.bg_result, 0, 0);
+        gra.drawPixmap(bg, 0, 0);
 
         // 結果
         drawGraphicalNumber(sc.beatCount, 60, 210, 180, 8);
@@ -115,9 +117,6 @@ public class ResultScreen extends Screen {
                 final NoWalkingPhoneGame nwp = (NoWalkingPhoneGame) game;
                 nwp.postRunnable(getReviewRunnable(nwp));
                 isReviewShow = true;
-            } else if (!isAdShow) {
-                ((NoWalkingPhoneGame) game).adActivityForward();
-                isAdShow = true;
             }
 
             // タッチイベントの処理
@@ -125,8 +124,16 @@ public class ResultScreen extends Screen {
                 GestureEvent ges = gestureEvents.get(gi);
 
                 if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
-//                    game.setScreen(new GameScreen(game, sc));
-                    game.setScreen(new TitleScreen(game));
+                    if (!isAdShow && isBounds(ges, continueDstArea)) {
+                        playSound(Assets.decision15, 1.0f);
+                        ((NoWalkingPhoneGame) game).adActivityForward();
+                        isAdShow = true;
+//                       game.setScreen(new GameScreen(game, sc));
+                        break;
+                    } else if (isBounds(ges, goTitleDstArea)) {
+                        playSound(Assets.decision15, 1.0f);
+                        game.setScreen(new TitleScreen(game));
+                    }
                 }
             }
         }
@@ -146,15 +153,6 @@ public class ResultScreen extends Screen {
     /** 固有の参照を明示的に切る */
     @Override
     public void dispose() {
-        Assets.bg_result = null;
-    }
-
-    /** 効果音を一度だけ再生するヘルパー */
-    private void soundPlayOnce(int flagIndex) {
-        if (!isSoundPlayed[flagIndex]) {
-            //playSound(Assets.result_score, 0.5f);
-            isSoundPlayed[flagIndex] = true;
-        }
     }
 
     @Override
