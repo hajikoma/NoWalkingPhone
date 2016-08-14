@@ -2,7 +2,6 @@ package com.hajikoma.nowalkingphone.screen;
 
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.DBManager;
@@ -11,6 +10,7 @@ import com.hajikoma.nowalkingphone.framework.Game;
 import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Graphics.PixmapFormat;
 import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
+import com.hajikoma.nowalkingphone.framework.Pixmap;
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
@@ -25,11 +25,6 @@ import java.util.Map;
  */
 public class RankingScreen extends Screen {
 
-
-    /** コンティニューボタン描画先 */
-    private Rect continueDstArea = new Rect(40, 1040, 40 + 400, 1040 + 200);
-    /** タイトルへボタン描画先 */
-    private Rect goMenuDstArea = new Rect(40 + 400 + 30, 1040, 40 + 400 + 10 + 200, 1020 + 200);
 
     /** 共通して使用するインスタンス */
     private Game game;
@@ -50,6 +45,9 @@ public class RankingScreen extends Screen {
     /** ランキングデータを処理したかどうか */
     private boolean isScoreProcessed = false;
 
+    /** 固有画像 */
+    private Pixmap bg;
+
 
     /** RankingScreenを生成する */
     public RankingScreen(Game game) {
@@ -69,7 +67,7 @@ public class RankingScreen extends Screen {
         rankingSmall.setColor(Color.WHITE);
 
         // 固有グラフィックの読み込み
-        Assets.bg_ranking = gra.newPixmap("others/bg_ranking.jpg", PixmapFormat.RGB565);
+        bg = gra.newPixmap("others/bg_ranking.jpg", PixmapFormat.RGB565);
     }
 
 
@@ -84,13 +82,13 @@ public class RankingScreen extends Screen {
         List<GestureEvent> gestureEvents = game.getInput().getGestureEvents();
         game.getInput().getKeyEvents();
 
-        gra.drawPixmap(Assets.bg_ranking, 0, 0);
+        gra.drawPixmap(bg, 0, 0);
 
 
         // スコアデータの処理
         boolean isScoreLoaded = ((AndroidGame) game).dbManager.isScoreLoaded();
         if (isScoreLoaded) {
-            if(!isScoreProcessed) {
+            if (!isScoreProcessed) {
                 processScore();
             }
 
@@ -119,6 +117,7 @@ public class RankingScreen extends Screen {
             GestureEvent ges = gestureEvents.get(gi);
 
             if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
+                playSound(Assets.decision15, 1.0f);
                 game.setScreen(new TitleScreen(game));
             }
         }
@@ -136,7 +135,6 @@ public class RankingScreen extends Screen {
     /** 固有の参照を明示的に切る */
     @Override
     public void dispose() {
-        Assets.bg_ranking = null;
     }
 
     @Override
