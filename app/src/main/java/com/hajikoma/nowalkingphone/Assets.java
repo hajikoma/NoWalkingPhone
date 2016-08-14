@@ -23,6 +23,7 @@ public class Assets {
 	public static Pixmap bg_game;
 	public static Pixmap bg_result;
 
+	public static Pixmap crash;
 	public static Pixmap settings;
 	public static Pixmap icon_hand;
 	public static Pixmap number;

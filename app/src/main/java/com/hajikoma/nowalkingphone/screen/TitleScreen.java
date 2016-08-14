@@ -41,9 +41,9 @@ public class TitleScreen extends Screen {
     /** 遊びかたボタン描画先 */
     private Rect tutorialDstArea = new Rect(80, 1030, 640, 1030 + 100);
     /** ミュートボタン描画先 */
-    private Rect muteDstArea = new Rect(80, 1200, 80 + 60, 1200 + 60);
+    private Rect muteDstArea = new Rect(80, 1190, 80 + 80, 1190 + 80);
     /** バイブボタン描画先 */
-    private Rect vibDstArea = new Rect(580, 1200, 580 + 60, 1200 + 60);
+    private Rect vibDstArea = new Rect(560, 1190, 560 + 80, 1190 + 80);
 
     /** 経過時間 */
     private float timer;

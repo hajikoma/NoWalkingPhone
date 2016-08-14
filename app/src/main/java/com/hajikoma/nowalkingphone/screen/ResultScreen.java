@@ -61,7 +61,7 @@ public class ResultScreen extends Screen {
         UserData ud = Assets.ud;
 
         // 固有グラフィックの読み込み
-        Assets.bg_result = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
+        Assets.bg_result = gra.newPixmap("others/bg_result.jpg", PixmapFormat.RGB565);
 
         // データを保存
         if (sc.score >= ud.getFirstScore()) {
@@ -98,9 +98,15 @@ public class ResultScreen extends Screen {
 
         gra.drawPixmap(Assets.bg_result, 0, 0);
 
-        drawGraphicalNumber(sc.score, 80, 20, 250, 9);
-        drawGraphicalNumber(sc.maxCombo, 80, 220, 450, 6);
-        drawGraphicalNumber(sc.beatCount, 80, 220, 650, 6);
+        // 結果
+        drawGraphicalNumber(sc.beatCount, 60, 210, 180, 8);
+        drawGraphicalNumber(sc.maxCombo, 60, 210, 280, 8);
+        drawGraphicalNumber(sc.score, 80, 20, 420, 9);
+
+        // ユーザーランキング
+        txt.drawText(Integer.toString(Assets.ud.getFirstScore()), 280, 710, 700, Assets.style_general_black);
+        txt.drawText(Integer.toString(Assets.ud.getSecondScore()), 280, 785, 700, Assets.style_general_black);
+        txt.drawText(Integer.toString(Assets.ud.getThirdScore()), 280, 865, 700, Assets.style_general_black);
 
         if (timer >= 3.0f) {
             // 一定間隔、かつ例外発生から一定回数以上遊んでいる場合、レビューを依頼
@@ -154,7 +160,6 @@ public class ResultScreen extends Screen {
                 ((NoWalkingPhoneGame) game).adActivityForward();
                 isAdShow = true;
             }
-            txt.drawText("コンティニュー？", 220, 950, 500, Assets.style_general_black);
 
             // タッチイベントの処理
             for (int gi = 0; gi < gestureEvents.size(); gi++) {

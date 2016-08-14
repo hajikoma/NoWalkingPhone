@@ -2,7 +2,6 @@ package com.hajikoma.nowalkingphone.screen;
 
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.AlphaGenerator;
@@ -80,7 +79,7 @@ public class GameScreen extends Screen {
     /** WalkerManager */
     private WalkerManager manager = new WalkerManager();
     /** Walkerの同時出現上限数 */
-    private int maxWalker = 5;
+    private int maxWalker = 2;
 
     /** 各スコアを格納 */
     private Score sc = new Score();
@@ -88,7 +87,7 @@ public class GameScreen extends Screen {
     /** スマッシュの使用可能回数 */
     private int remainSmash = 3;
     /** スマッシュの最大使用可能回数 */
-    private final int MAX_SMASH = 3;
+    private static final int MAX_SMASH = 3;
     /** スマッシュアイコンの描画先 */
     private final Rect SMASH_DST_RECT_ARR[] = {
             new Rect(500, 1150, 550, 1200),
@@ -97,7 +96,7 @@ public class GameScreen extends Screen {
     };
 
     /** Walkerタップ時の、当たり判定の拡大値 */
-    private final int TAP_EXPANTION = 30;
+    private static final int TAP_EXPANSION = 30;
 
     /** Font */
     private Paint fontNumber;
@@ -153,7 +152,8 @@ public class GameScreen extends Screen {
         manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 10, 5, "もはやテロリスト", 20, Assets.walker_car, 500, 500, null));
 
         // 固有グラフィックの読み込み
-        Assets.bg_game = gra.newPixmap("others/bg.jpg", PixmapFormat.RGB565);
+        Assets.bg_game = gra.newPixmap("others/bg_game.jpg", PixmapFormat.RGB565);
+        Assets.crash = gra.newPixmap("others/crash.png", PixmapFormat.ARGB4444);
         Assets.onomatopee = gra.newPixmap("others/onomatopee.png", PixmapFormat.ARGB4444);
 
         // Font
@@ -165,6 +165,7 @@ public class GameScreen extends Screen {
         fontScore.setTextSize(NoWalkingPhoneGame.FONT_SIZE_L);
 
         // Effect
+        crashEffect = new Effect(Assets.crash, 720, new float[]{3.0f});
         lifeReduceEffect = new Effect(Assets.onomatopee, 180, new float[]{0.25f, 0.25f, 0.25f, 0.25f});
 
         // BGM
@@ -209,8 +210,8 @@ public class GameScreen extends Screen {
 
         //共通部分の描画
         gra.drawPixmap(Assets.bg_game, 0, 0);
-        txt.drawText(String.valueOf(sc.level), 20, 100, 200, fontNumber);
-        txt.drawText(String.valueOf(sc.combo), 400, 100, 200, fontNumber);
+        txt.drawText(String.valueOf(sc.level), 20, 130, 200, fontNumber);
+        txt.drawText(String.valueOf(sc.combo), 400, 130, 200, fontNumber);
         drawGraphicalNumber(sc.score, 90, 20, 220, 9);
         drawLife(player.getInitLife(), player.getDamage());
         drawSmashIcon();
@@ -271,6 +272,7 @@ public class GameScreen extends Screen {
                 // 描画処理
                 player.action(deltaTime);
                 actWalkerBehindToForward(deltaTime);
+                crashEffect.play(deltaTime);
                 lifeReduceEffect.play(deltaTime);
 
                 // WalkerとPlayerの衝突処理
@@ -289,10 +291,15 @@ public class GameScreen extends Screen {
                 for (int gi = 0; gi < gestureEvents.size(); gi++) {
                     GestureEvent ges = gestureEvents.get(gi);
 
+                    // 稀にgesが正しく格納されないことがあることへの対処
+                    if(ges == null){
+                        continue;
+                    }
+
                     if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
                         // Walkerのタップ判定
                         for (Walker walker : walkers) {
-                            if (isBounds(ges, walker.getLocation(), TAP_EXPANTION)) {
+                            if (isBounds(ges, walker.getLocation(), TAP_EXPANSION)) {
                                 walker.addDamage(1);
                                 playSoundOnceRandom("onTap", onTap, 1.5f);
                                 if (walker.getLife() >= 1) {
@@ -427,6 +434,7 @@ public class GameScreen extends Screen {
         player.setState(Player.ActionType.DAMAGE);
         walker.setState(Walker.ActionType.CRASH);
         sc.combo = 0;
+        crashEffect.on(new Rect(0, 0, 720, 1280));
         lifeReduceEffect.on(new Rect(50, 1150, 300, 1230));
         playSoundOnceRandom("onCrash", onCrash, 1.5f);
         if (power >= 5) {
@@ -447,7 +455,7 @@ public class GameScreen extends Screen {
         return walkerState != Walker.ActionType.CRASH
                 && walkerState != Walker.ActionType.VANISH
                 && player.getState() != Player.ActionType.STEP_LEFT
-                && location.bottom >= 950 && location.bottom <= 1000;
+                && location.bottom >= 990 && location.bottom <= 1040;
     }
 
 
