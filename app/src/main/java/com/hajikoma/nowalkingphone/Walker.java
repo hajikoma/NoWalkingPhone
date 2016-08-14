@@ -2,9 +2,7 @@ package com.hajikoma.nowalkingphone;
 
 import android.graphics.Rect;
 
-import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
-import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
 /**
  * 「歩く者」を表すクラス。
@@ -24,8 +22,6 @@ public class Walker extends SpriteImage implements Cloneable {
         VANISH
     }
 
-    /** 名前 */
-    protected String name;
     /** 初期耐久力 */
     protected int hp;
     /** 残り耐久力 */
@@ -34,8 +30,6 @@ public class Walker extends SpriteImage implements Cloneable {
     protected int speed;
     /** 衝突力 */
     protected int power;
-    /** 解説文 */
-    protected String description;
     /** 得点 */
     protected int point;
 
@@ -97,14 +91,12 @@ public class Walker extends SpriteImage implements Cloneable {
      * @param colWidth  visualの中の、一画像の幅
      * @param location  描画先矩形座標
      */
-    public Walker(String name, int hp, int speed, int power, String description, int point,
+    public Walker(int hp, int speed, int power, int point,
                   Pixmap visual, Integer rowHeight, Integer colWidth, Rect location) {
         super(visual, rowHeight, colWidth, location);
-        this.name = name;
         this.hp = hp;
         this.speed = speed;
         this.power = power;
-        this.description = description;
         this.point = point;
 
         life = hp;
@@ -374,10 +366,6 @@ public class Walker extends SpriteImage implements Cloneable {
     }
 
 
-    public String getName() {
-        return name;
-    }
-
     public int getHp() {
         return hp;
     }
@@ -394,12 +382,7 @@ public class Walker extends SpriteImage implements Cloneable {
         return power;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     public int getPoint() {
         return point;
     }
-
 }

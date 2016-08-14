@@ -2,9 +2,7 @@ package com.hajikoma.nowalkingphone;
 
 import android.graphics.Rect;
 
-import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
-import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
 /**
  * 「歩きスマホする者」を表すクラス。
@@ -21,9 +19,9 @@ public class SmaphoWalker extends Walker {
      * @param colWidth  visualの中の、一画像の幅
      * @param location  描画先矩形座標
      */
-    public SmaphoWalker(String name, int hp, int speed, int power, String description, int point,
+    public SmaphoWalker(int hp, int speed, int power, int point,
                         Pixmap visual, Integer rowHeight, Integer colWidth, Rect location) {
-        super(name, hp, speed, power, description, point, visual, rowHeight, colWidth, location);
+        super(hp, speed, power, point, visual, rowHeight, colWidth, location);
     }
 
 

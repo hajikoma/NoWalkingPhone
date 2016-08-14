@@ -1,6 +1,5 @@
 package com.hajikoma.nowalkingphone.screen;
 
-import android.graphics.Color;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
@@ -15,7 +14,6 @@ import com.hajikoma.nowalkingphone.framework.Input.GestureEvent;
 import com.hajikoma.nowalkingphone.framework.Music;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
 import com.hajikoma.nowalkingphone.framework.Screen;
-import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.Vibrate;
 import com.hajikoma.nowalkingphone.framework.impl.AndroidGame;
 
@@ -77,13 +75,13 @@ public class TitleScreen extends Screen {
         }
 
         // Walkerのセットアップ
-        manager.addWalker(manager.BASIC, new SmaphoWalker("歩きスマホ", 1, 3, 2, "普通なのがとりえ", 2, Assets.walker_man, 500, 500, null));
-        manager.addWalker(manager.FRIEND, new Walker("おばあさん", 1, 2, 1, "善良な市民。タップ禁止", -5, Assets.walker_grandma, 500, 500, null));
-        manager.addWalker(manager.SCHOOL, new SmaphoWalker("歩き小学生", 1, 5, 1, "すばしっこくぶつかりやすい", 3, Assets.walker_boy, 500, 500, null));
-        manager.addWalker(manager.WOMAN, new SmaphoWalker("歩き系女子", 1, 3, 2, "たちどまったりふらついたり", 3, Assets.walker_girl, 500, 500, null));
-        manager.addWalker(manager.MANIA, new SmaphoWalker("歩きオタク", 2, 2, 3, "とろいがでかくて痛い", 4, Assets.walker_mania, 500, 500, null));
-        manager.addWalker(manager.MONSTER, new SmaphoWalker("歩き外人さん", 3, 3, 2, "日本に歩きスマホしにきた", 4, Assets.walker_visitor, 500, 500, null));
-        manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 10, 5, "もはやテロリスト", 20, Assets.walker_car, 500, 500, null));
+        manager.addWalker(manager.BASIC, new SmaphoWalker(1, 3, 2, 2, Assets.walker_man, 500, 500, null));
+        manager.addWalker(manager.FRIEND, new Walker(1, 2, 1, -5, Assets.walker_grandma, 500, 500, null));
+        manager.addWalker(manager.SCHOOL, new SmaphoWalker(1, 5, 1, 3, Assets.walker_boy, 500, 500, null));
+        manager.addWalker(manager.WOMAN, new SmaphoWalker(1, 3, 2, 3, Assets.walker_girl, 500, 500, null));
+        manager.addWalker(manager.MANIA, new SmaphoWalker(2, 2, 3, 4, Assets.walker_mania, 500, 500, null));
+        manager.addWalker(manager.MONSTER, new SmaphoWalker(3, 3, 2, 4, Assets.walker_visitor, 500, 500, null));
+        manager.addWalker(manager.CAR, new Walker(999, 10, 5, 20, Assets.walker_car, 500, 500, null));
 
         // BGM
         bgm = aud.newMusic("music/retrogamecenter.mp3");
@@ -92,7 +90,7 @@ public class TitleScreen extends Screen {
 
         //固有グラフィックの読み込み
         bg = gra.newPixmap("others/bg_title.jpg", PixmapFormat.RGB565);
-        icon_settings= gra.newPixmap("others/settings.png", PixmapFormat.ARGB4444);
+        icon_settings = gra.newPixmap("others/settings.png", PixmapFormat.ARGB4444);
     }
 
     @Override
@@ -162,14 +160,14 @@ public class TitleScreen extends Screen {
         }
 
         // 共通部分の描画
-        if(Assets.ud.isMute()){
+        if (Assets.ud.isMute()) {
             gra.drawPixmap(icon_settings, muteDstArea, 200, 0, 200, 200);
-        }else{
+        } else {
             gra.drawPixmap(icon_settings, muteDstArea, 0, 0, 200, 200);
         }
-        if(Assets.ud.isVibe()){
+        if (Assets.ud.isVibe()) {
             gra.drawPixmap(icon_settings, vibDstArea, 0, 200, 200, 200);
-        }else{
+        } else {
             gra.drawPixmap(icon_settings, vibDstArea, 200, 200, 200, 200);
         }
     }

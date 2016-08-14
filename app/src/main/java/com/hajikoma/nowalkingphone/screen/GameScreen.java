@@ -148,13 +148,13 @@ public class GameScreen extends Screen {
         player = new Player(Assets.player, 500, 500);
 
         // Walkerのセットアップ
-        manager.addWalker(manager.BASIC, new SmaphoWalker("歩きスマホ", 1, 3, 2, "普通なのがとりえ", 2, Assets.walker_man, 500, 500, null));
-        manager.addWalker(manager.FRIEND, new Walker("おばあさん", 1, 2, 1, "善良な市民。タップ禁止", -5, Assets.walker_grandma, 500, 500, null));
-        manager.addWalker(manager.SCHOOL, new SmaphoWalker("歩き小学生", 1, 5, 1, "すばしっこくぶつかりやすい", 3, Assets.walker_boy, 500, 500, null));
-        manager.addWalker(manager.WOMAN, new SmaphoWalker("歩き系女子", 1, 3, 2, "たちどまったりふらついたり", 3, Assets.walker_girl, 500, 500, null));
-        manager.addWalker(manager.MANIA, new SmaphoWalker("歩きオタク", 2, 2, 3, "とろいがでかくて痛い", 4, Assets.walker_mania, 500, 500, null));
-        manager.addWalker(manager.MONSTER, new SmaphoWalker("歩き外人さん", 3, 3, 2, "日本に歩きスマホしにきた", 4, Assets.walker_visitor, 500, 500, null));
-        manager.addWalker(manager.CAR, new Walker("歩きくるま", 999, 10, 5, "もはやテロリスト", 20, Assets.walker_car, 500, 500, null));
+        manager.addWalker(manager.BASIC, new SmaphoWalker(1, 3, 2, 2, Assets.walker_man, 500, 500, null));
+        manager.addWalker(manager.FRIEND, new Walker(1, 2, 1, -5, Assets.walker_grandma, 500, 500, null));
+        manager.addWalker(manager.SCHOOL, new SmaphoWalker(1, 5, 1, 3, Assets.walker_boy, 500, 500, null));
+        manager.addWalker(manager.WOMAN, new SmaphoWalker(1, 3, 2, 3, Assets.walker_girl, 500, 500, null));
+        manager.addWalker(manager.MANIA, new SmaphoWalker(2, 2, 3, 4, Assets.walker_mania, 500, 500, null));
+        manager.addWalker(manager.MONSTER, new SmaphoWalker(3, 3, 2, 4, Assets.walker_visitor, 500, 500, null));
+        manager.addWalker(manager.CAR, new Walker(999, 10, 5, 20, Assets.walker_car, 500, 500, null));
 
         // 固有グラフィックの読み込み
         bg = gra.newPixmap("others/bg_game.jpg", PixmapFormat.RGB565);
