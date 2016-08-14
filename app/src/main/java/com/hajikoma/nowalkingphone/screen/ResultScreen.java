@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
@@ -65,7 +66,7 @@ public class ResultScreen extends Screen {
 
         // データを保存
         if (sc.score >= ud.getFirstScore()) {
-            ((AndroidGame)game).dbManager.saveFirstScore(ud.getUserId(), ud.getFirstScore(), sc.score); //DBにも保存
+            ((AndroidGame) game).dbManager.saveFirstScore(ud.getUserId(), ud.getFirstScore(), sc.score); //DBにも保存
             ud.setThirdScore(ud.getSecondScore());
             ud.setSecondScore(ud.getFirstScore());
             ud.setFirstScore(sc.score);
@@ -112,49 +113,7 @@ public class ResultScreen extends Screen {
             // 一定間隔、かつ例外発生から一定回数以上遊んでいる場合、レビューを依頼
             if (!isReviewShow && Assets.ud.getReviewRemain() == 0 && Assets.ud.getExceptionBackward() >= 5) {
                 final NoWalkingPhoneGame nwp = (NoWalkingPhoneGame) game;
-                Runnable run = new Runnable() {
-                    @Override
-                    public void run() {
-                        nwp.showYesNoLaterDialog(
-                                "感想をお聞かせください！",
-                                "アプリをご使用いただきありがとうございます。楽しんで頂けたら、ぜひ評価で応援をお願いします",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Assets.ud.setReview(true);
-                                        Assets.ud.setReviewRemain(100);
-
-                                        // 描画を再開
-                                        nwp.getCurrentScreen().resume();
-                                        nwp.getRenderView().resume();
-
-                                        // playストアを開く
-                                        Intent googlePlayIntent = new Intent(Intent.ACTION_VIEW);
-                                        googlePlayIntent.setData(Uri.parse("market://details?id=com.xxx.myapp"));
-                                        nwp.startActivity(googlePlayIntent);
-                                    }
-                                },
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Assets.ud.setReviewRemain(15);
-
-                                        // 描画を再開
-                                        nwp.getCurrentScreen().resume();
-                                        nwp.getRenderView().resume();
-                                    }
-                                },
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Assets.ud.setReviewRemain(5);
-
-                                        // 描画を再開
-                                        nwp.getCurrentScreen().resume();
-                                        nwp.getRenderView().resume();
-                                    }
-                                }
-                        );
-                    }
-                };
-                nwp.postRunnable(run);
+                nwp.postRunnable(getReviewRunnable(nwp));
                 isReviewShow = true;
             } else if (!isAdShow) {
                 ((NoWalkingPhoneGame) game).adActivityForward();
@@ -175,12 +134,11 @@ public class ResultScreen extends Screen {
         timer += deltaTime;
     }
 
-    /** このスクリーンでの処理はない */
+
     @Override
     public void pause() {
     }
 
-    /** このスクリーンでの処理はない */
     @Override
     public void resume() {
     }
@@ -204,4 +162,51 @@ public class ResultScreen extends Screen {
         return "ResultScreen";
     }
 
+
+    /** レビュー依頼を表示するインスタンスを生成する */
+    @NonNull
+    private Runnable getReviewRunnable(final NoWalkingPhoneGame nwp) {
+        return new Runnable() {
+            @Override
+            public void run() {
+                nwp.showYesNoLaterDialog(
+                        "感想をお聞かせください！",
+                        "アプリをご使用いただきありがとうございます。楽しんで頂けたら、ぜひ評価で応援をお願いします",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Assets.ud.setReview(true);
+                                Assets.ud.setReviewRemain(100);
+
+                                // 描画を再開
+                                nwp.getCurrentScreen().resume();
+                                nwp.getRenderView().resume();
+
+                                // playストアを開く
+                                Intent googlePlayIntent = new Intent(Intent.ACTION_VIEW);
+                                googlePlayIntent.setData(Uri.parse("market://details?id=com.xxx.myapp"));
+                                nwp.startActivity(googlePlayIntent);
+                            }
+                        },
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Assets.ud.setReviewRemain(15);
+
+                                // 描画を再開
+                                nwp.getCurrentScreen().resume();
+                                nwp.getRenderView().resume();
+                            }
+                        },
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Assets.ud.setReviewRemain(5);
+
+                                // 描画を再開
+                                nwp.getCurrentScreen().resume();
+                                nwp.getRenderView().resume();
+                            }
+                        }
+                );
+            }
+        };
+    }
 }
