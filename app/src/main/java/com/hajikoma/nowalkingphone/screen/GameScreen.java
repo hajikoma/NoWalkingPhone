@@ -16,6 +16,7 @@ import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.Player;
 import com.hajikoma.nowalkingphone.SchoolWalker;
 import com.hajikoma.nowalkingphone.Score;
+import com.hajikoma.nowalkingphone.SmashEffect;
 import com.hajikoma.nowalkingphone.VisitorWalker;
 import com.hajikoma.nowalkingphone.Walker;
 import com.hajikoma.nowalkingphone.WalkerManager;
@@ -107,7 +108,7 @@ public class GameScreen extends Screen {
     private Paint fontScore;
 
     /** Effect */
-    private Effect smashEffect;
+    private SmashEffect smashEffect;
     private Effect crashEffect;
 
     /** BGM */
@@ -133,6 +134,9 @@ public class GameScreen extends Screen {
     private Pixmap bg;
     private Pixmap effect_crash;
     private Pixmap icon_smash;
+    private Pixmap smashEffect1;
+    private Pixmap smashEffect2;
+
 
 
     /**
@@ -163,6 +167,8 @@ public class GameScreen extends Screen {
         bg = gra.newPixmap("others/bg_game.jpg", PixmapFormat.RGB565);
         effect_crash = gra.newPixmap("others/crash.png", PixmapFormat.ARGB4444);
         icon_smash = gra.newPixmap("others/icon_smash2.png", PixmapFormat.ARGB4444);
+        smashEffect1 = gra.newPixmap("others/smash1.png", PixmapFormat.ARGB4444);
+        smashEffect2 = gra.newPixmap("others/smash2.png", PixmapFormat.ARGB4444);
 
         // Font
         fontNumber = new Paint();
@@ -173,6 +179,7 @@ public class GameScreen extends Screen {
         fontScore.setTextSize(NoWalkingPhoneGame.FONT_SIZE_L);
 
         // Effect
+        smashEffect = new SmashEffect(smashEffect1,smashEffect2);
         crashEffect = new Effect(effect_crash, 620, new float[]{0.5f});
 
         // BGM
@@ -255,6 +262,7 @@ public class GameScreen extends Screen {
                 if (player.getState() == Player.ActionType.STEP_RIGHT) {
                     // 右ステップでsmash使用
                     if (remainSmash >= 1) {
+                        smashEffect.on();
                         player.setState(Player.ActionType.SMASH);
                         for (Walker walker : walkers) {
                             walker.setState(Walker.ActionType.SMASHED);
@@ -287,6 +295,7 @@ public class GameScreen extends Screen {
                 player.action(deltaTime);
                 actWalkerBehindToForward(deltaTime);
                 crashEffect.play(deltaTime);
+                smashEffect.play(deltaTime);
 
                 // WalkerとPlayerの衝突処理
                 for (Walker walker : walkers) {

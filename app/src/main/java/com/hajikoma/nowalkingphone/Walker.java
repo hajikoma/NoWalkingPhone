@@ -208,20 +208,23 @@ public class Walker extends SpriteImage implements Cloneable {
      * スマッシュを受けた
      */
     protected void smashed() {
-        if (actionTime <= 0.05f) {
+        float fallTime = 0.3f;
+
+        if (actionTime <= fallTime) {
             drawAction(0, 0);
-        } else if (actionTime <= 0.1f) {
+        } else if (actionTime < fallTime + 0.05f) {
+        } else if (actionTime < fallTime + 0.1f) {
             drawAction(0, 0);
-        } else if (actionTime <= 0.15f) {
+        } else if (actionTime < fallTime + 0.15f) {
+        } else if (actionTime < fallTime + 0.2f) {
             drawAction(0, 0);
-        } else if (actionTime <= 0.2f) {
+        } else if (actionTime < fallTime + 0.25f) {
+        } else if (actionTime < fallTime + 0.3f) {
             drawAction(0, 0);
-        } else if (actionTime <= 0.25f) {
+        } else if (actionTime < fallTime + 0.35f) {
+        } else if (actionTime < fallTime + 0.4f) {
             drawAction(0, 0);
-        } else if (actionTime <= 0.3f) {
-            drawAction(0, 0);
-        } else if (actionTime <= 0.35f) {
-            drawAction(0, 0);
+        } else if (actionTime < fallTime + 0.45f) {
         } else {
             vanish();
         }
