@@ -212,7 +212,14 @@ public class GameScreen extends Screen {
     /** メインループ内で呼ばれる。ループ内のためインスタンスの生成には慎重を期すこと。 */
     @Override
     public void update(float deltaTime) {
-        List<GestureEvent> gestureEvents = game.getInput().getGestureEvents();
+        // gestureが稀に正しく格納されないことへの対策
+        List<GestureEvent> gestureEvents = null;
+        try {
+            gestureEvents = game.getInput().getGestureEvents();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
         game.getInput().getKeyEvents();
 
         //共通部分の描画
@@ -325,8 +332,8 @@ public class GameScreen extends Screen {
                             player.setState(Player.ActionType.STEP_RIGHT);
                         } else {
                             player.setState(Player.ActionType.STEP_LEFT);
-                        }
                             playSoundOnceRandom("onFling", onFling, 1.5f);
+                        }
                     }
                 }
 
