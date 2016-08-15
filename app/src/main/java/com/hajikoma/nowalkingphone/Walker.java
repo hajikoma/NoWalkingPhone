@@ -5,13 +5,13 @@ import android.graphics.Rect;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
 
 /**
- * 「歩く者」を表すクラス。
+ * 「歩きスマホする者」を表すクラス。
  * 状態によってさまざまなアクションをする。
  */
 public class Walker extends SpriteImage implements Cloneable {
 
     /** アクションの種類を表す定数 */
-    public static enum ActionType {
+    public enum ActionType {
         STANDBY,
         WALK,
         STOP,
@@ -22,6 +22,10 @@ public class Walker extends SpriteImage implements Cloneable {
         VANISH
     }
 
+    /** 名前 */
+    public String name;
+    /** 解説文 */
+    public String description;
     /** 初期耐久力 */
     protected int hp;
     /** 残り耐久力 */
@@ -91,9 +95,11 @@ public class Walker extends SpriteImage implements Cloneable {
      * @param colWidth  visualの中の、一画像の幅
      * @param location  描画先矩形座標
      */
-    public Walker(int hp, int speed, int power, int point,
+    public Walker(String name, String description, int hp, int speed, int power, int point,
                   Pixmap visual, Integer rowHeight, Integer colWidth, Rect location) {
         super(visual, rowHeight, colWidth, location);
+        this.name = name;
+        this.description = description;
         this.hp = hp;
         this.speed = speed;
         this.power = power;
@@ -101,6 +107,7 @@ public class Walker extends SpriteImage implements Cloneable {
 
         life = hp;
         isEnlarged = new boolean[]{false, false, false};
+
         state = ActionType.WALK;
     }
 
@@ -136,34 +143,28 @@ public class Walker extends SpriteImage implements Cloneable {
 
 
     /**
-     * 歩く
+     * ふらふら歩く
      */
     protected void walk() {
         if (dstRect.top <= 1200) {
             if (actionTime <= 0.3f) {
-//                drawAction(0, 1);
                 drawAction(0, 0);
-                move(0, speed);
+                move(1, speed);
             } else if (actionTime <= 0.6f) {
-//                drawAction(0, 1);
                 drawAction(0, 0);
-                move(0, speed);
+                move(-1, speed);
             } else {
-//                drawAction(0, 1);
-                drawAction(0, 0);
-                move(0, speed);
                 loopAction();
                 walk();
             }
 
             // たまに立ち止まる
-            if (Math.random() > 0.999f) {
+            if (Math.random() > 0.999) {
                 setState(ActionType.STOP);
             }
         } else {
             vanish();
         }
-
     }
 
 
@@ -172,10 +173,8 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void stop() {
         if (actionTime <= 1.2f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
         } else {
-//            drawAction(0, 1);
             drawAction(0, 0);
             endAction();
         }
@@ -187,23 +186,18 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void damage() {
         if (actionTime <= 0.1f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
             move(10, 0);
         } else if (actionTime <= 0.2f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
             move(-10, 0);
         } else if (actionTime <= 0.3f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
             move(10, 0);
         } else if (actionTime <= 0.4f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
             move(-10, 0);
         } else {
-//            drawAction(0, 1);
             drawAction(0, 0);
             endAction();
         }
@@ -215,22 +209,18 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void smashed() {
         if (actionTime <= 0.05f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
         } else if (actionTime <= 0.1f) {
             drawAction(0, 0);
         } else if (actionTime <= 0.15f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
         } else if (actionTime <= 0.2f) {
             drawAction(0, 0);
         } else if (actionTime <= 0.25f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
         } else if (actionTime <= 0.3f) {
             drawAction(0, 0);
         } else if (actionTime <= 0.35f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
         } else {
             vanish();
@@ -243,7 +233,6 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void die() {
         if (dstRect.bottom > 0) {
-//            drawAction(1, 1);
             drawAction(0, 0);
             move(0, -20);
             scale(-7);
@@ -258,19 +247,15 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void crash() {
         if (actionTime <= 0.1f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
             move(10, 0);
         } else if (actionTime <= 0.2f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
             move(-10, 0);
         } else if (actionTime <= 0.3f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
             move(10, 0);
         } else if (actionTime <= 0.4f) {
-//            drawAction(0, 1);
             drawAction(0, 0);
             move(-10, 0);
         } else {

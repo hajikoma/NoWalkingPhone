@@ -6,11 +6,17 @@ import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.AlphaGenerator;
 import com.hajikoma.nowalkingphone.Assets;
+import com.hajikoma.nowalkingphone.CarWalker;
 import com.hajikoma.nowalkingphone.Effect;
+import com.hajikoma.nowalkingphone.GirlWalker;
+import com.hajikoma.nowalkingphone.GrandmaWalker;
+import com.hajikoma.nowalkingphone.ManWalker;
+import com.hajikoma.nowalkingphone.ManiaWalker;
 import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.Player;
+import com.hajikoma.nowalkingphone.SchoolWalker;
 import com.hajikoma.nowalkingphone.Score;
-import com.hajikoma.nowalkingphone.SmaphoWalker;
+import com.hajikoma.nowalkingphone.VisitorWalker;
 import com.hajikoma.nowalkingphone.Walker;
 import com.hajikoma.nowalkingphone.WalkerManager;
 import com.hajikoma.nowalkingphone.framework.Audio;
@@ -63,9 +69,6 @@ public class GameScreen extends Screen {
     private float timer;
     /** ランダムな数を得るのに使用 */
     private Random random = new Random();
-
-    /** チュートリアル表示フラグ */
-    private boolean[] isTrimTutorialShow = new boolean[5];
 
     /** 現在のシーン */
     private Scene scene;
@@ -148,13 +151,13 @@ public class GameScreen extends Screen {
         player = new Player(Assets.player, 500, 500);
 
         // Walkerのセットアップ
-        manager.addWalker(manager.BASIC, new SmaphoWalker(1, 3, 2, 2, Assets.walker_man, 500, 500, null));
-        manager.addWalker(manager.GRANDMA, new Walker(1, 2, 1, -5, Assets.walker_grandma, 500, 500, null));
-        manager.addWalker(manager.SCHOOL, new SmaphoWalker(1, 5, 1, 3, Assets.walker_boy, 500, 500, null));
-        manager.addWalker(manager.WOMAN, new SmaphoWalker(1, 3, 2, 3, Assets.walker_girl, 500, 500, null));
-        manager.addWalker(manager.MANIA, new SmaphoWalker(2, 2, 3, 4, Assets.walker_mania, 500, 500, null));
-        manager.addWalker(manager.MONSTER, new SmaphoWalker(3, 3, 2, 4, Assets.walker_visitor, 500, 500, null));
-        manager.addWalker(manager.CAR, new Walker(999, 10, 5, 20, Assets.walker_car, 500, 500, null));
+        manager.addWalker(manager.MAN, new ManWalker(Assets.walker_man, 500, 500, null));
+        manager.addWalker(manager.GRANDMA, new GrandmaWalker(Assets.walker_grandma, 500, 500, null));
+        manager.addWalker(manager.SCHOOL, new SchoolWalker(Assets.walker_boy, 500, 500, null));
+        manager.addWalker(manager.GIRL, new GirlWalker(Assets.walker_girl, 500, 500, null));
+        manager.addWalker(manager.MANIA, new ManiaWalker(Assets.walker_mania, 500, 500, null));
+        manager.addWalker(manager.VISITOR, new VisitorWalker(Assets.walker_visitor, 500, 500, null));
+        manager.addWalker(manager.CAR, new CarWalker(Assets.walker_car, 500, 500, null));
 
         // 固有グラフィックの読み込み
         bg = gra.newPixmap("others/bg_game.jpg", PixmapFormat.RGB565);
@@ -323,7 +326,7 @@ public class GameScreen extends Screen {
                         } else {
                             player.setState(Player.ActionType.STEP_LEFT);
                         }
-                        playSoundOnceRandom("onFling", onFling, 1.5f);
+                            playSoundOnceRandom("onFling", onFling, 1.5f);
                     }
                 }
 

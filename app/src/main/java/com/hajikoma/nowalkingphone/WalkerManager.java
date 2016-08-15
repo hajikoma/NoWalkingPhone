@@ -12,12 +12,12 @@ import java.util.Random;
 public class WalkerManager {
 
     /** Walkerの種類別定数 */
-    public final int BASIC = 0;
+    public final int MAN = 0;
     public final int GRANDMA = 1;
     public final int SCHOOL = 2;
-    public final int WOMAN = 3;
+    public final int GIRL = 3;
     public final int MANIA = 4;
-    public final int MONSTER = 5;
+    public final int VISITOR = 5;
     public final int CAR = 6;
 
 
@@ -32,18 +32,18 @@ public class WalkerManager {
 
     /** 置換テーブル */
     public int replaceTable[][] = {
-            {BASIC, BASIC},
-            {BASIC, SCHOOL},
-            {BASIC, WOMAN},
-            {BASIC, BASIC},
-            {BASIC, SCHOOL},
-            {BASIC, MANIA},
-            {BASIC, BASIC},
-            {BASIC, SCHOOL},
-            {BASIC, MANIA},
-            {BASIC, MONSTER},
-            {BASIC, SCHOOL},
-            {BASIC, CAR}
+            {MAN, MAN},
+            {MAN, SCHOOL},
+            {MAN, GIRL},
+            {MAN, MAN},
+            {MAN, SCHOOL},
+            {MAN, MANIA},
+            {MAN, MAN},
+            {MAN, SCHOOL},
+            {MAN, MANIA},
+            {MAN, VISITOR},
+            {MAN, SCHOOL},
+            {MAN, CAR}
     };
     /** 置換テーブルのイテレータ的役割のインデックス */
     public int replaceIndex = 0;
@@ -55,12 +55,12 @@ public class WalkerManager {
     public WalkerManager() {
         beatenArray = new int[7];
 
-        Arrays.fill(generateTable, 0, 1, BASIC);
+        Arrays.fill(generateTable, 0, 1, MAN);
         generateTable[44] = GRANDMA;
         generateTable[45] = SCHOOL;
-        generateTable[46] = WOMAN;
+        generateTable[46] = GIRL;
         generateTable[47] = MANIA;
-        generateTable[48] = MONSTER;
+        generateTable[48] = VISITOR;
         generateTable[49] = CAR;
     }
 
