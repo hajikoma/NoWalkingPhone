@@ -7,7 +7,8 @@ import android.graphics.Rect;
 import com.hajikoma.nowalkingphone.AlphaGenerator;
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.CarWalker;
-import com.hajikoma.nowalkingphone.Effect;
+import com.hajikoma.nowalkingphone.CutInEffect;
+import com.hajikoma.nowalkingphone.SpriteEffect;
 import com.hajikoma.nowalkingphone.GirlWalker;
 import com.hajikoma.nowalkingphone.GrandmaWalker;
 import com.hajikoma.nowalkingphone.ManWalker;
@@ -68,6 +69,8 @@ public class GameScreen extends Screen {
 
     /** 汎用的に使用するタイマー */
     private float timer;
+    /** カットインに使用するタイマー */
+    private float cutInTimer = 0.0f;
     /** ランダムな数を得るのに使用 */
     private Random random = new Random();
 
@@ -109,7 +112,10 @@ public class GameScreen extends Screen {
 
     /** Effect */
     private SmashEffect smashEffect;
-    private Effect crashEffect;
+    private SpriteEffect crashSpriteEffect;
+    private SpriteEffect blueCutIn;
+    private CutInEffect smashPlusCutIn;
+    private CutInEffect dangerCutIn;
 
     /** BGM */
     private Music bgm;
@@ -136,7 +142,7 @@ public class GameScreen extends Screen {
     private Pixmap icon_smash;
     private Pixmap smashEffect1;
     private Pixmap smashEffect2;
-
+    private Pixmap effectCutInBlue;
 
 
     /**
@@ -169,6 +175,7 @@ public class GameScreen extends Screen {
         icon_smash = gra.newPixmap("others/icon_smash2.png", PixmapFormat.ARGB4444);
         smashEffect1 = gra.newPixmap("others/smash1.png", PixmapFormat.ARGB4444);
         smashEffect2 = gra.newPixmap("others/smash2.png", PixmapFormat.ARGB4444);
+        effectCutInBlue = gra.newPixmap("others/pipo-btleffect-blue.jpg", PixmapFormat.ARGB4444);
 
         // Font
         fontNumber = new Paint();
@@ -179,8 +186,13 @@ public class GameScreen extends Screen {
         fontScore.setTextSize(NoWalkingPhoneGame.FONT_SIZE_L);
 
         // Effect
-        smashEffect = new SmashEffect(smashEffect1,smashEffect2);
-        crashEffect = new Effect(effect_crash, 620, new float[]{0.5f});
+        smashEffect = new SmashEffect(smashEffect1, smashEffect2);
+        crashSpriteEffect = new SpriteEffect(effect_crash, 620, new float[]{0.5f});
+        blueCutIn = new SpriteEffect(effectCutInBlue, 320, new float[]{0.1f, 0.1f, 0.1f});
+        blueCutIn.on(new Rect(0, 500, 720, 740), 8);
+        smashPlusCutIn = new CutInEffect(icon_smash, "SMASH回復！", 80, 80);
+        smashPlusCutIn.on();
+        dangerCutIn = new CutInEffect(icon_smash, "LIFE DANGER！", 80, 80);
 
         // BGM
         bgm = aud.newMusic("music/me_6777276_Race.mp3");
@@ -254,9 +266,15 @@ public class GameScreen extends Screen {
             case PLAYING://-----------------------------------------------------------------------------------
 
                 timer += deltaTime;
+                cutInTimer += deltaTime;
 
                 // 再生済み効果音を初期化
                 playedSounds = new ArrayList<>();
+
+                blueCutIn.play(deltaTime);
+                smashPlusCutIn.play(deltaTime);
+                dangerCutIn.play(deltaTime);
+
 
                 // Playerの状態に応じた処理
                 if (player.getState() == Player.ActionType.STEP_RIGHT) {
@@ -294,7 +312,7 @@ public class GameScreen extends Screen {
                 // 描画処理
                 player.action(deltaTime);
                 actWalkerBehindToForward(deltaTime);
-                crashEffect.play(deltaTime);
+                crashSpriteEffect.play(deltaTime);
                 smashEffect.play(deltaTime);
 
                 // WalkerとPlayerの衝突処理
@@ -450,10 +468,15 @@ public class GameScreen extends Screen {
         int power = walker.getPower();
 
         player.addDamage(power);
+
+        if(player.getDamage() >= player.getInitLife() * 4 / 5){
+            dangerCutIn.on();
+        }
+
         player.setState(Player.ActionType.DAMAGE);
         walker.setState(Walker.ActionType.CRASH);
         sc.combo = 0;
-        crashEffect.on(new Rect(0, 0, 720, 1280));
+        crashSpriteEffect.on(new Rect(0, 0, 720, 1280));
         playSoundOnceRandom("onCrash", onCrash, 1.5f);
         if (power >= 5) {
             doVibrate(vib, Assets.vibLongOnce);

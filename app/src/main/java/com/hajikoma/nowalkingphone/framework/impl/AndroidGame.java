@@ -53,7 +53,7 @@ public abstract class AndroidGame extends Activity implements Game {
     /** データ入出力モジュール */
     FileIO fileIO;
     /** データ入出力モジュール */
-    Text text;
+    public static Text text;
     /** バイブレーション処理モジュール */
     Vibrate vibrate;
     /** アクティブスクリーン */
