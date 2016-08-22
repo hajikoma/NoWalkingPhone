@@ -2,11 +2,10 @@ package com.hajikoma.nowalkingphone;
 
 import android.graphics.Rect;
 
-import com.hajikoma.nowalkingphone.framework.Graphics;
 import com.hajikoma.nowalkingphone.framework.Pixmap;
 
 /**
- * スプライト画像を扱いやすくするための抽象クラス。
+ * 横一列のスプライト画像を扱いやすくするための抽象クラス。
  * スプライト画像セットから、目的の画像の座標矩形取得を便利に行える。
  */
 abstract class SpriteImage {
@@ -15,10 +14,8 @@ abstract class SpriteImage {
     private Pixmap visual;
     /** 一画像の幅 */
     private int colWidth;
-    /** 一画像の高さ */
-    private int rowHeight;
     /** 各画像の座標マップ。画像内で描画すべき矩形を表す */
-    protected Rect[][] srcRects;
+    protected Rect[] srcRects;
     /** 画像の描画先矩形座標 */
     protected Rect dstRect;
 
@@ -26,44 +23,34 @@ abstract class SpriteImage {
     /**
      * SpriteImageHandlerを生成する。
      *
-     * @param visual    Playerの画像セット（スプライト画像）
-     * @param rowHeight visualの中の、一画像の高さ
+     * @param visual    Playerの画像セット（横一列のスプライト画像）
      * @param colWidth  visualの中の、一画像の幅
      */
-    public SpriteImage(Pixmap visual, Integer rowHeight, Integer colWidth, Rect dstRect) {
+    public SpriteImage(Pixmap visual, Integer colWidth, Rect dstRect) {
         this.visual = visual;
-        this.rowHeight = rowHeight;
         this.colWidth = colWidth;
         this.dstRect = dstRect;
 
         // 画像セット内の各画像の座標矩形配列を作成
-        int totalRow = visual.getHeight() / rowHeight;
         int totalCol = visual.getWidth() / colWidth;
-        srcRects = new Rect[totalRow][totalCol];
-        for (int row_i = 0; row_i < totalRow; row_i++) {
+        srcRects = new Rect[totalCol];
             for (int col_i = 0; col_i < totalCol; col_i++) {
-                srcRects[row_i][col_i] = new Rect(colWidth * col_i, rowHeight * row_i, colWidth * (col_i + 1), rowHeight * (row_i + 1));
+                srcRects[col_i] = new Rect(colWidth * col_i, 0, colWidth * (col_i + 1), visual.getHeight());
             }
-        }
     }
 
 
-    protected void drawAction(int rowIndex, int colIndex) {
+    protected void drawAction(int colIndex) {
         try {
-            NoWalkingPhoneGame.graphics.drawPixmap(getVisual(), dstRect, srcRects[rowIndex][colIndex]);
+            NoWalkingPhoneGame.graphics.drawPixmap(getVisual(), dstRect, srcRects[colIndex]);
         } catch (ArrayIndexOutOfBoundsException $e) {
-            throw new ArrayIndexOutOfBoundsException("描画元矩形が、画像の範囲外を指しています。");
+            throw new ArrayIndexOutOfBoundsException("描画元矩形が、画像の範囲外を指しています。 colIndex:" + colIndex);
         }
     }
 
 
     public Pixmap getVisual() {
         return visual;
-    }
-
-
-    public int getRowHeight() {
-        return rowHeight;
     }
 
 

@@ -8,7 +8,7 @@ import com.hajikoma.nowalkingphone.framework.Pixmap;
  * 「歩きスマホする者」を表すクラス。
  * 状態によってさまざまなアクションをする。
  */
-public class Walker extends SpriteImage implements Cloneable {
+public class Walker extends SpriteImage {
 
     /** アクションの種類を表す定数 */
     public enum ActionType {
@@ -22,10 +22,6 @@ public class Walker extends SpriteImage implements Cloneable {
         VANISH
     }
 
-    /** 名前 */
-    public String name;
-    /** 解説文 */
-    public String description;
     /** 初期耐久力 */
     protected int hp;
     /** 残り耐久力 */
@@ -91,15 +87,12 @@ public class Walker extends SpriteImage implements Cloneable {
      * Walkerを生成する。
      *
      * @param visual    Walkerの画像セット（スプライト画像）
-     * @param rowHeight visualの中の、一画像の高さ
      * @param colWidth  visualの中の、一画像の幅
      * @param location  描画先矩形座標
      */
-    public Walker(String name, String description, int hp, int speed, int power, int point,
-                  Pixmap visual, Integer rowHeight, Integer colWidth, Rect location) {
-        super(visual, rowHeight, colWidth, location);
-        this.name = name;
-        this.description = description;
+    public Walker(int hp, int speed, int power, int point,
+                  Pixmap visual, Integer colWidth, Rect location) {
+        super(visual, colWidth, location);
         this.hp = hp;
         this.speed = speed;
         this.power = power;
@@ -113,32 +106,10 @@ public class Walker extends SpriteImage implements Cloneable {
 
 
     /**
-     * Walkerを複製する。
-     */
-    @Override
-    public Walker clone() {
-
-        Walker newWalker = null;
-
-        /*ObjectクラスのcloneメソッドはCloneNotSupportedExceptionを投げる可能性があるので、try-catch文で記述(呼び出し元に投げても良い)*/
-        try {
-            newWalker = (Walker) super.clone(); // 親クラスのcloneメソッドを呼び出す。親クラスの型で返ってくるので、自分自身の型でのキャスト
-            newWalker.dstRect = null; // オブジェクト型変数なので、clone()では参照がコピーされる
-            newWalker.isEnlarged = null;
-            newWalker.isEnlarged = new boolean[]{false, false, false};
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return newWalker;
-    }
-
-
-    /**
      * 何もしていない
      */
     public void standby() {
-        drawAction(1, 0);
+        drawAction(0);
     }
 
 
@@ -148,10 +119,10 @@ public class Walker extends SpriteImage implements Cloneable {
     protected void walk() {
         if (dstRect.top <= 1200) {
             if (actionTime <= 0.3f) {
-                drawAction(0, 0);
+                drawAction(0);
                 move(1, speed);
             } else if (actionTime <= 0.6f) {
-                drawAction(0, 0);
+                drawAction(1);
                 move(-1, speed);
             } else {
                 loopAction();
@@ -173,9 +144,9 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void stop() {
         if (actionTime <= 1.2f) {
-            drawAction(0, 0);
+            drawAction(0);
         } else {
-            drawAction(0, 0);
+            drawAction(0);
             endAction();
         }
     }
@@ -186,19 +157,19 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void damage() {
         if (actionTime <= 0.1f) {
-            drawAction(0, 0);
+            drawAction(2);
             move(10, 0);
         } else if (actionTime <= 0.2f) {
-            drawAction(0, 0);
+            drawAction(2);
             move(-10, 0);
         } else if (actionTime <= 0.3f) {
-            drawAction(0, 0);
+            drawAction(2);
             move(10, 0);
         } else if (actionTime <= 0.4f) {
-            drawAction(0, 0);
+            drawAction(2);
             move(-10, 0);
         } else {
-            drawAction(0, 0);
+            drawAction(2);
             endAction();
         }
     }
@@ -211,19 +182,19 @@ public class Walker extends SpriteImage implements Cloneable {
         float fallTime = 0.3f;
 
         if (actionTime <= fallTime) {
-            drawAction(0, 0);
+            drawAction(0);
         } else if (actionTime < fallTime + 0.05f) {
         } else if (actionTime < fallTime + 0.1f) {
-            drawAction(0, 0);
+            drawAction(2);
         } else if (actionTime < fallTime + 0.15f) {
         } else if (actionTime < fallTime + 0.2f) {
-            drawAction(0, 0);
+            drawAction(2);
         } else if (actionTime < fallTime + 0.25f) {
         } else if (actionTime < fallTime + 0.3f) {
-            drawAction(0, 0);
+            drawAction(2);
         } else if (actionTime < fallTime + 0.35f) {
         } else if (actionTime < fallTime + 0.4f) {
-            drawAction(0, 0);
+            drawAction(2);
         } else if (actionTime < fallTime + 0.45f) {
         } else {
             vanish();
@@ -236,7 +207,7 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void die() {
         if (dstRect.bottom > 0) {
-            drawAction(0, 0);
+            drawAction(2);
             move(0, -20);
             scale(-7);
         } else {
@@ -250,16 +221,16 @@ public class Walker extends SpriteImage implements Cloneable {
      */
     protected void crash() {
         if (actionTime <= 0.1f) {
-            drawAction(0, 0);
+            drawAction(2);
             move(10, 0);
         } else if (actionTime <= 0.2f) {
-            drawAction(0, 0);
+            drawAction(2);
             move(-10, 0);
         } else if (actionTime <= 0.3f) {
-            drawAction(0, 0);
+            drawAction(2);
             move(10, 0);
         } else if (actionTime <= 0.4f) {
-            drawAction(0, 0);
+            drawAction(2);
             move(-10, 0);
         } else {
             vanish();

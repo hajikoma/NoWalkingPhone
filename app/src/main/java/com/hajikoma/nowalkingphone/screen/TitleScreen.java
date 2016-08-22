@@ -3,13 +3,6 @@ package com.hajikoma.nowalkingphone.screen;
 import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.Assets;
-import com.hajikoma.nowalkingphone.CarWalker;
-import com.hajikoma.nowalkingphone.GirlWalker;
-import com.hajikoma.nowalkingphone.GrandmaWalker;
-import com.hajikoma.nowalkingphone.ManWalker;
-import com.hajikoma.nowalkingphone.ManiaWalker;
-import com.hajikoma.nowalkingphone.SchoolWalker;
-import com.hajikoma.nowalkingphone.VisitorWalker;
 import com.hajikoma.nowalkingphone.Walker;
 import com.hajikoma.nowalkingphone.WalkerManager;
 import com.hajikoma.nowalkingphone.framework.Audio;
@@ -79,15 +72,6 @@ public class TitleScreen extends Screen {
         if (((AndroidGame) game).isNetworkConnected()) {
             ((AndroidGame) game).dbManager.fetchScoresDataUnsync();
         }
-
-        // Walkerのセットアップ
-        manager.addWalker(manager.MAN, new ManWalker(Assets.walker_man, 500, 500, null));
-        manager.addWalker(manager.GRANDMA, new GrandmaWalker(Assets.walker_grandma, 500, 500, null));
-        manager.addWalker(manager.SCHOOL, new SchoolWalker(Assets.walker_boy, 500, 500, null));
-        manager.addWalker(manager.GIRL, new GirlWalker(Assets.walker_girl, 500, 500, null));
-        manager.addWalker(manager.MANIA, new ManiaWalker(Assets.walker_mania, 500, 500, null));
-        manager.addWalker(manager.VISITOR, new VisitorWalker(Assets.walker_visitor, 500, 500, null));
-        manager.addWalker(manager.CAR, new CarWalker(Assets.walker_car, 500, 500, null));
 
         // BGM
         bgm = aud.newMusic("music/retrogamecenter.mp3");

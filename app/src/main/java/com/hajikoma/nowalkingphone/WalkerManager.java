@@ -28,7 +28,7 @@ public class WalkerManager {
     public ArrayList<Walker> walkerList = new ArrayList<>();
 
     /** 出現テーブル */
-    public int generateTable[] = new int[50];
+    public int generateTable[] = new int[30];
 
     /** 置換テーブル */
     public int replaceTable[][] = {
@@ -53,15 +53,7 @@ public class WalkerManager {
 
 
     public WalkerManager() {
-        beatenArray = new int[7];
-
         Arrays.fill(generateTable, 0, 1, MAN);
-        generateTable[44] = GRANDMA;
-        generateTable[45] = SCHOOL;
-        generateTable[46] = GIRL;
-        generateTable[47] = MANIA;
-        generateTable[48] = VISITOR;
-        generateTable[49] = CAR;
     }
 
 
@@ -72,7 +64,34 @@ public class WalkerManager {
 
     public Walker getWalker(Rect appearRect) {
         int type = generateTable[random.nextInt(generateTable.length)];
-        Walker newWalker = walkerList.get(type).clone();
+
+        Walker newWalker;
+        switch (type) {
+            case MAN:
+                newWalker = new ManWalker(Assets.walker_man, 200, null);
+                break;
+            case GRANDMA:
+                newWalker = new GrandmaWalker(Assets.walker_grandma, 200, null);
+                break;
+            case SCHOOL:
+                newWalker =  new SchoolWalker(Assets.walker_boy, 200, null);
+                break;
+            case GIRL:
+                newWalker =  new GirlWalker(Assets.walker_girl, 200, null);
+                break;
+            case MANIA:
+                newWalker = new ManiaWalker(Assets.walker_mania, 200, null);
+                break;
+            case VISITOR:
+                newWalker =   new VisitorWalker(Assets.walker_visitor, 200, null);
+                break;
+            case CAR:
+                newWalker = new CarWalker(Assets.walker_car, 200, null);
+                break;
+            default:
+                newWalker = new ManWalker(Assets.walker_man, 200, null);
+                break;
+        }
         newWalker.setLocation(appearRect);
 
         return newWalker;
@@ -87,7 +106,7 @@ public class WalkerManager {
         int targetIndex = Arrays.binarySearch(generateTable, from);
 
         // 置換対象が存在する場合
-        if(targetIndex != -1){
+        if (targetIndex != -1) {
             generateTable[targetIndex] = to;
         }
 
@@ -99,7 +118,7 @@ public class WalkerManager {
 
 
     /** 全てのWalkerの状態を変更する */
-    public void setAllWalkerState(ArrayList<Walker> walkers, Walker.ActionType toState){
+    public void setAllWalkerState(ArrayList<Walker> walkers, Walker.ActionType toState) {
         for (Walker walker : walkers) {
             walker.setState(toState);
         }

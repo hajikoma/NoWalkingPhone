@@ -6,19 +6,12 @@ import android.graphics.Rect;
 
 import com.hajikoma.nowalkingphone.AlphaGenerator;
 import com.hajikoma.nowalkingphone.Assets;
-import com.hajikoma.nowalkingphone.CarWalker;
 import com.hajikoma.nowalkingphone.CutInEffect;
 import com.hajikoma.nowalkingphone.SpriteEffect;
-import com.hajikoma.nowalkingphone.GirlWalker;
-import com.hajikoma.nowalkingphone.GrandmaWalker;
-import com.hajikoma.nowalkingphone.ManWalker;
-import com.hajikoma.nowalkingphone.ManiaWalker;
 import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.Player;
-import com.hajikoma.nowalkingphone.SchoolWalker;
 import com.hajikoma.nowalkingphone.Score;
 import com.hajikoma.nowalkingphone.SmashEffect;
-import com.hajikoma.nowalkingphone.VisitorWalker;
 import com.hajikoma.nowalkingphone.Walker;
 import com.hajikoma.nowalkingphone.WalkerManager;
 import com.hajikoma.nowalkingphone.framework.Audio;
@@ -116,6 +109,7 @@ public class GameScreen extends Screen {
     private SpriteEffect blueCutIn;
     private CutInEffect smashPlusCutIn;
     private CutInEffect dangerCutIn;
+    private CutInEffect appearManCutIn;
 
     /** BGM */
     private Music bgm;
@@ -138,11 +132,7 @@ public class GameScreen extends Screen {
 
     /** 固有画像 */
     private Pixmap bg;
-    private Pixmap effect_crash;
     private Pixmap icon_smash;
-    private Pixmap smashEffect1;
-    private Pixmap smashEffect2;
-    private Pixmap effectCutInBlue;
 
 
     /**
@@ -157,25 +147,14 @@ public class GameScreen extends Screen {
         vib = game.getVibrate();
 
         // Playerのセットアップ
-        Assets.player = gra.newPixmap("player/player_ready.png", PixmapFormat.ARGB4444);
-        player = new Player(Assets.player, 500, 500);
+        Assets.player = gra.newPixmap("player/player.png", PixmapFormat.ARGB4444);
+        player = new Player(Assets.player, 200);
 
         // Walkerのセットアップ
-        manager.addWalker(manager.MAN, new ManWalker(Assets.walker_man, 500, 500, null));
-        manager.addWalker(manager.GRANDMA, new GrandmaWalker(Assets.walker_grandma, 500, 500, null));
-        manager.addWalker(manager.SCHOOL, new SchoolWalker(Assets.walker_boy, 500, 500, null));
-        manager.addWalker(manager.GIRL, new GirlWalker(Assets.walker_girl, 500, 500, null));
-        manager.addWalker(manager.MANIA, new ManiaWalker(Assets.walker_mania, 500, 500, null));
-        manager.addWalker(manager.VISITOR, new VisitorWalker(Assets.walker_visitor, 500, 500, null));
-        manager.addWalker(manager.CAR, new CarWalker(Assets.walker_car, 500, 500, null));
 
         // 固有グラフィックの読み込み
         bg = gra.newPixmap("others/bg_game.jpg", PixmapFormat.RGB565);
-        effect_crash = gra.newPixmap("others/crash.png", PixmapFormat.ARGB4444);
         icon_smash = gra.newPixmap("others/icon_smash2.png", PixmapFormat.ARGB4444);
-        smashEffect1 = gra.newPixmap("others/smash1.png", PixmapFormat.ARGB4444);
-        smashEffect2 = gra.newPixmap("others/smash2.png", PixmapFormat.ARGB4444);
-        effectCutInBlue = gra.newPixmap("others/pipo-btleffect-blue.jpg", PixmapFormat.ARGB4444);
 
         // Font
         fontNumber = new Paint();
@@ -186,13 +165,11 @@ public class GameScreen extends Screen {
         fontScore.setTextSize(NoWalkingPhoneGame.FONT_SIZE_L);
 
         // Effect
-        smashEffect = new SmashEffect(smashEffect1, smashEffect2);
-        crashSpriteEffect = new SpriteEffect(effect_crash, 620, new float[]{0.5f});
-        blueCutIn = new SpriteEffect(effectCutInBlue, 320, new float[]{0.1f, 0.1f, 0.1f});
-        blueCutIn.on(new Rect(0, 500, 720, 740), 8);
-        smashPlusCutIn = new CutInEffect(icon_smash, "SMASH回復！", 80, 80);
-        smashPlusCutIn.on();
-        dangerCutIn = new CutInEffect(icon_smash, "LIFE DANGER！", 80, 80);
+        smashEffect = new SmashEffect(gra.newPixmap("others/smash1.png", PixmapFormat.ARGB4444), gra.newPixmap("others/smash2.png", PixmapFormat.ARGB4444));
+        crashSpriteEffect = new SpriteEffect(gra.newPixmap("others/crash.png", PixmapFormat.ARGB4444), 620, new float[]{0.5f});
+        blueCutIn = new SpriteEffect(gra.newPixmap("others/pipo-btleffect-blue.jpg", PixmapFormat.ARGB4444), 320, new float[]{0.1f, 0.1f, 0.1f});
+        appearManCutIn = new CutInEffect(gra.newPixmap("cutin/appear_man.png", PixmapFormat.ARGB4444), blueCutIn);
+        appearManCutIn.on();
 
         // BGM
         bgm = aud.newMusic("music/me_6777276_Race.mp3");
@@ -271,9 +248,7 @@ public class GameScreen extends Screen {
                 // 再生済み効果音を初期化
                 playedSounds = new ArrayList<>();
 
-                blueCutIn.play(deltaTime);
-                smashPlusCutIn.play(deltaTime);
-                dangerCutIn.play(deltaTime);
+                appearManCutIn.play(deltaTime);
 
 
                 // Playerの状態に応じた処理

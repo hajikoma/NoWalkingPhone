@@ -29,7 +29,7 @@ public class SpriteEffect extends SpriteImage {
      *                  ex) visualに3枚画像があり、各0.2秒ずつ表示　→　 [0.2f, 0.4f, 0.6f]
      */
     public SpriteEffect(Pixmap visual, Integer colWidth, float timeTable[]) {
-        super(visual, visual.getHeight(), colWidth, null);
+        super(visual, colWidth, null);
         this.timeTable = timeTable;
     }
 
@@ -71,7 +71,7 @@ public class SpriteEffect extends SpriteImage {
         for (colIndex = 0; colIndex < timeTable.length; colIndex++) {
             tableTimeTotal += timeTable[colIndex];
             if (timer <= tableTimeTotal) {
-                drawAction(0, colIndex);
+                drawAction(colIndex);
                 return;
             }
         }
@@ -79,13 +79,20 @@ public class SpriteEffect extends SpriteImage {
         if (loopNumber >= 1) {
             timer = deltaTime;
             loopNumber--;
-            drawAction(0, 0);
+            drawAction(0);
             return;
         }
 
         // 表示されなかった場合（Effect終了）
         isAnimate = false;
         timer = 0.0f;
+    }
+
+
+    public void off() {
+        isAnimate = false;
+        timer = 0.0f;
+        this.loopNumber = 0;
     }
 
 

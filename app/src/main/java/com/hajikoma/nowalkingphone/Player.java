@@ -39,12 +39,11 @@ public class Player extends SpriteImage {
     /**
      * Playerを生成する。
      *
-     * @param visual    Playerの画像セット（スプライト画像）
-     * @param rowHeight visualの中の、一画像の高さ
-     * @param colWidth  visualの中の、一画像の幅
+     * @param visual   Playerの画像セット（スプライト画像）
+     * @param colWidth visualの中の、一画像の幅
      */
-    public Player(Pixmap visual, Integer rowHeight, Integer colWidth) {
-        super(visual, rowHeight, colWidth, new Rect(220, 900, 500, 1200));
+    public Player(Pixmap visual, Integer colWidth) {
+        super(visual, colWidth, new Rect(220, 900, 500, 1200));
         state = ActionType.WALK;
     }
 
@@ -88,7 +87,7 @@ public class Player extends SpriteImage {
      * 何もしていない
      */
     public void standby() {
-        drawAction(0, 0);
+        drawAction(0);
     }
 
 
@@ -96,16 +95,7 @@ public class Player extends SpriteImage {
      * 歩く
      */
     public void walk() {
-        if (actionTime <= 0.3f) {
-            drawAction(0, 0);
-        } else if (actionTime <= 0.6f) {
-//            drawAction(0, 1);
-            drawAction(0, 0);
-        } else {
-//            drawAction(0, 1);
-            drawAction(0, 0);
-            endAction();
-        }
+        drawAction(0);
     }
 
 
@@ -113,18 +103,24 @@ public class Player extends SpriteImage {
      * ダメージを受けた
      */
     public void damage() {
-        if (actionTime <= 0.3f) {
-//            drawAction(2, 0);
-            drawAction(0, 0);
+        if (actionTime <= 0.2f) {
+            move(0, 5);
+            drawAction(0);
+        } else if (actionTime <= 0.4f) {
+            move(0, 4);
+            drawAction(0);
         } else if (actionTime <= 0.6f) {
-//            drawAction(2, 1);
-            drawAction(0, 0);
-        } else if (actionTime <= 0.9f) {
-//            drawAction(2, 0);
-            drawAction(0, 0);
+            move(0, 3);
+            drawAction(0);
+        } else if (actionTime <= 0.8f) {
+            move(0, 2);
+            drawAction(0);
+        } else if (actionTime <= 1.0f) {
+            move(0, 1);
+            drawAction(0);
         } else {
-//            drawAction(2, 0);
-            drawAction(0, 0);
+            drawAction(0);
+            resetDstArea();
             endAction();
         }
     }
@@ -135,23 +131,22 @@ public class Player extends SpriteImage {
      */
     public void stepLeft() {
         if (actionTime <= 0.2f) {
-//            drawAction(1, 0);
-            drawAction(0, 0);
+            move(2, 0);
+            drawAction(2);
         } else if (actionTime <= 0.4f) {
-//            drawAction(1, 1);
-            drawAction(0, 0);
+            move(-2, 0);
+            drawAction(2);
         } else if (actionTime <= 0.6f) {
-//            drawAction(1, 0);
-            drawAction(0, 0);
+            move(2, 0);
+            drawAction(2);
         } else if (actionTime <= 0.8f) {
-//            drawAction(1, 1);
-            drawAction(0, 0);
+            move(-2, 0);
+            drawAction(2);
         } else if (actionTime <= 1.0f) {
-//            drawAction(1, 0);
-            drawAction(0, 0);
+            move(2, 0);
+            drawAction(2);
         } else {
-//            drawAction(1, 0);
-            drawAction(0, 0);
+            drawAction(2);
             resetDstArea();
             endAction();
         }
@@ -162,24 +157,10 @@ public class Player extends SpriteImage {
      * 右にステップをした
      */
     public void stepRight() {
-        if (actionTime <= 0.2f) {
-//            drawAction(1, 0);
-            drawAction(0, 0);
-        } else if (actionTime <= 0.4f) {
-//            drawAction(1, 1);
-            drawAction(0, 0);
-        } else if (actionTime <= 0.6f) {
-//            drawAction(1, 0);
-            drawAction(0, 0);
-        } else if (actionTime <= 0.8f) {
-//            drawAction(1, 1);
-            drawAction(0, 0);
-        } else if (actionTime <= 1.0f) {
-//            drawAction(1, 0);
-            drawAction(0, 0);
+        if (actionTime <= 1.0f) {
+            drawAction(1);
         } else {
-//            drawAction(1, 0);
-            drawAction(0, 0);
+            drawAction(0);
             resetDstArea();
             endAction();
         }
@@ -191,17 +172,16 @@ public class Player extends SpriteImage {
      */
     public void smash() {
         if (actionTime <= 0.4f) {
-//            drawAction(0, 1);
-            drawAction(0, 0);
+            move(0, 2);
+            drawAction(1);
         } else if (actionTime <= 0.8f) {
-//            drawAction(0, 1);
-            drawAction(0, 0);
+            move(0, -2);
+            drawAction(1);
         } else if (actionTime <= 1.2f) {
-//            drawAction(0, 1);
-            drawAction(0, 0);
+            move(0, 2);
+            drawAction(1);
         } else {
-//            drawAction(0, 1);
-            drawAction(0, 0);
+            drawAction(1);
             resetDstArea();
             endAction();
         }
@@ -221,10 +201,10 @@ public class Player extends SpriteImage {
 
 
     /**
-     * 状態を変更する
+     * レベルアップ時の処理
      */
     public void lvUp() {
-        if(damage >= 1) {
+        if (damage >= 1) {
             damage--; // life回復
         }
     }
@@ -238,22 +218,38 @@ public class Player extends SpriteImage {
         actionTime = 0.0f;
         resetDstArea();
 
-        if (state == ActionType.STEP_LEFT){
+        if (state == ActionType.STEP_LEFT) {
             dstRect.left -= 220;
             dstRect.right -= 220;
-        }else if(state == ActionType.STEP_RIGHT){
+        } else if (state == ActionType.STEP_RIGHT) {
             dstRect.left += 220;
             dstRect.right += 220;
-        }else if(state == ActionType.SMASH) {
+        } else if (state == ActionType.SMASH) {
             dstRect.left += 220;
             dstRect.right += 220;
         }
     }
 
 
-    private void resetDstArea(){
+    /**
+     * 描画先矩形座標を初期位置に戻す
+     */
+    private void resetDstArea() {
         dstRect.left = defaultDstArea.left;
+        dstRect.top = defaultDstArea.top;
         dstRect.right = defaultDstArea.right;
+        dstRect.bottom = defaultDstArea.bottom;
+    }
+
+
+    /**
+     * 描画先矩形座標をずらし、描画位置を変更する。
+     */
+    protected void move(int distanceX, int distanceY) {
+        dstRect.left += distanceX;
+        dstRect.right += distanceX;
+        dstRect.top += distanceY;
+        dstRect.bottom += distanceY;
     }
 
 

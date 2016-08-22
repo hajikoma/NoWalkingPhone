@@ -8,35 +8,13 @@ import com.hajikoma.nowalkingphone.framework.Pixmap;
  * 「歩き系女子」を表すクラス。
  * 気分屋で動きが読みづらい。
  */
-public class GirlWalker extends Walker implements Cloneable {
+public class GirlWalker extends Walker {
 
     /**
      * {@inheritDoc}
      */
-    public GirlWalker(Pixmap visual, Integer rowHeight, Integer colWidth, Rect location) {
-        super("歩き系女子", "動きが読みづらい", 2, 3, 2, 4, visual, rowHeight, colWidth, location);
-    }
-
-
-    /**
-     * GirlWalkerを複製する。
-     */
-    @Override
-    public GirlWalker clone() {
-
-        GirlWalker newWalker = null;
-
-        /*ObjectクラスのcloneメソッドはCloneNotSupportedExceptionを投げる可能性があるので、try-catch文で記述(呼び出し元に投げても良い)*/
-        try {
-            newWalker = (GirlWalker) super.clone(); // 親クラスのcloneメソッドを呼び出す。親クラスの型で返ってくるので、自分自身の型でのキャスト
-            newWalker.dstRect = null; // オブジェクト型変数なので、clone()では参照がコピーされる
-            newWalker.isEnlarged = null;
-            newWalker.isEnlarged = new boolean[]{false, false, false};
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return newWalker;
+    public GirlWalker(Pixmap visual, Integer colWidth, Rect location) {
+        super(2, 3, 2, 4, visual, colWidth, location);
     }
 
 
@@ -48,10 +26,10 @@ public class GirlWalker extends Walker implements Cloneable {
     protected void walk() {
         if (dstRect.top <= 1200) {
             if (actionTime <= 0.3f) {
-                drawAction(0, 0);
+                drawAction(1);
                 move(-3, speed);
             } else if (actionTime <= 0.6f) {
-                drawAction(0, 0);
+                drawAction(0);
                 move(3, speed);
             } else {
                 loopAction();
