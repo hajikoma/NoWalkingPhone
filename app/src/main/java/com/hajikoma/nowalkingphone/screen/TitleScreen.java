@@ -143,7 +143,7 @@ public class TitleScreen extends Screen {
         }
         if (walkers.size() < MAX_WALKER) {
             int left = 100 + random.nextInt(AndroidGame.TARGET_WIDTH - 100 - 150);
-            walkers.add(manager.getWalker(new Rect(left, 370, left + 100, 470)));
+            walkers.add(manager.getSomeWalker(new Rect(left, 370, left + 100, 470)));
         }
         for (Walker walker : walkers) {
             walker.action(deltaTime);

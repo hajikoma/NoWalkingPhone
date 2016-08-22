@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -50,7 +51,7 @@ public class GameScreen extends Screen {
         /** 一時停止 */
         PAUSE,
         /** ゲームオーバー */
-        GAME_OVER;
+        GAME_OVER
     }
 
     /** 共通して使用するインスタンス */
@@ -62,8 +63,6 @@ public class GameScreen extends Screen {
 
     /** 汎用的に使用するタイマー */
     private float timer;
-    /** カットインに使用するタイマー */
-    private float cutInTimer = 0.0f;
     /** ランダムな数を得るのに使用 */
     private Random random = new Random();
 
@@ -81,6 +80,8 @@ public class GameScreen extends Screen {
     private WalkerManager manager = new WalkerManager();
     /** Walkerの同時出現上限数 */
     private int maxWalker = 2;
+    /** 次に出現させるWalkerの種類定数。-1の場合、ランダム出現とする */
+    private int nextWalkerType = WalkerManager.MAN;
 
     /** 各スコアを格納 */
     private Score sc = new Score();
@@ -91,9 +92,9 @@ public class GameScreen extends Screen {
     private static final int MAX_SMASH = 3;
     /** スマッシュアイコンの描画先 */
     private final Rect SMASH_DST_RECT_ARR[] = {
-            new Rect(420, 1185, 500, 1265),
-            new Rect(520, 1185, 600, 1265),
-            new Rect(620, 1185, 700, 1265)
+            new Rect(450, 1175, 520, 1245),
+            new Rect(540, 1175, 610, 1245),
+            new Rect(630, 1175, 700, 1245)
     };
 
     /** Walkerタップ時の、当たり判定の拡大値 */
@@ -106,10 +107,15 @@ public class GameScreen extends Screen {
     /** Effect */
     private SmashEffect smashEffect;
     private SpriteEffect crashSpriteEffect;
-    private SpriteEffect blueCutIn;
+
+    // CutIn
+    private SpriteEffect blueCutInBack;
+    private CutInEffect startCutIn;
     private CutInEffect smashPlusCutIn;
     private CutInEffect dangerCutIn;
-    private CutInEffect appearManCutIn;
+
+    /** CutInの表示キュー */
+    private LinkedList<CutInEffect> cutInQueue = new LinkedList<>();
 
     /** BGM */
     private Music bgm;
@@ -150,8 +156,6 @@ public class GameScreen extends Screen {
         Assets.player = gra.newPixmap("player/player.png", PixmapFormat.ARGB4444);
         player = new Player(Assets.player, 200);
 
-        // Walkerのセットアップ
-
         // 固有グラフィックの読み込み
         bg = gra.newPixmap("others/bg_game.jpg", PixmapFormat.RGB565);
         icon_smash = gra.newPixmap("others/icon_smash2.png", PixmapFormat.ARGB4444);
@@ -167,9 +171,12 @@ public class GameScreen extends Screen {
         // Effect
         smashEffect = new SmashEffect(gra.newPixmap("others/smash1.png", PixmapFormat.ARGB4444), gra.newPixmap("others/smash2.png", PixmapFormat.ARGB4444));
         crashSpriteEffect = new SpriteEffect(gra.newPixmap("others/crash.png", PixmapFormat.ARGB4444), 620, new float[]{0.5f});
-        blueCutIn = new SpriteEffect(gra.newPixmap("others/pipo-btleffect-blue.jpg", PixmapFormat.ARGB4444), 320, new float[]{0.1f, 0.1f, 0.1f});
-        appearManCutIn = new CutInEffect(gra.newPixmap("cutin/appear_man.png", PixmapFormat.ARGB4444), blueCutIn);
-        appearManCutIn.on();
+
+        // CutIn
+        blueCutInBack = new SpriteEffect(gra.newPixmap("others/pipo-btleffect-blue.jpg", PixmapFormat.ARGB4444), 320, new float[]{0.1f, 0.1f, 0.1f});
+        startCutIn = new CutInEffect(gra.newPixmap("cutin/start.png", PixmapFormat.ARGB4444), blueCutInBack);
+        smashPlusCutIn = new CutInEffect(gra.newPixmap("cutin/smash_plus.png", PixmapFormat.ARGB4444), blueCutInBack);
+        dangerCutIn = new CutInEffect(gra.newPixmap("cutin/life_danger.png", PixmapFormat.ARGB4444), blueCutInBack);
 
         // BGM
         bgm = aud.newMusic("music/me_6777276_Race.mp3");
@@ -221,7 +228,7 @@ public class GameScreen extends Screen {
         //共通部分の描画
         gra.drawPixmap(bg, 0, 0);
         txt.drawText(String.valueOf(sc.level), 20, 130, 200, fontNumber);
-        txt.drawText(String.valueOf(sc.combo), 400, 130, 200, fontNumber);
+        txt.drawText(String.valueOf(sc.combo), 280, 130, 200, fontNumber);
         drawGraphicalNumber(sc.score, 90, 20, 220, 9);
         drawLife(player.getInitLife(), player.getDamage());
         drawSmashIcon();
@@ -229,27 +236,36 @@ public class GameScreen extends Screen {
         // シーンごとの処理
         switch (scene) {
             case READY://-----------------------------------------------------------------------------------
-                // 変数の初期化
+                // 変数の初期化など
+                startCutIn.on();
                 changeScene(Scene.START);
                 break;
             //-------------------------------------------------------------------------------------------------
 
             case START://--------------------------------------------------------------------------------------
-                // チュートリアル表示
-                changeScene(Scene.PLAYING);
+                // スタートカットイン表示
+                if (!startCutIn.play(deltaTime)) {
+                    startCutIn = null;
+                    changeScene(Scene.PLAYING);
+                }
                 break;
             //-------------------------------------------------------------------------------------------------
 
             case PLAYING://-----------------------------------------------------------------------------------
 
                 timer += deltaTime;
-                cutInTimer += deltaTime;
 
                 // 再生済み効果音を初期化
                 playedSounds = new ArrayList<>();
 
-                appearManCutIn.play(deltaTime);
-
+                // エフェクト描画
+                if (cutInQueue.size() >= 1) {
+                    // 先頭のカットインを表示
+                    if (!cutInQueue.get(0).play(deltaTime)) {
+                        // カットインが終了していたら削除
+                        cutInQueue.remove(0);
+                    }
+                }
 
                 // Playerの状態に応じた処理
                 if (player.getState() == Player.ActionType.STEP_RIGHT) {
@@ -281,7 +297,14 @@ public class GameScreen extends Screen {
                 // Walkerを出現させる
                 if (walkers.size() < maxWalker) {
                     int left = 50 + random.nextInt(AndroidGame.TARGET_WIDTH - 100 - 50);
-                    walkers.add(manager.getWalker(new Rect(left, 370, left + 100, 470)));
+                    if (nextWalkerType == WalkerManager.RANDOM) {
+                        // ランダム出現
+                        walkers.add(manager.getSomeWalker(new Rect(left, 370, left + 100, 470)));
+                    } else {
+                        // 固定出現
+                        walkers.add(manager.getTheWalker(nextWalkerType, new Rect(left, 370, left + 100, 470)));
+                        nextWalkerType = WalkerManager.RANDOM;
+                    }
                 }
 
                 // 描画処理
@@ -303,38 +326,40 @@ public class GameScreen extends Screen {
                 }
 
                 // タッチイベントの処理
-                for (int gi = 0; gi < gestureEvents.size(); gi++) {
-                    GestureEvent ges = gestureEvents.get(gi);
+                if (gestureEvents != null) {
+                    for (int gi = 0; gi < gestureEvents.size(); gi++) {
+                        GestureEvent ges = gestureEvents.get(gi);
 
-                    // 稀にgesが正しく格納されないことがあることへの対処
-                    if (ges == null) {
-                        continue;
-                    }
+                        // 稀にgesが正しく格納されないことがあることへの対処
+                        if (ges == null) {
+                            continue;
+                        }
 
-                    if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
-                        // Walkerのタップ判定
-                        for (Walker walker : walkers) {
-                            if (isBounds(ges, walker.getLocation(), TAP_EXPANSION)) {
-                                walker.addDamage(1);
-                                playSoundOnceRandom("onTap", onTap, 1.5f);
-                                if (walker.getLife() >= 1) {
-                                    walker.setState(Walker.ActionType.DAMAGE);
-                                } else {
-                                    walker.setState(Walker.ActionType.DEAD);
-                                    if (sc.beatWalker(walker.getPoint())) {
-                                        lvUp();
+                        if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
+                            // Walkerのタップ判定
+                            for (Walker walker : walkers) {
+                                if (isBounds(ges, walker.getLocation(), TAP_EXPANSION)) {
+                                    walker.addDamage(1);
+                                    playSoundOnceRandom("onTap", onTap, 1.5f);
+                                    if (walker.getLife() >= 1) {
+                                        walker.setState(Walker.ActionType.DAMAGE);
+                                    } else {
+                                        walker.setState(Walker.ActionType.DEAD);
+                                        if (sc.beatWalker(walker.getPoint())) {
+                                            lvUp();
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                    } else if (ges.type == GestureEvent.GESTURE_FLING && isBounds(ges, onStepArea)) {
-                        // Playerをステップさせた
-                        if (ges.velocityX > 0.0f) {
-                            player.setState(Player.ActionType.STEP_RIGHT);
-                        } else {
-                            player.setState(Player.ActionType.STEP_LEFT);
-                            playSoundOnceRandom("onFling", onFling, 1.5f);
+                        } else if (ges.type == GestureEvent.GESTURE_FLING && isBounds(ges, onStepArea)) {
+                            // Playerをステップさせた
+                            if (ges.velocityX > 0.0f) {
+                                player.setState(Player.ActionType.STEP_RIGHT);
+                            } else {
+                                player.setState(Player.ActionType.STEP_LEFT);
+                                playSoundOnceRandom("onFling", onFling, 1.5f);
+                            }
                         }
                     }
                 }
@@ -377,6 +402,7 @@ public class GameScreen extends Screen {
         playMusic(bgm);
     }
 
+
     /** 一時停止状態をセットする */
     @Override
     public void pause() {
@@ -393,7 +419,9 @@ public class GameScreen extends Screen {
         if (!bgm.isPlaying()) {
             playMusic(bgm);
         }
-        scene = Scene.PLAYING;
+        if (scene != Scene.READY) {
+            scene = Scene.PLAYING;
+        }
     }
 
 
@@ -444,8 +472,9 @@ public class GameScreen extends Screen {
 
         player.addDamage(power);
 
-        if(player.getDamage() >= player.getInitLife() * 4 / 5){
+        if (player.getDamage() >= player.getInitLife() * 4 / 5) {
             dangerCutIn.on();
+            cutInQueue.add(dangerCutIn);
         }
 
         player.setState(Player.ActionType.DAMAGE);
@@ -471,7 +500,7 @@ public class GameScreen extends Screen {
         return walkerState != Walker.ActionType.CRASH
                 && walkerState != Walker.ActionType.VANISH
                 && player.getState() != Player.ActionType.STEP_LEFT
-                && location.bottom >= 990 && location.bottom <= 1040;
+                && location.bottom >= 1010 && location.bottom <= 1060;
     }
 
 
@@ -491,14 +520,57 @@ public class GameScreen extends Screen {
             playSoundRandom(onLvUpMany, 0.7f);
             if (remainSmash < MAX_SMASH) {
                 remainSmash++;
+                smashPlusCutIn.on();
+                cutInQueue.add(smashPlusCutIn);
             }
+        }
+
+
+        // 特定のWalkerの初出現
+        CutInEffect cutIn = null;
+        switch (sc.level) {
+            case 3:
+                nextWalkerType = WalkerManager.SCHOOL;
+                manager.appearedFlags[WalkerManager.SCHOOL] = true;
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_school.png", PixmapFormat.ARGB4444), blueCutInBack);
+                break;
+            case 10:
+                nextWalkerType = WalkerManager.GRANDMA;
+                manager.appearedFlags[WalkerManager.GRANDMA] = true;
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_grandma.png", PixmapFormat.ARGB4444), blueCutInBack);
+                break;
+            case 30:
+                nextWalkerType = WalkerManager.GIRL;
+                manager.appearedFlags[WalkerManager.GIRL] = true;
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_girl.png", PixmapFormat.ARGB4444), blueCutInBack);
+                break;
+            case 60:
+                nextWalkerType = WalkerManager.MANIA;
+                manager.appearedFlags[WalkerManager.MANIA] = true;
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_mania.png", PixmapFormat.ARGB4444), blueCutInBack);
+                break;
+            case 90:
+                nextWalkerType = WalkerManager.VISITOR;
+                manager.appearedFlags[WalkerManager.VISITOR] = true;
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_visitor.png", PixmapFormat.ARGB4444), blueCutInBack);
+                break;
+            case 120:
+                nextWalkerType = WalkerManager.CAR;
+                manager.appearedFlags[WalkerManager.CAR] = true;
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_car.png", PixmapFormat.ARGB4444), blueCutInBack);
+                break;
+        }
+
+        if (cutIn != null) {
+            cutIn.on();
+            cutInQueue.add(cutIn);
         }
     }
 
 
     /** 残りlifeゲージを描画する */
     private void drawLife(int initLife, int damage) {
-        int left = 50;
+        int left = 20;
         int top = 1185;
         int width = 250;
         int height = 80;

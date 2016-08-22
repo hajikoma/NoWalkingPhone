@@ -48,10 +48,12 @@ public class CutInEffect {
 
     /**
      * CutInEffectを実際に表示する。
+     *
+     * @return 表示したかどうか
      */
-    public void play(float deltaTime) {
+    public boolean play(float deltaTime) {
         if (!isAnimate) {
-            return;
+            return false;
         }
 
         timer += deltaTime;
@@ -60,18 +62,19 @@ public class CutInEffect {
             backEffect.play(deltaTime);
             int left = (int) Math.pow((double) ((HALF_TIME - timer) * 30), 2);
             drawImage(left);
-            return;
+            return true;
         } else if(timer < HALF_TIME + HALF_TIME){
             backEffect.play(deltaTime);
             int left = (int) Math.pow((double) ((timer - HALF_TIME) * 30), 2);
             drawImage(left);
-            return;
+            return true;
         }
 
         // 表示されなかった場合（Effect終了）
         isAnimate = false;
         backEffect.off();
         timer = 0.0f;
+        return false;
     }
 
 
