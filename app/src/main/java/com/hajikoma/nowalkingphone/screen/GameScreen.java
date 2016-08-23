@@ -91,11 +91,14 @@ public class GameScreen extends Screen {
     /** スマッシュの最大使用可能回数 */
     private static final int MAX_SMASH = 3;
     /** スマッシュアイコンの描画先 */
-    private final Rect SMASH_DST_RECT_ARR[] = {
+    private static final Rect SMASH_DST_RECT_ARR[] = {
             new Rect(495, 1205, 560, 1270),
             new Rect(570, 1205, 635, 1270),
             new Rect(645, 1205, 710, 1270)
     };
+
+    /** 一時停止ボタンのタップ判定エリア */
+    private static final Rect PAUSE_DST_AREA = new Rect(580, 0, 720, 140);
 
     /** Walkerタップ時の、当たり判定の拡大値 */
     private static final int TAP_EXPANSION = 30;
@@ -340,20 +343,25 @@ public class GameScreen extends Screen {
                         }
 
                         if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
-                            // Walkerのタップ判定
-                            for (Walker walker : walkers) {
-                                if (isBounds(ges, walker.getLocation(), TAP_EXPANSION)) {
-                                    walker.addDamage(1);
-                                    playSoundOnceRandom("onTap", onTap, 1.5f);
-                                    if (walker.getLife() >= 1) {
-                                        walker.setState(Walker.ActionType.DAMAGE);
-                                    } else {
-                                        walker.setState(Walker.ActionType.DEAD);
-                                        if (sc.beatWalker(walker.getPoint())) {
-                                            lvUp();
+                            if (!isBounds(ges, PAUSE_DST_AREA)) {
+                                // Walkerのタップ判定
+                                for (Walker walker : walkers) {
+                                    if (isBounds(ges, walker.getLocation(), TAP_EXPANSION)) {
+                                        walker.addDamage(1);
+                                        playSoundOnceRandom("onTap", onTap, 1.5f);
+                                        if (walker.getLife() >= 1) {
+                                            walker.setState(Walker.ActionType.DAMAGE);
+                                        } else {
+                                            walker.setState(Walker.ActionType.DEAD);
+                                            if (sc.beatWalker(walker.getPoint())) {
+                                                lvUp();
+                                            }
                                         }
                                     }
                                 }
+                            } else {
+                                // 一時停止が押された
+                                changeScene(Scene.PAUSE);
                             }
 
                         } else if (ges.type == GestureEvent.GESTURE_FLING && isBounds(ges, onStepArea)) {
@@ -382,7 +390,19 @@ public class GameScreen extends Screen {
             //-------------------------------------------------------------------------------------------------
 
             case PAUSE://-----------------------------------------------------------------------------------
-                //再開待機画面
+                // 停止中
+                gra.drawRect(0, 0, NoWalkingPhoneGame.TARGET_WIDTH, NoWalkingPhoneGame.TARGET_HEIGHT, Color.argb(100, 255, 255, 255));
+                txt.drawText("一時休戦中…", 250, 600, 620, Assets.style_general_black);
+
+                if (gestureEvents != null) {
+                    for (int gi = 0; gi < gestureEvents.size(); gi++) {
+                        GestureEvent ges = gestureEvents.get(gi);
+                        if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
+                            changeScene(Scene.PLAYING);
+                        }
+                    }
+                }
+
                 break;
             //-------------------------------------------------------------------------------------------------
 
