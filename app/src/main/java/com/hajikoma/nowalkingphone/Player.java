@@ -21,9 +21,8 @@ public class Player extends SpriteImage {
         DEAD
     }
 
-
     /** lifeの初期値 */
-    private static final int INIT_LIFE = 30;
+    private static final int INIT_LIFE = 20;
     /** 受けたダメージ量 */
     private int damage = 0;
 
@@ -263,6 +262,11 @@ public class Player extends SpriteImage {
 
     public int getInitLife() {
         return INIT_LIFE;
+    }
+
+
+    public int getRemainLife() {
+        return INIT_LIFE - damage;
     }
 
 

@@ -92,9 +92,9 @@ public class GameScreen extends Screen {
     private static final int MAX_SMASH = 3;
     /** スマッシュアイコンの描画先 */
     private final Rect SMASH_DST_RECT_ARR[] = {
-            new Rect(450, 1175, 520, 1245),
-            new Rect(540, 1175, 610, 1245),
-            new Rect(630, 1175, 700, 1245)
+            new Rect(495, 1205, 560, 1270),
+            new Rect(570, 1205, 635, 1270),
+            new Rect(645, 1205, 710, 1270)
     };
 
     /** Walkerタップ時の、当たり判定の拡大値 */
@@ -476,7 +476,7 @@ public class GameScreen extends Screen {
 
         player.addDamage(power);
 
-        if (player.getDamage() >= player.getInitLife() * 4 / 5) {
+        if (player.getRemainLife() <= player.getInitLife() / 5) {
             dangerCutIn.on();
             cutInQueue.add(dangerCutIn);
         }
@@ -574,36 +574,39 @@ public class GameScreen extends Screen {
 
     /** 残りlifeゲージを描画する */
     private void drawLife(int initLife, int damage) {
-        int left = 20;
-        int top = 1185;
-        int width = 250;
-        int height = 80;
+        int left = 10;
+        int top = 1210;
+        int width = 10 + initLife * (10 + 5) + 5; // 左余白10＋ライフゲージバー10+バー間の余白5+右余白10(5+5)
+        int height = 60;
         int warningZone = initLife / 2;
-        int dangerZone = initLife * 4 / 5;
+        int dangerZone = initLife / 5;
+        int remainLife = initLife - damage;
 
         // lifeゲージ背景
-        if (damage < warningZone) {
-            gra.drawRoundRect(left, top, width, height, 10.0f, Color.LTGRAY);
-        } else if (damage < dangerZone) {
-            gra.drawRoundRect(left, top, width, height, 10.0f, Color.argb(agLifeWarning.getAlpha(), 255, 0, 0));
-        } else {
-            gra.drawRoundRect(left, top, width, height, 10.0f, Color.argb(agLifeDanger.getAlpha(), 255, 0, 0));
-        }
-
-        // lifeゲージ残り
-        left += 5;
-        top += 5;
-        width -= 10;
-        height -= 10;
         int color;
-        if (damage < warningZone) {
-            color = Color.GREEN;
-        } else if (damage < dangerZone) {
+        if (remainLife <= 0) {
+            gra.drawRoundRect(left, top, width, height, 10.0f, Color.rgb(255, 0, 0));
+            color = Color.RED;
+        } else if (remainLife <= dangerZone) {
+            gra.drawRoundRect(left, top, width, height, 10.0f, Color.argb(agLifeDanger.getAlpha(), 255, 0, 0));
+            color = Color.RED;
+        } else if (remainLife <= warningZone) {
+            gra.drawRoundRect(left, top, width, height, 10.0f, Color.argb(agLifeWarning.getAlpha(), 255, 0, 0));
             color = Color.YELLOW;
         } else {
-            color = Color.RED;
+            gra.drawRoundRect(left, top, width, height, 10.0f, Color.rgb(156, 167, 226)); // 薄い青
+            color = Color.GREEN;
         }
-        gra.drawRoundRect(left, top, width - (int) ((float) width / (float) initLife * (float) damage), height, 9.0f, color);
+
+        // lifeゲージバー
+        left += 10;
+        top += 10;
+        width = 10;
+        height = 40;
+        for (int li = 1; li <= remainLife; li++) {
+            gra.drawRoundRect(left, top, width, height, 5.0f, color);
+            left += 10 + 5; // バーが10、余白5
+        }
     }
 
 
