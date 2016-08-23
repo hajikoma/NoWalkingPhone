@@ -23,8 +23,10 @@ public class CutInEffect {
     private static final int DST_HEIGHT = 240;
     /** 画像描画位置top */
     private static final int DST_TOP = 500;
-    /** カットインエフェクトの折り返し時間 */
-    private static final float HALF_TIME = 1.5f;
+    /** 画像描画位置left */
+    private int left = -80;
+    /** カットインエフェクト全体の表示時間 */
+    private static final float EFFECT_TIME = 3.0f;
 
 
     /**
@@ -58,14 +60,15 @@ public class CutInEffect {
 
         timer += deltaTime;
 
-        if (timer < HALF_TIME) {
+        if (timer < EFFECT_TIME * 4 / 5) {
             backEffect.play(deltaTime);
-            int left = (int) Math.pow((double) ((HALF_TIME - timer) * 30), 2);
+            left += 2;
             drawImage(left);
             return true;
-        } else if(timer < HALF_TIME + HALF_TIME){
+        } else if (timer < EFFECT_TIME) {
+            // 残り1/5でスライドアウト
             backEffect.play(deltaTime);
-            int left = (int) Math.pow((double) ((timer - HALF_TIME) * 30), 2);
+            left += (int) Math.pow((double) (timer * 7), 2);
             drawImage(left);
             return true;
         }
@@ -74,6 +77,7 @@ public class CutInEffect {
         isAnimate = false;
         backEffect.off();
         timer = 0.0f;
+        left = -80;
         return false;
     }
 

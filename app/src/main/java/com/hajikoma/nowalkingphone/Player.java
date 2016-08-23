@@ -33,7 +33,7 @@ public class Player extends SpriteImage {
     private float actionTime = 0.0f;
 
     /** Playerの描画先 */
-    private Rect defaultDstArea = new Rect(220, 900, 500, 1200);
+    private Rect defaultDstArea = new Rect(210, 800, 510, 1100);
 
 
     /**
@@ -43,7 +43,7 @@ public class Player extends SpriteImage {
      * @param colWidth visualの中の、一画像の幅
      */
     public Player(Pixmap visual, Integer colWidth) {
-        super(visual, colWidth, new Rect(220, 900, 500, 1200));
+        super(visual, colWidth, new Rect(210, 800, 510, 1100));
         state = ActionType.WALK;
     }
 
@@ -104,16 +104,16 @@ public class Player extends SpriteImage {
      */
     public void damage() {
         if (actionTime <= 0.2f) {
-            move(0, 5);
+            move(2, 3);
             drawAction(0);
         } else if (actionTime <= 0.4f) {
-            move(0, 4);
+            move(-2, 2);
             drawAction(0);
         } else if (actionTime <= 0.6f) {
-            move(0, 3);
+            move(1, 2);
             drawAction(0);
         } else if (actionTime <= 0.8f) {
-            move(0, 2);
+            move(-1, 1);
             drawAction(0);
         } else if (actionTime <= 1.0f) {
             move(0, 1);

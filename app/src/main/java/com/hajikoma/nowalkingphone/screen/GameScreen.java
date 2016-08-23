@@ -72,7 +72,7 @@ public class GameScreen extends Screen {
     /** Player */
     private Player player;
     /** Playerのステップ操作の受付範囲 */
-    private Rect onStepArea = new Rect(0, 1000, NoWalkingPhoneGame.TARGET_WIDTH, NoWalkingPhoneGame.TARGET_HEIGHT);
+    private Rect onStepArea = new Rect(0, 800, NoWalkingPhoneGame.TARGET_WIDTH, NoWalkingPhoneGame.TARGET_HEIGHT);
 
     /** Walker */
     private ArrayList<Walker> walkers = new ArrayList<>();
@@ -109,12 +109,14 @@ public class GameScreen extends Screen {
     private SpriteEffect crashSpriteEffect;
 
     // CutIn
-    private SpriteEffect blueCutInBack;
+    private SpriteEffect cutInBackBlue;
+    private SpriteEffect cutInBackYellow;
+    private SpriteEffect cutInBackRed;
     private CutInEffect startCutIn;
     private CutInEffect smashPlusCutIn;
     private CutInEffect dangerCutIn;
 
-    /** CutInの表示キュー */
+    /** CutInの表示キュー（カットインは同時には表示しない） */
     private LinkedList<CutInEffect> cutInQueue = new LinkedList<>();
 
     /** BGM */
@@ -173,10 +175,12 @@ public class GameScreen extends Screen {
         crashSpriteEffect = new SpriteEffect(gra.newPixmap("others/crash.png", PixmapFormat.ARGB4444), 620, new float[]{0.5f});
 
         // CutIn
-        blueCutInBack = new SpriteEffect(gra.newPixmap("others/pipo-btleffect-blue.jpg", PixmapFormat.ARGB4444), 320, new float[]{0.1f, 0.1f, 0.1f});
-        startCutIn = new CutInEffect(gra.newPixmap("cutin/start.png", PixmapFormat.ARGB4444), blueCutInBack);
-        smashPlusCutIn = new CutInEffect(gra.newPixmap("cutin/smash_plus.png", PixmapFormat.ARGB4444), blueCutInBack);
-        dangerCutIn = new CutInEffect(gra.newPixmap("cutin/life_danger.png", PixmapFormat.ARGB4444), blueCutInBack);
+        cutInBackBlue = new SpriteEffect(gra.newPixmap("cutin/cutin_back_blue.jpg", PixmapFormat.RGB565), 360, new float[]{0.1f, 0.1f, 0.1f});
+        cutInBackYellow = new SpriteEffect(gra.newPixmap("cutin/cutin_back_yellow.jpg", PixmapFormat.RGB565), 360, new float[]{0.1f, 0.1f, 0.1f});
+        cutInBackRed = new SpriteEffect(gra.newPixmap("cutin/cutin_back_red.jpg", PixmapFormat.RGB565), 360, new float[]{0.1f, 0.1f, 0.1f});
+        startCutIn = new CutInEffect(gra.newPixmap("cutin/start.png", PixmapFormat.ARGB4444), cutInBackBlue);
+        smashPlusCutIn = new CutInEffect(gra.newPixmap("cutin/smash_plus.png", PixmapFormat.ARGB4444), cutInBackBlue);
+        dangerCutIn = new CutInEffect(gra.newPixmap("cutin/life_danger.png", PixmapFormat.ARGB4444), cutInBackRed);
 
         // BGM
         bgm = aud.newMusic("music/me_6777276_Race.mp3");
@@ -308,8 +312,8 @@ public class GameScreen extends Screen {
                 }
 
                 // 描画処理
-                player.action(deltaTime);
                 actWalkerBehindToForward(deltaTime);
+                player.action(deltaTime);
                 crashSpriteEffect.play(deltaTime);
                 smashEffect.play(deltaTime);
 
@@ -500,7 +504,7 @@ public class GameScreen extends Screen {
         return walkerState != Walker.ActionType.CRASH
                 && walkerState != Walker.ActionType.VANISH
                 && player.getState() != Player.ActionType.STEP_LEFT
-                && location.bottom >= 1010 && location.bottom <= 1060;
+                && location.bottom >= 1050 && location.bottom <= 1100;
     }
 
 
@@ -532,32 +536,32 @@ public class GameScreen extends Screen {
             case 3:
                 nextWalkerType = WalkerManager.SCHOOL;
                 manager.appearedFlags[WalkerManager.SCHOOL] = true;
-                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_school.png", PixmapFormat.ARGB4444), blueCutInBack);
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_school.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
             case 10:
                 nextWalkerType = WalkerManager.GRANDMA;
                 manager.appearedFlags[WalkerManager.GRANDMA] = true;
-                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_grandma.png", PixmapFormat.ARGB4444), blueCutInBack);
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_grandma.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
             case 30:
                 nextWalkerType = WalkerManager.GIRL;
                 manager.appearedFlags[WalkerManager.GIRL] = true;
-                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_girl.png", PixmapFormat.ARGB4444), blueCutInBack);
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_girl.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
             case 60:
                 nextWalkerType = WalkerManager.MANIA;
                 manager.appearedFlags[WalkerManager.MANIA] = true;
-                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_mania.png", PixmapFormat.ARGB4444), blueCutInBack);
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_mania.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
             case 90:
                 nextWalkerType = WalkerManager.VISITOR;
                 manager.appearedFlags[WalkerManager.VISITOR] = true;
-                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_visitor.png", PixmapFormat.ARGB4444), blueCutInBack);
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_visitor.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
             case 120:
                 nextWalkerType = WalkerManager.CAR;
                 manager.appearedFlags[WalkerManager.CAR] = true;
-                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_car.png", PixmapFormat.ARGB4444), blueCutInBack);
+                cutIn = new CutInEffect(gra.newPixmap("cutin/appear_car.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
         }
 
