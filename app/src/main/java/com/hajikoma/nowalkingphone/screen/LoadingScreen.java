@@ -7,6 +7,7 @@ import android.graphics.Paint;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
+import com.hajikoma.nowalkingphone.Score;
 import com.hajikoma.nowalkingphone.UserData;
 import com.hajikoma.nowalkingphone.framework.Audio;
 import com.hajikoma.nowalkingphone.framework.Game;
@@ -63,6 +64,8 @@ public class LoadingScreen extends Screen {
             Assets.ud.setUserId(userId);
         }
 
+        //スコアインスタンス
+        Assets.score = new Score();
 
         //共有グラフィックの読み込み
         Assets.icon_hand = gra.newPixmap("others/icon_hand.png", PixmapFormat.ARGB4444);

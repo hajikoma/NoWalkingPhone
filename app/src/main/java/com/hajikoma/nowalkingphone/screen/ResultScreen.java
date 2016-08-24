@@ -30,7 +30,7 @@ public class ResultScreen extends Screen {
     /** タイトルへボタン描画先 */
     private Rect goTitleDstArea = new Rect(0, 1180, 280, 1280);
     /** コンティニューボタン描画先 */
-    private Rect continueDstArea = new Rect(320, 1180, 400, 1280);
+    private Rect continueDstArea = new Rect(320, 1160, 720, 1280);
 
     /** 共通して使用するインスタンス */
     private final Game game;
@@ -38,7 +38,7 @@ public class ResultScreen extends Screen {
     private final Text txt;
 
     /** スコア */
-    private Score sc;
+    private Score sc = Assets.score;
 
     /** 経過時間 */
     private float timer;
@@ -46,27 +46,25 @@ public class ResultScreen extends Screen {
     /** 固有画像 */
     private Pixmap bg;
 
-    /** 広告表示フラグ */
-    private boolean isAdShow = false;
     /** レビュー依頼表示フラグ */
     private boolean isReviewShow = false;
 
 
     /** ResultScreenを生成する */
-    public ResultScreen(Game game, Score sc) {
+    public ResultScreen(Game game) {
         super(game);
         this.game = game;
-        this.sc = sc;
+
+        ((AndroidGame) game).prepareAd();
 
         gra = game.getGraphics();
         txt = game.getText();
-
-        UserData ud = Assets.ud;
 
         // 固有グラフィックの読み込み
         bg = gra.newPixmap("others/bg_result.jpg", PixmapFormat.RGB565);
 
         // データを保存
+        UserData ud = Assets.ud;
         if (sc.score >= ud.getFirstScore()) {
             ((AndroidGame) game).dbManager.saveFirstScore(ud.getUserId(), ud.getFirstScore(), sc.score); //DBにも保存
             ud.setThirdScore(ud.getSecondScore());
@@ -83,9 +81,6 @@ public class ResultScreen extends Screen {
         ud.addExceptionBackward();
         ud.addGrandScore(sc.score);
         ud.saveAllToPref(getSharedPreference());
-
-        // 広告読み込み
-        ((NoWalkingPhoneGame) game).adActivityPrepare();
     }
 
     @Override
@@ -124,15 +119,15 @@ public class ResultScreen extends Screen {
                 GestureEvent ges = gestureEvents.get(gi);
 
                 if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
-                    if (!isAdShow && isBounds(ges, continueDstArea)) {
+                    if (isBounds(ges, continueDstArea)) {
                         playSound(Assets.decision15, 1.0f);
-                        ((NoWalkingPhoneGame) game).adActivityForward();
-                        isAdShow = true;
-//                       game.setScreen(new GameScreen(game, sc));
+                        ((NoWalkingPhoneGame) game).showAd();
                         break;
+
                     } else if (isBounds(ges, goTitleDstArea)) {
                         playSound(Assets.decision15, 1.0f);
                         game.setScreen(new TitleScreen(game));
+                        break;
                     }
                 }
             }

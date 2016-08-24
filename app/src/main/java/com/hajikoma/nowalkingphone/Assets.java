@@ -60,4 +60,6 @@ public class Assets {
 //メモリの使用量が大きく、都度生成するのが望ましくない変数のみここに定義する。
 	/** ユーザーデータ */
 	public static UserData ud;
+	/** スコア */
+	public static Score score;
 }

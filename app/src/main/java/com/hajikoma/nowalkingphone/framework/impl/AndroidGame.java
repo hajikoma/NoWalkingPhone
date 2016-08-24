@@ -1,7 +1,8 @@
 package com.hajikoma.nowalkingphone.framework.impl;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -13,12 +14,12 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+import com.ad_stir.videoreward.AdstirVideoReward;
+import com.ad_stir.videoreward.AdstirVideoRewardListener;
 import com.hajikoma.nowalkingphone.DBManager;
+import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
 import com.hajikoma.nowalkingphone.framework.Audio;
 import com.hajikoma.nowalkingphone.framework.FileIO;
 import com.hajikoma.nowalkingphone.framework.Game;
@@ -27,6 +28,7 @@ import com.hajikoma.nowalkingphone.framework.Input;
 import com.hajikoma.nowalkingphone.framework.Screen;
 import com.hajikoma.nowalkingphone.framework.Text;
 import com.hajikoma.nowalkingphone.framework.Vibrate;
+import com.hajikoma.nowalkingphone.screen.GameScreen;
 
 /**
  * Gameインターフェースを実装する。
@@ -47,6 +49,8 @@ public abstract class AndroidGame extends Activity implements Game {
     /** 画像処理モジュール */
     public static Graphics graphics;
     /** BGM,効果音モジュール */
+    Game game;
+    /** BGM,効果音モジュール */
     Audio audio;
     /** ユーザー入力処理モジュール */
     Input input;
@@ -64,9 +68,22 @@ public abstract class AndroidGame extends Activity implements Game {
     /** ネットワーク状態を扱うためのマネージャ */
     public ConnectivityManager conManager;
 
+    /** 広告表示関係 */
+    private Intent adIntent;
+    //    private static final String MEDIA_NO = "MEDIA-31008f2f";
+    private static final String MEDIA_NO = "MEDIA-989f9626";
+    public boolean isAdLoaded = false;
+    public boolean isRewarded = false;
+    private AdstirVideoReward adstirVideoReward;
 
-    /** アクティビティ生成時に呼ばれる */
-    @SuppressLint("NewApi")
+    /** 高速に描画を行うサブスレッド2つを処理するSurfaceView */
+    private FrameLayout frameLayout;
+
+
+    /**
+     * アクティビティ生成時に呼ばれる
+     * 画面のセットアップ、フレームワークで使用するメンバの生成などを行う
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +111,7 @@ public abstract class AndroidGame extends Activity implements Game {
         scaleY = (float) frameBufferHeight / size.y;
 
         // 各モジュールのインスタンス化
+        game = this;
         renderView = new AndroidFastRenderView(this, frameBuffer);
         graphics = new AndroidGraphics(getAssets(), frameBuffer);
         fileIO = new AndroidFileIO(getAssets());
@@ -102,7 +120,6 @@ public abstract class AndroidGame extends Activity implements Game {
         text = new AndroidText(frameBuffer);
         vibrate = new AndroidVibrate(this);
 
-
         // スタート画面をセット（ここ以前にAndroidGameクラスのメンバの初期化は終わらせること）
         screen = getStartScreen();
         setContentView(getRenderView());
@@ -110,6 +127,14 @@ public abstract class AndroidGame extends Activity implements Game {
         // スクリーンロックをオフに設定
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        // 広告を読み込み
+        // このアクティビティで使用するスポットIDについて、初期化処理
+        int[] spotIds = {1};
+        AdstirVideoReward.init(this, MEDIA_NO, spotIds);
+        // スポットIDごとにインスタンスを生成します。ここでは1についてのみ生成
+        adstirVideoReward = new AdstirVideoReward(this, MEDIA_NO, 1);
+        // 上で定義したリスナーを登録
+        adstirVideoReward.setAdstirVideoRewardListener(listener);
     }
 
     /** 再開時に呼ばれる */
@@ -218,5 +243,83 @@ public abstract class AndroidGame extends Activity implements Game {
     public boolean isNetworkConnected() {
         NetworkInfo info = conManager.getActiveNetworkInfo();
         return info != null && info.isConnected();
+    }
+
+
+    /** 広告のリスナーの定義 */
+    private AdstirVideoRewardListener listener = new AdstirVideoRewardListener() {
+        public void onLoad(int spot_no) {
+            Log.e("AD", "onLoad");
+            isAdLoaded = true;
+        }
+
+        public void onFailed(int spot_no) {
+            Log.e("AD", "onFailed");
+            isAdLoaded = false;
+            prepareAd();
+        }
+
+        public void onStart(int spot_no) {
+            Log.e("AD", "onStart");
+            isAdLoaded = false;
+        }
+
+        public void onStartFailed(int spot_no) {
+            Log.e("AD", "onStartFailed");
+            isAdLoaded = false;
+            prepareAd();
+        }
+
+        public void onFinished(int spot_no) {
+            Log.e("AD", "onFinished");
+        }
+
+        public void onReward(int spot_no) {
+            Log.e("AD", "onReward");
+            isRewarded = true;
+        }
+
+        public void onRewardCanceled(int spot_no) {
+            Log.e("AD", "onRewardCanceled");
+        }
+
+        public void onClose(int spot_no) {
+            Log.e("AD", "onClose");
+            prepareAd();
+            if (isRewarded) {
+                game.setScreen(new GameScreen(game, true));
+            } else {
+                ((NoWalkingPhoneGame) game).showConfirmDialog(
+                        "コンティニューに失敗しました",
+                        "広告が正しく終了しませんでした。最初からゲームをスタートします…",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                game.setScreen(new GameScreen(game, false));
+                            }
+                        }
+                );
+            }
+        }
+    };
+
+
+    /**
+     * 広告を読み込む
+     * 広告データの受信に時間がかかるため、準備と表示のメソッドを分離している
+     */
+    public void prepareAd() {
+        adstirVideoReward.load();
+    }
+
+
+    /**
+     * 広告を表示する
+     * 広告データの受信に時間がかかるため、準備と表示のメソッドを分離している
+     */
+    public void showAd() {
+        if (!isAdLoaded) {
+            prepareAd();
+        }
+        adstirVideoReward.showRewardVideo();
     }
 }

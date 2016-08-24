@@ -83,9 +83,6 @@ public class GameScreen extends Screen {
     /** 次に出現させるWalkerの種類定数。-1の場合、ランダム出現とする */
     private int nextWalkerType = WalkerManager.MAN;
 
-    /** 各スコアを格納 */
-    private Score sc = new Score();
-
     /** スマッシュの使用可能回数 */
     private int remainSmash = 3;
     /** スマッシュの最大使用可能回数 */
@@ -149,13 +146,18 @@ public class GameScreen extends Screen {
     /**
      * GameScreenを生成する
      */
-    public GameScreen(Game game) {
+    public GameScreen(Game game, boolean isContinue) {
         super(game);
         this.game = game;
         gra = game.getGraphics();
         aud = game.getAudio();
         txt = game.getText();
         vib = game.getVibrate();
+
+        // Scoreのセットアップ
+        if (!isContinue) {
+            Assets.score = new Score();
+        }
 
         // Playerのセットアップ
         Assets.player = gra.newPixmap("player/player.png", PixmapFormat.ARGB4444);
@@ -208,17 +210,6 @@ public class GameScreen extends Screen {
     }
 
 
-    /**
-     * コンティニュー時のGameScreenを生成する
-     *
-     * @param score 前回ゲームのスコア
-     */
-    public GameScreen(Game game, Score score) {
-        this(game);
-        sc = score;
-    }
-
-
     /** メインループ内で呼ばれる。ループ内のためインスタンスの生成には慎重を期すこと。 */
     @Override
     public void update(float deltaTime) {
@@ -234,9 +225,9 @@ public class GameScreen extends Screen {
 
         //共通部分の描画
         gra.drawPixmap(bg, 0, 0);
-        txt.drawText(String.valueOf(sc.level), 20, 130, 200, fontNumber);
-        txt.drawText(String.valueOf(sc.combo), 280, 130, 200, fontNumber);
-        drawGraphicalNumber(sc.score, 90, 20, 220, 9);
+        txt.drawText(String.valueOf(Assets.score.level), 20, 130, 200, fontNumber);
+        txt.drawText(String.valueOf(Assets.score.combo), 280, 130, 200, fontNumber);
+        drawGraphicalNumber(Assets.score.score, 90, 20, 220, 9);
         drawLife(player.getInitLife(), player.getDamage());
         drawSmashIcon();
 
@@ -246,6 +237,8 @@ public class GameScreen extends Screen {
                 // 変数の初期化など
                 startCutIn.on();
                 changeScene(Scene.START);
+                player.action(deltaTime);
+
                 break;
             //-------------------------------------------------------------------------------------------------
 
@@ -255,6 +248,8 @@ public class GameScreen extends Screen {
                     startCutIn = null;
                     changeScene(Scene.PLAYING);
                 }
+                player.action(deltaTime);
+
                 break;
             //-------------------------------------------------------------------------------------------------
 
@@ -282,7 +277,7 @@ public class GameScreen extends Screen {
                         player.setState(Player.ActionType.SMASH);
                         for (Walker walker : walkers) {
                             walker.setState(Walker.ActionType.SMASHED);
-                            if (sc.beatWalker(walker.getPoint())) {
+                            if (Assets.score.beatWalker(walker.getPoint())) {
                                 lvUp();
                             }
                         }
@@ -353,7 +348,7 @@ public class GameScreen extends Screen {
                                             walker.setState(Walker.ActionType.DAMAGE);
                                         } else {
                                             walker.setState(Walker.ActionType.DEAD);
-                                            if (sc.beatWalker(walker.getPoint())) {
+                                            if (Assets.score.beatWalker(walker.getPoint())) {
                                                 lvUp();
                                             }
                                         }
@@ -412,7 +407,7 @@ public class GameScreen extends Screen {
                     txt.drawText("もう歩けない…", 5, 700, 620, Assets.style_general_black);
                     timer += deltaTime;
                 } else {
-                    game.setScreen(new ResultScreen(game, sc));
+                    game.setScreen(new ResultScreen(game));
                 }
                 break;
             //-------------------------------------------------------------------------------------------------
@@ -503,7 +498,7 @@ public class GameScreen extends Screen {
 
         player.setState(Player.ActionType.DAMAGE);
         walker.setState(Walker.ActionType.CRASH);
-        sc.combo = 0;
+        Assets.score.combo = 0;
         crashSpriteEffect.on(new Rect(0, 0, 720, 1280));
         playSoundOnceRandom("onCrash", onCrash, 1.5f);
         if (power >= 5) {
@@ -534,13 +529,13 @@ public class GameScreen extends Screen {
     private void lvUp() {
         player.lvUp();
 
-        if (sc.level % 3 == 0) {
+        if (Assets.score.level % 3 == 0) {
             manager.replaceGenerateTable();
         }
-        if (sc.level % 10 == 0) {
+        if (Assets.score.level % 10 == 0) {
             maxWalker++;
         }
-        if (sc.level % 25 == 0) {
+        if (Assets.score.level % 25 == 0) {
             playSoundRandom(onLvUpMany, 0.7f);
             if (remainSmash < MAX_SMASH) {
                 remainSmash++;
@@ -552,7 +547,7 @@ public class GameScreen extends Screen {
 
         // 特定のWalkerの初出現
         CutInEffect cutIn = null;
-        switch (sc.level) {
+        switch (Assets.score.level) {
             case 3:
                 nextWalkerType = WalkerManager.SCHOOL;
                 manager.appearedFlags[WalkerManager.SCHOOL] = true;

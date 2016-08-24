@@ -95,7 +95,7 @@ public class TitleScreen extends Screen {
             if (ges.type == GestureEvent.GESTURE_SINGLE_TAP_UP) {
                 if (isBounds(ges, startDstArea)) {
                     playSound(Assets.decision15, 1.0f);
-                    game.setScreen(new GameScreen(game));
+                    game.setScreen(new GameScreen(game, false));
                     break;
                 } else if (isBounds(ges, rankingDstArea)) {
                     playSound(Assets.decision15, 1.0f);
@@ -103,7 +103,7 @@ public class TitleScreen extends Screen {
                     break;
                 } else if (isBounds(ges, tutorialDstArea)) {
                     playSound(Assets.decision15, 1.0f);
-                    game.setScreen(new GameScreen(game));
+                    game.setScreen(new GameScreen(game, false));
                     break;
                 } else if (isBounds(ges, muteDstArea)) {
                     if (Assets.ud.isMute()) {
