@@ -16,8 +16,6 @@ public class UserData {
     public static final String PREF_STR_USER_ID = "user_id";
     /** SharedPreferenceのキー：ユーザー名 */
     public static final String PREF_STR_USER_NAME = "user_name";
-    /** SharedPreferenceのキー：チュートリアル見たか */
-    public static final String PREF_BOOL_TUTORIAL_SHOW = "tutorial_show";
     /** SharedPreferenceのキー：レビューしたか */
     public static final String PREF_BOOL_REVIEW = "review";
     /** SharedPreferenceのキー：レビュー依頼表示までのゲーム回数 */
@@ -45,8 +43,6 @@ public class UserData {
     private String userId = "";
     /** ユーザー名 */
     private String userName = "";
-    /** チュートリアル見たか */
-    private boolean tutorialShow = false;
     /** レビューしたか */
     private boolean review = false;
     /** レビュー依頼表示までのゲーム回数 */
@@ -94,7 +90,6 @@ public class UserData {
         try {
             userId = preference.getString(PREF_STR_USER_ID, userId);
             userName = preference.getString(PREF_STR_USER_NAME, userName);
-            tutorialShow = preference.getBoolean(PREF_BOOL_TUTORIAL_SHOW, tutorialShow);
             review = preference.getBoolean(PREF_BOOL_REVIEW, review);
             reviewRemain = preference.getInt(PREF_INT_REVIEW_REMAIN, reviewRemain);
             launchTime = preference.getInt(PREF_INT_LAUNCH_TIME, launchTime);
@@ -121,7 +116,6 @@ public class UserData {
 
         editor.putString(PREF_STR_USER_ID, userId);
         editor.putString(PREF_STR_USER_NAME, userName);
-        editor.putBoolean(PREF_BOOL_TUTORIAL_SHOW, tutorialShow);
         editor.putBoolean(PREF_BOOL_REVIEW, review);
         editor.putInt(PREF_INT_REVIEW_REMAIN, reviewRemain);
         editor.putInt(PREF_INT_LAUNCH_TIME, launchTime);
@@ -134,7 +128,7 @@ public class UserData {
         editor.putInt(PREF_INT_THIRD_SCORE, thirdScore);
         editor.putLong(PREF_LONG_GRAND_SCORE, grandScore);
 
-        editor.commit();
+        editor.apply();
     }
 
 
@@ -152,14 +146,6 @@ public class UserData {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public boolean isTutorialShow() {
-        return tutorialShow;
-    }
-
-    public void setTutorialShow(boolean tutorialShow) {
-        this.tutorialShow = tutorialShow;
     }
 
     public boolean isReview() {

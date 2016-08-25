@@ -48,9 +48,7 @@ public class TitleScreen extends Screen {
     /** Walker */
     private ArrayList<Walker> walkers = new ArrayList<>();
     /** WalkerManager */
-    private WalkerManager manager = new WalkerManager();
-    /** Walkerの同時出現上限数 */
-    private static final int MAX_WALKER = 1;
+    private WalkerManager manager = new WalkerManager(1);
 
     /** BGM */
     private Music bgm;
@@ -79,7 +77,7 @@ public class TitleScreen extends Screen {
         bgm.setLooping(true);
 
         //固有グラフィックの読み込み
-        bg = gra.newPixmap("others/bg_title.jpg", PixmapFormat.RGB565);
+        bg = gra.newPixmap("bg/bg_title.jpg", PixmapFormat.RGB565);
         icon_settings = gra.newPixmap("others/settings.png", PixmapFormat.ARGB4444);
     }
 
@@ -103,7 +101,7 @@ public class TitleScreen extends Screen {
                     break;
                 } else if (isBounds(ges, tutorialDstArea)) {
                     playSound(Assets.decision15, 1.0f);
-                    game.setScreen(new GameScreen(game, false));
+                    game.setScreen(new TutorialScreen(game));
                     break;
                 } else if (isBounds(ges, muteDstArea)) {
                     if (Assets.ud.isMute()) {
@@ -141,7 +139,7 @@ public class TitleScreen extends Screen {
                 walkers.remove(i);
             }
         }
-        if (walkers.size() < MAX_WALKER) {
+        if (walkers.size() < manager.maxWalker) {
             int left = 100 + random.nextInt(AndroidGame.TARGET_WIDTH - 100 - 150);
             walkers.add(manager.getSomeWalker(new Rect(left, 370, left + 100, 470)));
         }

@@ -21,6 +21,8 @@ public class WalkerManager {
     public static final int VISITOR = 5;
     public static final int CAR = 6;
 
+    /** Walkerの同時出現上限数 */
+    public int maxWalker;
 
     /** 出現テーブル */
     public int generateTable[] = new int[50];
@@ -51,7 +53,9 @@ public class WalkerManager {
     private Random random = new Random();
 
 
-    public WalkerManager() {
+    public WalkerManager(int initMaxWalker)
+    {
+        maxWalker = initMaxWalker;
         Arrays.fill(generateTable, 0, 1, MAN);
     }
 

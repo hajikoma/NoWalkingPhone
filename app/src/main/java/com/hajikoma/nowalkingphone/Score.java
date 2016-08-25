@@ -1,7 +1,7 @@
 package com.hajikoma.nowalkingphone;
 
 /**
- * ゲーム中のスコアを管理するクラス。
+ * ゲーム中のスコアや状態を保持・管理するクラス。
  */
 public class Score {
 
@@ -15,8 +15,10 @@ public class Score {
     public int maxCombo = 0;
     /** 倒したWalkerの数 */
     public int beatCount = 0;
-
+    /** 次のレベルアップスコア */
     private int nextLvUpScore = 10;
+    /** 最大スコア */
+    private static final int MAX_SCORE = 999999999;
 
 
     /**
@@ -37,6 +39,10 @@ public class Score {
         }
 
         this.score += score + combo / 10;
+        if (this.score > MAX_SCORE) {
+            this.score = MAX_SCORE;
+        }
+
         while (this.score >= nextLvUpScore) {
             level++;
             nextLvUpScore += 10 + level;

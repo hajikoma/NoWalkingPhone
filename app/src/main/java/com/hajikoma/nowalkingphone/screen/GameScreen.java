@@ -42,16 +42,12 @@ public class GameScreen extends Screen {
 
     /** 現在のシーンを表す列挙型 */
     private enum Scene {
-        /** お手入れ開始準備、セットアップに使用 */
-        READY,
-        /** お手入れ開始直後、カウントダウンに使用 */
-        START,
-        /** ゲーム中 */
-        PLAYING,
-        /** 一時停止 */
-        PAUSE,
-        /** ゲームオーバー */
-        GAME_OVER
+        READY,//開始準備、セットアップに使用
+        CONTINUE_READY,// コンティニュー後の開始準備、セットアップに使用
+        START,// 開始直後、カットインに使用
+        PLAYING,// ゲーム中
+        PAUSE,// 一時停止
+        GAME_OVER// ゲームオーバー
     }
 
     /** 共通して使用するインスタンス */
@@ -76,10 +72,6 @@ public class GameScreen extends Screen {
 
     /** Walker */
     private ArrayList<Walker> walkers = new ArrayList<>();
-    /** WalkerManager */
-    private WalkerManager manager = new WalkerManager();
-    /** Walkerの同時出現上限数 */
-    private int maxWalker = 2;
     /** 次に出現させるWalkerの種類定数。-1の場合、ランダム出現とする */
     private int nextWalkerType = WalkerManager.MAN;
 
@@ -140,7 +132,7 @@ public class GameScreen extends Screen {
 
     /** 固有画像 */
     private Pixmap bg;
-    private Pixmap icon_smash;
+    private Pixmap iconSmash;
 
 
     /**
@@ -154,18 +146,12 @@ public class GameScreen extends Screen {
         txt = game.getText();
         vib = game.getVibrate();
 
-        // Scoreのセットアップ
-        if (!isContinue) {
-            Assets.score = new Score();
-        }
-
         // Playerのセットアップ
-        Assets.player = gra.newPixmap("player/player.png", PixmapFormat.ARGB4444);
-        player = new Player(Assets.player, 200);
+        player = new Player(gra.newPixmap("player/player.png", PixmapFormat.ARGB4444), 200);
 
         // 固有グラフィックの読み込み
-        bg = gra.newPixmap("others/bg_game.jpg", PixmapFormat.RGB565);
-        icon_smash = gra.newPixmap("others/icon_smash2.png", PixmapFormat.ARGB4444);
+        bg = gra.newPixmap("bg/bg_game.jpg", PixmapFormat.RGB565);
+        iconSmash = gra.newPixmap("others/icon_smash2.png", PixmapFormat.ARGB4444);
 
         // Font
         fontNumber = new Paint();
@@ -206,7 +192,14 @@ public class GameScreen extends Screen {
         onLvUpMany.put(0.5, Assets.peoplePerformanceCheer1);
         onLvUpMany.put(1.0, Assets.peopleStadiumCheer1);
 
-        changeScene(Scene.READY);
+        if (!isContinue) {
+            // 前回のゲームデータを削除、初期化
+            Assets.score = new Score();
+            Assets.manager = new WalkerManager(2);
+            changeScene(Scene.READY);
+        } else {
+            changeScene(Scene.CONTINUE_READY);
+        }
     }
 
 
@@ -234,9 +227,20 @@ public class GameScreen extends Screen {
         // シーンごとの処理
         switch (scene) {
             case READY://-----------------------------------------------------------------------------------
-                // 変数の初期化など
                 startCutIn.on();
                 changeScene(Scene.START);
+                player.action(deltaTime);
+
+                break;
+            //-------------------------------------------------------------------------------------------------
+
+            case CONTINUE_READY://-----------------------------------------------------------------------------------
+                // 動画が終わるまで待つ
+                if (((AndroidGame)game).isRewarded) {
+                    startCutIn.on();
+                    changeScene(Scene.START);
+                }
+
                 player.action(deltaTime);
 
                 break;
@@ -297,14 +301,14 @@ public class GameScreen extends Screen {
                 }
 
                 // Walkerを出現させる
-                if (walkers.size() < maxWalker) {
+                if (walkers.size() < Assets.manager.maxWalker) {
                     int left = 50 + random.nextInt(AndroidGame.TARGET_WIDTH - 100 - 50);
                     if (nextWalkerType == WalkerManager.RANDOM) {
                         // ランダム出現
-                        walkers.add(manager.getSomeWalker(new Rect(left, 370, left + 100, 470)));
+                        walkers.add(Assets.manager.getSomeWalker(new Rect(left, 370, left + 100, 470)));
                     } else {
                         // 固定出現
-                        walkers.add(manager.getTheWalker(nextWalkerType, new Rect(left, 370, left + 100, 470)));
+                        walkers.add(Assets.manager.getTheWalker(nextWalkerType, new Rect(left, 370, left + 100, 470)));
                         nextWalkerType = WalkerManager.RANDOM;
                     }
                 }
@@ -374,7 +378,7 @@ public class GameScreen extends Screen {
                 // ゲームオーバーの判定
                 if (player.getDamage() >= player.getInitLife()) {
                     player.setState(Player.ActionType.STANDBY);
-                    manager.setAllWalkerState(walkers, Walker.ActionType.STANDBY);
+                    Assets.manager.setAllWalkerState(walkers, Walker.ActionType.STANDBY);
                     changeScene(Scene.GAME_OVER);
                 }
 
@@ -530,10 +534,10 @@ public class GameScreen extends Screen {
         player.lvUp();
 
         if (Assets.score.level % 3 == 0) {
-            manager.replaceGenerateTable();
+            Assets.manager.replaceGenerateTable();
         }
         if (Assets.score.level % 10 == 0) {
-            maxWalker++;
+            Assets.manager.maxWalker++;
         }
         if (Assets.score.level % 25 == 0) {
             playSoundRandom(onLvUpMany, 0.7f);
@@ -547,35 +551,36 @@ public class GameScreen extends Screen {
 
         // 特定のWalkerの初出現
         CutInEffect cutIn = null;
+        boolean appearedFlags[] = Assets.manager.appearedFlags;
         switch (Assets.score.level) {
             case 3:
                 nextWalkerType = WalkerManager.SCHOOL;
-                manager.appearedFlags[WalkerManager.SCHOOL] = true;
+                appearedFlags[WalkerManager.SCHOOL] = true;
                 cutIn = new CutInEffect(gra.newPixmap("cutin/appear_school.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
             case 10:
                 nextWalkerType = WalkerManager.GRANDMA;
-                manager.appearedFlags[WalkerManager.GRANDMA] = true;
+                appearedFlags[WalkerManager.GRANDMA] = true;
                 cutIn = new CutInEffect(gra.newPixmap("cutin/appear_grandma.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
             case 30:
                 nextWalkerType = WalkerManager.GIRL;
-                manager.appearedFlags[WalkerManager.GIRL] = true;
+                appearedFlags[WalkerManager.GIRL] = true;
                 cutIn = new CutInEffect(gra.newPixmap("cutin/appear_girl.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
             case 60:
                 nextWalkerType = WalkerManager.MANIA;
-                manager.appearedFlags[WalkerManager.MANIA] = true;
+                appearedFlags[WalkerManager.MANIA] = true;
                 cutIn = new CutInEffect(gra.newPixmap("cutin/appear_mania.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
             case 90:
                 nextWalkerType = WalkerManager.VISITOR;
-                manager.appearedFlags[WalkerManager.VISITOR] = true;
+                appearedFlags[WalkerManager.VISITOR] = true;
                 cutIn = new CutInEffect(gra.newPixmap("cutin/appear_visitor.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
             case 120:
                 nextWalkerType = WalkerManager.CAR;
-                manager.appearedFlags[WalkerManager.CAR] = true;
+                appearedFlags[WalkerManager.CAR] = true;
                 cutIn = new CutInEffect(gra.newPixmap("cutin/appear_car.png", PixmapFormat.ARGB4444), cutInBackYellow);
                 break;
         }
@@ -629,7 +634,7 @@ public class GameScreen extends Screen {
     private void drawSmashIcon() {
         Rect srcRect = new Rect(0, 0, 143, 143);
         for (int ii = 0; ii < remainSmash; ii++) {
-            gra.drawPixmap(icon_smash, SMASH_DST_RECT_ARR[ii], srcRect);
+            gra.drawPixmap(iconSmash, SMASH_DST_RECT_ARR[ii], srcRect);
         }
     }
 

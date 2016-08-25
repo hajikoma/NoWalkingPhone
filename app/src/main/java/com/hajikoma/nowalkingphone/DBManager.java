@@ -53,17 +53,6 @@ public class DBManager {
 
     // リスナー（DB更新時に自動で呼ばれる）
     private void setListener() {
-        t_users.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                Log.d("Firebase", snapshot.getValue().toString());
-            }
-
-            @Override
-            public void onCancelled(FirebaseError error) {
-                Log.d("Firebase", "error");
-            }
-        });
     }
 
 
@@ -179,7 +168,13 @@ public class DBManager {
                 Integer keys_i[] = new Integer[keys.size()];
                 // keyをIntegerに
                 for (int i = 0; i < keys.size(); i++) {
-                    keys_i[i] = Integer.valueOf(keys.get(i));
+                    try {
+                        keys_i[i] = Integer.valueOf(keys.get(i));
+                    } catch (NumberFormatException e) {
+                        // ランキングに数字以外が入っていた場合→0点扱い
+                        e.printStackTrace();
+                        keys_i[i] = 0;
+                    }
                 }
                 // 降順で並べ替え
                 Arrays.sort(keys_i, new Comparator<Integer>() {

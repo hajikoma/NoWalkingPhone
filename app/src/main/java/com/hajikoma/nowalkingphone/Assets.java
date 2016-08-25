@@ -16,10 +16,8 @@ import com.hajikoma.nowalkingphone.framework.Sound;
  */
 public class Assets {
 
-	public static Pixmap icon_hand;
 	public static Pixmap number;
 
-	public static Pixmap player;
 	public static Pixmap walker_boy;
 	public static Pixmap walker_car;
 	public static Pixmap walker_girl;
@@ -49,17 +47,16 @@ public class Assets {
 
 	public static int vibShortOnce;
 	public static int vibLongOnce;
-	public static long[] vibShortRythem;
-	public static long[] vibLongRythem;
 
 	public static Paint style_general_black;
+	public static Paint style_general_black_big;
 	public static Paint style_general_white;
+	public static Paint style_general_white_big;
 
 
 //各Screenで共有する変数。Screenが遷移しても値を保持しておきたい変数や、
 //メモリの使用量が大きく、都度生成するのが望ましくない変数のみここに定義する。
-	/** ユーザーデータ */
 	public static UserData ud;
-	/** スコア */
 	public static Score score;
+	public static WalkerManager manager;
 }

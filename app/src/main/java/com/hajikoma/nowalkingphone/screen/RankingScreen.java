@@ -67,7 +67,7 @@ public class RankingScreen extends Screen {
         rankingSmall.setColor(Color.WHITE);
 
         // 固有グラフィックの読み込み
-        bg = gra.newPixmap("others/bg_ranking.jpg", PixmapFormat.RGB565);
+        bg = gra.newPixmap("bg/bg_ranking.jpg", PixmapFormat.RGB565);
     }
 
 

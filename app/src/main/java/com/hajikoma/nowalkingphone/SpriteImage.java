@@ -31,6 +31,11 @@ abstract class SpriteImage {
         this.colWidth = colWidth;
         this.dstRect = dstRect;
 
+        // 一画像の幅が、画像の幅より大きい
+        if(colWidth > visual.getWidth()){
+            colWidth = visual.getWidth();
+        }
+
         // 画像セット内の各画像の座標矩形配列を作成
         int totalCol = visual.getWidth() / colWidth;
         srcRects = new Rect[totalCol];
@@ -44,7 +49,8 @@ abstract class SpriteImage {
         try {
             NoWalkingPhoneGame.graphics.drawPixmap(getVisual(), dstRect, srcRects[colIndex]);
         } catch (ArrayIndexOutOfBoundsException $e) {
-            throw new ArrayIndexOutOfBoundsException("描画元矩形が、画像の範囲外を指しています。 colIndex:" + colIndex);
+            // 描画元矩形が、画像の範囲外のとき発生→確実に存在するindex0を描画
+            drawAction(0);
         }
     }
 

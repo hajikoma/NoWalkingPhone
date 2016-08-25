@@ -64,11 +64,7 @@ public class LoadingScreen extends Screen {
             Assets.ud.setUserId(userId);
         }
 
-        //スコアインスタンス
-        Assets.score = new Score();
-
         //共有グラフィックの読み込み
-        Assets.icon_hand = gra.newPixmap("others/icon_hand.png", PixmapFormat.ARGB4444);
         Assets.number = gra.newPixmap("others/number.png", PixmapFormat.ARGB4444);
 
         Assets.walker_boy = gra.newPixmap("walker/walker_boy.png", PixmapFormat.ARGB4444);
@@ -103,8 +99,6 @@ public class LoadingScreen extends Screen {
         // バイブパターンのセットアップ
         Assets.vibShortOnce = 50;
         Assets.vibLongOnce = 150;
-        Assets.vibShortRythem = new long[]{50, 50};
-        Assets.vibLongRythem = new long[]{150, 150};
 
         // スタイルのセットアップ
         Assets.style_general_black = new Paint();
@@ -114,6 +108,13 @@ public class LoadingScreen extends Screen {
         Assets.style_general_white.setAntiAlias(true);
         Assets.style_general_white.setTextSize(NoWalkingPhoneGame.FONT_SIZE_GENERAL);
         Assets.style_general_white.setColor(Color.WHITE);
+        Assets.style_general_black_big = new Paint();
+        Assets.style_general_black_big.setAntiAlias(true);
+        Assets.style_general_black_big.setTextSize(NoWalkingPhoneGame.FONT_SIZE_M);
+        Assets.style_general_white_big = new Paint();
+        Assets.style_general_white_big.setAntiAlias(true);
+        Assets.style_general_white_big.setTextSize(NoWalkingPhoneGame.FONT_SIZE_M);
+        Assets.style_general_white_big.setColor(Color.WHITE);
     }
 
     /** 次のスクリーンに処理を移す。 */
