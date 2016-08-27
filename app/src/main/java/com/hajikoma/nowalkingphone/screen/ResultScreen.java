@@ -48,7 +48,7 @@ public class ResultScreen extends Screen {
     /** レビュー依頼表示フラグ */
     private boolean isReviewShow = false;
     /** playストアのURL */
-    private static final String STORE_URL = "market://details?id=com.xxx.myapp";
+    private static final String STORE_URL = "market://details?id=com.hajikoma.nowalkingphone";
     /** ランキング更新フラグ。順に1位、2位、3位 */
     private boolean isRankedIn[] = new boolean[]{false, false, false};
 
@@ -149,7 +149,7 @@ public class ResultScreen extends Screen {
         }
         txt.drawText(message, 80, 980, 550, Assets.style_general_white_big);
 
-        if (timer >= 3.0f) {
+        if (timer >= 2.0f) {
             // 一定回数以上遊んでおり、ランキング更新時、レビューを依頼
             if (!isReviewShow
                     && Assets.ud.getReviewRemain() == 0
@@ -175,16 +175,23 @@ public class ResultScreen extends Screen {
                                 ((AndroidGame) game).prepareAd();
                             } else {
                                 final NoWalkingPhoneGame nwp = (NoWalkingPhoneGame) game;
-                                ((NoWalkingPhoneGame) game).showConfirmDialog(
-                                        "動画が取得できません。",
-                                        "動画の取得に失敗しました。ネットワーク接続を確認して下さい。",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                nwp.getCurrentScreen().resume();
-                                                nwp.getRenderView().resume();
-                                            }
-                                        }
-                                );
+
+                                Runnable run = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ((NoWalkingPhoneGame) game).showConfirmDialog(
+                                                "動画が取得できません。",
+                                                "動画の取得に失敗しました。ネットワーク接続を確認して下さい。",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        nwp.getCurrentScreen().resume();
+                                                        nwp.getRenderView().resume();
+                                                    }
+                                                }
+                                        );
+                                    }
+                                };
+                                nwp.postRunnable(run);
                             }
                         }
 

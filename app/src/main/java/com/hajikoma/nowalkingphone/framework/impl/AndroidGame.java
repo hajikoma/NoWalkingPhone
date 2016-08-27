@@ -68,6 +68,7 @@ public abstract class AndroidGame extends Activity implements Game {
 
     /** 広告表示関係 */
     private static final String MEDIA_NO = "MEDIA-31008f2f";
+    public boolean isAdLoading = false;
     public boolean isAdLoaded = false;
     public boolean isRewarded = false;
     private AdstirVideoReward adstirVideoReward;
@@ -242,55 +243,68 @@ public abstract class AndroidGame extends Activity implements Game {
     /** 広告のリスナーの定義 */
     private AdstirVideoRewardListener listener = new AdstirVideoRewardListener() {
         public void onLoad(int spot_no) {
-            Log.e("AD", "onLoad");
+            Log.d("AD", "onLoad");
+            isAdLoading = false;
             isAdLoaded = true;
         }
 
         public void onFailed(int spot_no) {
-            Log.e("AD", "onFailed");
+            Log.d("AD", "onFailed");
+            isAdLoading = false;
             isAdLoaded = false;
             prepareAd();
         }
 
         public void onStart(int spot_no) {
-            Log.e("AD", "onStart");
+            Log.d("AD", "onStart");
             isAdLoaded = false;
         }
 
         public void onStartFailed(int spot_no) {
-            Log.e("AD", "onStartFailed");
+            Log.d("AD", "onStartFailed");
             isAdLoaded = false;
             prepareAd();
         }
 
         public void onFinished(int spot_no) {
-            Log.e("AD", "onFinished");
+            Log.d("AD", "onFinished");
         }
 
         public void onReward(int spot_no) {
-            Log.e("AD", "onReward");
+            Log.d("AD", "onReward");
             isRewarded = true;
         }
 
         public void onRewardCanceled(int spot_no) {
-            Log.e("AD", "onRewardCanceled");
+            Log.d("AD", "onRewardCanceled");
+            isRewarded = false;
         }
 
         public void onClose(int spot_no) {
-            Log.e("AD", "onClose");
+            Log.d("AD", "onClose");
             prepareAd();
             if (isRewarded) {
+                isRewarded = false;
                 game.setScreen(new GameScreen(game, true));
             } else {
-                ((NoWalkingPhoneGame) game).showConfirmDialog(
-                        "コンティニューに失敗しました",
-                        "広告が正しく再生・終了しませんでした。最初からゲームをスタートします…",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                game.setScreen(new GameScreen(game, false));
-                            }
-                        }
-                );
+                final NoWalkingPhoneGame nwp = (NoWalkingPhoneGame) game;
+                Runnable run = new Runnable() {
+                    @Override
+                    public void run() {
+                        ((NoWalkingPhoneGame) game).showConfirmDialog(
+                                "コンティニューに失敗しました",
+                                "広告が正しく再生・終了しませんでした。最初からゲームをスタートします…",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        nwp.getCurrentScreen().resume();
+                                        nwp.getRenderView().resume();
+                                        game.setScreen(new GameScreen(game, false));
+                                    }
+                                }
+                        );
+                    }
+                };
+                nwp.postRunnable(run);
             }
         }
     };
@@ -301,7 +315,10 @@ public abstract class AndroidGame extends Activity implements Game {
      * 広告データの受信に時間がかかるため、準備と表示のメソッドを分離している
      */
     public void prepareAd() {
-        adstirVideoReward.load();
+        if(!isAdLoading) {
+            isAdLoading = true;
+            adstirVideoReward.load();
+        }
     }
 
 
