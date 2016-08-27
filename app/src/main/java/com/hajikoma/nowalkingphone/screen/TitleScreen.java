@@ -37,8 +37,6 @@ public class TitleScreen extends Screen {
     private Rect rankingDstArea = new Rect(80, 890, 640, 890 + 100);
     /** 遊びかたボタン描画先 */
     private Rect tutorialDstArea = new Rect(80, 1030, 640, 1030 + 100);
-    /** ミュートボタン描画先 */
-    private Rect muteDstArea = new Rect(80, 1190, 80 + 80, 1190 + 80);
     /** バイブボタン描画先 */
     private Rect vibDstArea = new Rect(560, 1190, 560 + 80, 1190 + 80);
 
@@ -103,14 +101,6 @@ public class TitleScreen extends Screen {
                     playSound(Assets.decision15, 1.0f);
                     game.setScreen(new TutorialScreen(game));
                     break;
-                } else if (isBounds(ges, muteDstArea)) {
-                    if (Assets.ud.isMute()) {
-                        Assets.ud.unMute();
-                        break;
-                    } else {
-                        Assets.ud.mute();
-                        break;
-                    }
                 } else if (isBounds(ges, vibDstArea)) {
                     if (Assets.ud.isVibe()) {
                         Assets.ud.vibeOff();
@@ -148,11 +138,6 @@ public class TitleScreen extends Screen {
         }
 
         // 共通部分の描画
-        if (Assets.ud.isMute()) {
-            gra.drawPixmap(icon_settings, muteDstArea, 200, 0, 200, 200);
-        } else {
-            gra.drawPixmap(icon_settings, muteDstArea, 0, 0, 200, 200);
-        }
         if (Assets.ud.isVibe()) {
             gra.drawPixmap(icon_settings, vibDstArea, 0, 200, 200, 200);
         } else {
