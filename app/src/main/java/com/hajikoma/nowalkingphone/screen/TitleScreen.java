@@ -37,6 +37,8 @@ public class TitleScreen extends Screen {
     private Rect rankingDstArea = new Rect(80, 890, 640, 890 + 100);
     /** 遊びかたボタン描画先 */
     private Rect tutorialDstArea = new Rect(80, 1030, 640, 1030 + 100);
+    /** クレジットへ描画先 */
+    private Rect creditDstArea = new Rect(0, 1180, 400, 1280);
     /** バイブボタン描画先 */
     private Rect vibDstArea = new Rect(560, 1190, 560 + 80, 1190 + 80);
 
@@ -100,6 +102,10 @@ public class TitleScreen extends Screen {
                 } else if (isBounds(ges, tutorialDstArea)) {
                     playSound(Assets.decision15, 1.0f);
                     game.setScreen(new TutorialScreen(game));
+                    break;
+                } else if (isBounds(ges, creditDstArea)) {
+                    playSound(Assets.decision15, 1.0f);
+                    game.setScreen(new CreditScreen(game));
                     break;
                 } else if (isBounds(ges, vibDstArea)) {
                     if (Assets.ud.isVibe()) {

@@ -2,7 +2,6 @@ package com.hajikoma.nowalkingphone.framework.impl;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -14,7 +13,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 
 import com.ad_stir.videoreward.AdstirVideoReward;
 import com.ad_stir.videoreward.AdstirVideoRewardListener;
@@ -69,15 +67,10 @@ public abstract class AndroidGame extends Activity implements Game {
     public ConnectivityManager conManager;
 
     /** 広告表示関係 */
-    private Intent adIntent;
-    //    private static final String MEDIA_NO = "MEDIA-31008f2f";
-    private static final String MEDIA_NO = "MEDIA-989f9626";
+    private static final String MEDIA_NO = "MEDIA-31008f2f";
     public boolean isAdLoaded = false;
     public boolean isRewarded = false;
     private AdstirVideoReward adstirVideoReward;
-
-    /** 高速に描画を行うサブスレッド2つを処理するSurfaceView */
-    private FrameLayout frameLayout;
 
 
     /**
