@@ -1,13 +1,11 @@
 package com.hajikoma.nowalkingphone.screen;
 
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.hajikoma.nowalkingphone.Assets;
 import com.hajikoma.nowalkingphone.NoWalkingPhoneGame;
-import com.hajikoma.nowalkingphone.Score;
 import com.hajikoma.nowalkingphone.UserData;
 import com.hajikoma.nowalkingphone.framework.Audio;
 import com.hajikoma.nowalkingphone.framework.Game;
@@ -82,9 +80,11 @@ public class LoadingScreen extends Screen {
         Assets.voice_mieru = aud.newSound("sound/voice_mieru.mp3");
         Assets.voice_soko = aud.newSound("sound/voice_soko.mp3");
         Assets.voice_abunai = aud.newSound("sound/voice_abunai.mp3");
-        Assets.voice_kamihitoe = aud.newSound("sound/voice_kamihitoe.mp3");
+        Assets.voice_douda= aud.newSound("sound/voice_douda.mp3");
+        Assets.voice_futtonjae = aud.newSound("sound/voice_futtonjae.mp3");
+        Assets.voice_itete = aud.newSound("sound/voice_itete.mp3");
+        Assets.voice_kurae = aud.newSound("sound/voice_kurae.mp3");
 
-        Assets.decision22 = aud.newSound("sound/decision22.mp3");
         Assets.decision15 = aud.newSound("sound/decision15.mp3");
         Assets.peoplePerformanceCheer1 = aud.newSound("sound/people-performance-cheer1.mp3");
         Assets.peopleStadiumCheer1 = aud.newSound("sound/people-stadium-cheer1.mp3");
@@ -93,8 +93,8 @@ public class LoadingScreen extends Screen {
         Assets.kickLow1 = aud.newSound("sound/kick-low1.mp3");
         Assets.punchMiddle2 = aud.newSound("sound/punch-middle2.mp3");
         Assets.magicElectron2 = aud.newSound("sound/magic-electron2.mp3");
-        Assets.weak = aud.newSound("sound/weak.mp3");
-        Assets.weak = aud.newSound("sound/laser3.mp3");
+        Assets.incorrect1 = aud.newSound("sound/incorrect1.mp3");
+        Assets.setup1 = aud.newSound("sound/setup1.mp3");
 
         // バイブパターンのセットアップ
         Assets.vibShortOnce = 50;

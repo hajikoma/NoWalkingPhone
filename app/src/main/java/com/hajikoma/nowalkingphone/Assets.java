@@ -31,9 +31,11 @@ public class Assets {
 	public static Sound voice_mieru;
 	public static Sound voice_soko;
 	public static Sound voice_abunai;
-	public static Sound voice_kamihitoe;
+	public static Sound voice_douda;
+	public static Sound voice_futtonjae;
+	public static Sound voice_itete;
+	public static Sound voice_kurae;
 
-	public static Sound decision22;
 	public static Sound decision15;
 	public static Sound peoplePerformanceCheer1;
 	public static Sound peopleStadiumCheer1;
@@ -42,8 +44,9 @@ public class Assets {
 	public static Sound kickLow1;
 	public static Sound punchMiddle2;
 	public static Sound magicElectron2;
-	public static Sound weak;
-	public static Sound laser3;
+	public static Sound incorrect1;
+	public static Sound setup1;
+
 
 	public static int vibShortOnce;
 	public static int vibLongOnce;

@@ -73,7 +73,7 @@ public class TitleScreen extends Screen {
 
         // BGM
         bgm = aud.newMusic("music/retrogamecenter.mp3");
-        bgm.setVolume(0.05f);
+        bgm.setVolume(0.2f);
         bgm.setLooping(true);
 
         //固有グラフィックの読み込み

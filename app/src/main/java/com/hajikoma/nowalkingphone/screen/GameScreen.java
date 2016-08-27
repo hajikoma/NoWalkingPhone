@@ -121,7 +121,7 @@ public class GameScreen extends Screen {
     private LinkedHashMap<Double, Sound> onTap = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onFling = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onCrash = new LinkedHashMap<>();
-    private LinkedHashMap<Double, Sound> onBarrier = new LinkedHashMap<>();
+    private LinkedHashMap<Double, Sound> onSmashVoice = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onSmash = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onNoSmash = new LinkedHashMap<>();
     private LinkedHashMap<Double, Sound> onLvUpMany = new LinkedHashMap<>();
@@ -179,16 +179,27 @@ public class GameScreen extends Screen {
         bgm.setLooping(true);
 
         // 効果音セット
-        onTap.put(0.5, Assets.voice_soko);
+        onTap.put(0.2, Assets.voice_kurae);
+        onTap.put(0.4, Assets.voice_soko);
+        onTap.put(0.6, Assets.voice_amai);
         onTap.put(1.0, Assets.punchMiddle2);
-        onFling.put(0.5, Assets.voice_mieru);
-        onFling.put(1.0, Assets.punchSwing1);
-        onCrash.put(0.5, Assets.voice_nanto);
-        onCrash.put(1.0, Assets.punchMiddle2);
-        onBarrier.put(1.0, Assets.laser3);
+
+        onFling.put(0.25, Assets.voice_mieru);
+        onFling.put(0.5, Assets.voice_abunai);
+        onFling.put(1.0, Assets.setup1);
+
+        onCrash.put(0.25, Assets.voice_nanto);
+        onCrash.put(0.5, Assets.voice_itete);
+        onCrash.put(1.0, Assets.kickLow1);
+
+        onSmashVoice.put(0.5, Assets.voice_douda);
+        onSmashVoice.put(1.0, Assets.voice_futtonjae);
+
         onSmash.put(0.5, Assets.magicElectron2);
         onSmash.put(1.0, Assets.bomb1);
-        onNoSmash.put(1.0, Assets.weak);
+
+        onNoSmash.put(1.0, Assets.incorrect1);
+
         onLvUpMany.put(0.5, Assets.peoplePerformanceCheer1);
         onLvUpMany.put(1.0, Assets.peopleStadiumCheer1);
 
@@ -285,11 +296,12 @@ public class GameScreen extends Screen {
                                 lvUp();
                             }
                         }
-                        playSoundOnceRandom("onSmash", onSmash, 1.2f);
+                        playSoundOnceRandom("onSmashVoice", onSmashVoice, 1.0f);
+                        playSoundOnceRandom("onSmash", onSmash, 1.0f);
                         remainSmash--;
                     } else {
                         player.setState(Player.ActionType.WALK);
-                        playSoundOnceRandom("onNoSmash", onNoSmash, 1.2f);
+                        playSoundOnceRandom("onNoSmash", onNoSmash, 1.0f);
                     }
                 }
 
@@ -347,7 +359,7 @@ public class GameScreen extends Screen {
                                 for (Walker walker : walkers) {
                                     if (isBounds(ges, walker.getLocation(), TAP_EXPANSION)) {
                                         walker.addDamage(1);
-                                        playSoundOnceRandom("onTap", onTap, 1.5f);
+                                        playSoundOnceRandom("onTap", onTap, 1.0f);
                                         if (walker.getLife() >= 1) {
                                             walker.setState(Walker.ActionType.DAMAGE);
                                         } else {
@@ -369,7 +381,7 @@ public class GameScreen extends Screen {
                                 player.setState(Player.ActionType.STEP_RIGHT);
                             } else {
                                 player.setState(Player.ActionType.STEP_LEFT);
-                                playSoundOnceRandom("onFling", onFling, 1.5f);
+                                playSoundOnceRandom("onFling", onFling, 1.0f);
                             }
                         }
                     }
@@ -485,7 +497,6 @@ public class GameScreen extends Screen {
     /** ステップ中に衝突した時の一連の処理 */
     private void processBarrier(Walker walker) {
         walker.setState(Walker.ActionType.VANISH);
-        playSoundOnceRandom("onBarrier", onBarrier, 1.5f);
     }
 
 
@@ -504,7 +515,7 @@ public class GameScreen extends Screen {
         walker.setState(Walker.ActionType.CRASH);
         Assets.score.combo = 0;
         crashSpriteEffect.on(new Rect(0, 0, 720, 1280));
-        playSoundOnceRandom("onCrash", onCrash, 1.5f);
+        playSoundOnceRandom("onCrash", onCrash, 1.0f);
         if (power >= 5) {
             doVibrate(vib, Assets.vibLongOnce);
         } else {
@@ -540,7 +551,7 @@ public class GameScreen extends Screen {
             Assets.manager.maxWalker++;
         }
         if (Assets.score.level % 25 == 0) {
-            playSoundRandom(onLvUpMany, 0.7f);
+            playSoundRandom(onLvUpMany, 0.8f);
             if (remainSmash < MAX_SMASH) {
                 remainSmash++;
                 smashPlusCutIn.on();
