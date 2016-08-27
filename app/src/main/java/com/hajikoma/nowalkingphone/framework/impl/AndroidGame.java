@@ -284,7 +284,7 @@ public abstract class AndroidGame extends Activity implements Game {
             } else {
                 ((NoWalkingPhoneGame) game).showConfirmDialog(
                         "コンティニューに失敗しました",
-                        "広告が正しく終了しませんでした。最初からゲームをスタートします…",
+                        "広告が正しく再生・終了しませんでした。最初からゲームをスタートします…",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 game.setScreen(new GameScreen(game, false));

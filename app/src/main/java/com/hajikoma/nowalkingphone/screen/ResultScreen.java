@@ -47,6 +47,8 @@ public class ResultScreen extends Screen {
 
     /** レビュー依頼表示フラグ */
     private boolean isReviewShow = false;
+    /** playストアのURL */
+    private static final String STORE_URL = "market://details?id=com.xxx.myapp";
     /** ランキング更新フラグ。順に1位、2位、3位 */
     private boolean isRankedIn[] = new boolean[]{false, false, false};
 
@@ -241,7 +243,7 @@ public class ResultScreen extends Screen {
 
                                 // playストアを開く
                                 Intent googlePlayIntent = new Intent(Intent.ACTION_VIEW);
-                                googlePlayIntent.setData(Uri.parse("market://details?id=com.xxx.myapp"));
+                                googlePlayIntent.setData(Uri.parse(STORE_URL));
                                 nwp.startActivity(googlePlayIntent);
                             }
                         },
