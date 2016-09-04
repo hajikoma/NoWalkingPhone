@@ -14,6 +14,6 @@ public class CarWalker extends Walker {
      * {@inheritDoc}
      */
     public CarWalker(Pixmap visual, Integer colWidth, Rect location) {
-        super(999, 9, 5, 20, visual, colWidth, location);
+        super(999, 8, 4, 20, visual, colWidth, location);
     }
 }
