@@ -81,9 +81,9 @@ public class GameScreen extends Screen {
     private static final int MAX_SMASH = 3;
     /** スマッシュアイコンの描画先 */
     private static final Rect SMASH_DST_RECT_ARR[] = {
-            new Rect(495, 1205, 560, 1270),
-            new Rect(570, 1205, 635, 1270),
-            new Rect(645, 1205, 710, 1270)
+            new Rect(350, 60, 415, 125),
+            new Rect(425, 60, 490, 125),
+            new Rect(500, 60, 565, 125)
     };
 
     /** 一時停止ボタンのタップ判定エリア */
@@ -229,9 +229,8 @@ public class GameScreen extends Screen {
 
         //共通部分の描画
         gra.drawPixmap(bg, 0, 0);
-        txt.drawText(String.valueOf(Assets.score.level), 20, 130, 200, fontNumber);
-        txt.drawText(String.valueOf(Assets.score.combo), 280, 130, 200, fontNumber);
-        drawGraphicalNumber(Assets.score.score, 90, 20, 220, 9);
+        txt.drawText(String.valueOf(Assets.score.combo), 20, 270, 200, fontNumber);
+        drawGraphicalNumber(Assets.score.score, 80, 220, 200, 7);
         drawLife(player.getInitLife(), player.getDamage());
         drawSmashIcon();
 
@@ -606,9 +605,9 @@ public class GameScreen extends Screen {
     /** 残りlifeゲージを描画する */
     private void drawLife(int initLife, int damage) {
         int left = 10;
-        int top = 1210;
+        int top = 50;
         int width = 10 + initLife * (10 + 5) + 5; // 左余白10＋ライフゲージバー10+バー間の余白5+右余白10(5+5)
-        int height = 60;
+        int height = 80;
         int warningZone = initLife / 2;
         int dangerZone = initLife / 5;
         int remainLife = initLife - damage;
@@ -633,7 +632,7 @@ public class GameScreen extends Screen {
         left += 10;
         top += 10;
         width = 10;
-        height = 40;
+        height -= 20;
         for (int li = 1; li <= remainLife; li++) {
             gra.drawRoundRect(left, top, width, height, 5.0f, color);
             left += 10 + 5; // バーが10、余白5
