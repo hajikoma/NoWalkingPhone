@@ -237,7 +237,7 @@ public abstract class Screen {
     public static boolean isBounds(GestureEvent e, Rect rect, int expansion) {
         int left = rect.left - expansion;
         int width = rect.right + expansion - left;
-        int top = rect.top - expansion;
+        int top = rect.top - expansion - expansion; // 手前に歩いてくる分、当たり判定が下方に強く見えるため2掛け
         int height = rect.bottom + expansion - top;
 
         return isBounds(e, left, top, width, height);
