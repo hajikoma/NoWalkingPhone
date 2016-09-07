@@ -14,7 +14,7 @@ public class GirlWalker extends Walker {
      * {@inheritDoc}
      */
     public GirlWalker(Pixmap visual, Integer colWidth, Rect location) {
-        super(2, 3, 2, 4, visual, colWidth, location);
+        super(1, 3, 2, 4, visual, colWidth, location);
     }
 
 
@@ -27,10 +27,10 @@ public class GirlWalker extends Walker {
         if (dstRect.top <= 1200) {
             if (actionTime <= 0.3f) {
                 drawAction(1);
-                move(-3, speed);
+                move(-4, speed);
             } else if (actionTime <= 0.6f) {
                 drawAction(0);
-                move(3, speed);
+                move(4, speed);
             } else {
                 loopAction();
                 walk();
